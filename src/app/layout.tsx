@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Footer from "@/components/footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -36,6 +37,9 @@ export default function RootLayout({
             <Navbar/>
           </header>
           {children}
+          <footer>
+            <Footer/>
+          </footer>
         </ThemeProvider>
       </body>
     </html>
