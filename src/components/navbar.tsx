@@ -61,7 +61,7 @@ export function Navbar() {
                 {/* Logo */}
                 <NavigationMenuItem>
                     <NavigationMenuLink>
-                        <Link href="/" >NekoPress</Link>
+                        <span className=" dark:text-neutral-50 cursor-pointer" >Neko Press</span>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
