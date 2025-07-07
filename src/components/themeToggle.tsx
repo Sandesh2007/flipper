@@ -4,14 +4,20 @@ import * as React from "react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
-import { Moon, Sun, SunMoon } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
+import { toast } from "sonner"
 
 
 export function ThemeToggle() {
     const { theme, setTheme } = useTheme()
 
     return (
-        <Button variant="ghost" size="lg" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} >
+        <Button variant="ghost" size="lg" onClick={() => {
+            toast("Event has been created.",{
+                description: `Theme changed to ${theme}`
+            })
+            setTheme(theme === "dark" ? "light" : "dark")
+            }} >
             {/* <SunMoon size={32} /> */}
             {theme === "dark" ? <Sun/> : <Moon/>}
         </Button>

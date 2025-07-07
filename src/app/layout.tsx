@@ -3,8 +3,8 @@ import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -34,11 +34,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header>
-            <Navbar/>
+            <Navbar />
           </header>
           {children}
+          <Toaster />
           <footer>
-            <Footer/>
+            <Footer />
           </footer>
         </ThemeProvider>
       </body>
