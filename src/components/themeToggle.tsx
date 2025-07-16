@@ -5,7 +5,6 @@ import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
 import { Moon, Sun } from "lucide-react"
-import { toast } from "sonner"
 
 
 export function ThemeToggle() {
