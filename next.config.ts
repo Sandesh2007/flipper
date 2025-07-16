@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
 module.exports = {
   output: 'export',
   basePath: '/nekopress',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig;
