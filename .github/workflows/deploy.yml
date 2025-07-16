@@ -36,10 +36,7 @@ jobs:
         run: npm ci
 
       - name: Build with Next.js
-        run: |
-          # Ignore ESLint errors during build to prevent CI failures
-          echo "module.exports = { eslint: { ignoreDuringBuilds: true }, output: 'export' };" > next.config.js
-          npx next build && npx next export
+        run: npx next build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
