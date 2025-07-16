@@ -13,9 +13,6 @@ export function ThemeToggle() {
 
     return (
         <Button variant="ghost" size="lg" onClick={() => {
-            toast("Event has been created.",{
-                description: `Theme changed to ${theme}`
-            })
             setTheme(theme === "dark" ? "light" : "dark")
             }} >
             {/* <SunMoon size={32} /> */}
