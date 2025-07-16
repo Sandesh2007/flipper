@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   output: 'export',
+  basePath: '/nekopress',
 }
 
 export default nextConfig;
