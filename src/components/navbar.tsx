@@ -45,9 +45,9 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     return (
-        <nav className="w-full bg-neutral-50 text-neutral-950 dark:bg-neutral-900 dark:text-neutral-50 shadow-sm">
+        <nav className="w-screen bg-neutral-50 text-neutral-950 dark:bg-neutral-900 dark:text-neutral-50 shadow-sm">
             {/* Desktop & Mobile Container */}
-            <div className="flex justify-between items-center px-4 py-3 md:py-4">
+            <div className="flex justify-between items-center p-2 w-screen">
                 {/* Left Side: Logo & Search */}
                 <div className="flex items-center gap-4">
                     <Link href="/" className="flex gap-2 items-center">
@@ -83,12 +83,13 @@ export function Navbar() {
                 </div>
 
                 {/* Mobile Hamburger */}
-                <button
-                    className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                <Button
+                variant={"ghost"}
+                    className="lg:hidden p-2 rounded-md"
                     onClick={() => setMobileOpen(!mobileOpen)}
                 >
                     {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+                </Button>
             </div>
 
             {/* Mobile Dropdown */}

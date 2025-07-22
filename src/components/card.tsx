@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image';
 import React from 'react';
 
@@ -13,18 +14,19 @@ const Card: React.FC<CardProps> = ({ name, image, hover_preview }) => {
             {/* Image */}
             <div className="relative w-full rounded-xl overflow-hidden">
                 {/* Base Image */}
-                <Image
+                <img
+                    loading='lazy'
                     src={image}
                     alt={name}
-                    className="w-full h-full object-cover rounded-xl"
+                    className="w-full h-full aspect-square object-cover rounded-xl"
                 />
 
                 {/* Hover Preview Overlay */}
                 {hover_preview && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-600">
-                        <Image
+                    <div className="absolute inset-0 flepx items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-600">
+                        <img
                             src={hover_preview}
-                            alt={`${name} preview`}
+                            alt={`${name} review`}
                             className="h-fit rounded-lg shadow-lg"
                         />
                     </div>
