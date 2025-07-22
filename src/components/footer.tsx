@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import logo from "../../public/logo.svg";
 import Image from "next/image";
-import { FileUp, Twitter, Facebook, Instagram, Linkedin, Youtube, TwitterIcon } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, TwitterIcon } from "lucide-react";
 
 const footerLinks = {
   product: [
