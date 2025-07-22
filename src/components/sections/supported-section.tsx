@@ -1,4 +1,4 @@
-import { FileText, Image, BookOpen, Monitor, Smartphone, Tablet } from "lucide-react";
+import { FileText, Image, BookOpen } from "lucide-react";
 
 const formats = [
   { icon: FileText, label: "PDF", color: "text-red-500" },
