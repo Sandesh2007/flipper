@@ -3,8 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import Footer from "@/components/footer";
 import { Toaster } from "sonner";
+import { Footer } from "@/components/footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning >
       <body
-        className={`${poppins.className} antialiased`}
+        className={`${poppins.className} antialiased scroll-smooth`}
       >
         <ThemeProvider
           attribute="class"
@@ -33,7 +33,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <header>
+          <header
+          className="sticky top-0 z-50"
+          >
             <Navbar />
           </header>
           {children}

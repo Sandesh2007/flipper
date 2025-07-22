@@ -45,7 +45,7 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     return (
-        <nav className="w-screen bg-neutral-50 text-neutral-950 dark:bg-neutral-900 dark:text-neutral-50 shadow-sm">
+        <nav className=" bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
             {/* Desktop & Mobile Container */}
             <div className="flex justify-between items-center p-2 w-screen">
                 {/* Left Side: Logo & Search */}
@@ -55,13 +55,14 @@ export function Navbar() {
                         <span className="font-semibold text-lg">Neko Press</span>
                     </Link>
                     {/* Search (hidden on mobile) */}
-                    <div className="hidden lg:flex ml-6 items-center bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md gap-2">
-                        <Search size={20} />
-                        <Input
-                            type="text"
-                            placeholder="Search"
-                            className="bg-transparent placeholder:text-neutral-500 focus:ring-0 dark:placeholder:text-neutral-400"
-                        />
+                    <div className="flex-1 max-w-sm mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md">
+                        <div className="relative ">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder="Find creators and content"
+                                className="pl-10 bg-transparent border-none focus:outline-none"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -84,7 +85,7 @@ export function Navbar() {
 
                 {/* Mobile Hamburger */}
                 <Button
-                variant={"ghost"}
+                    variant={"ghost"}
                     className="lg:hidden p-2 rounded-md"
                     onClick={() => setMobileOpen(!mobileOpen)}
                 >
