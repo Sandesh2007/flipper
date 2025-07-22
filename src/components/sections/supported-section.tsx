@@ -10,12 +10,6 @@ const formats = [
   { icon: Image, label: "PPSX", color: "text-pink-500" },
 ];
 
-const devices = [
-  { icon: Monitor, label: "Desktop" },
-  { icon: Tablet, label: "Tablet" },
-  { icon: Smartphone, label: "Mobile" },
-];
-
 export const SupportedFormats = () => {
   return (
     <div className="w-full max-w-4xl mx-auto mt-12">
