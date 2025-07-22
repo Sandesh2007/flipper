@@ -1,18 +1,14 @@
-import type { NextConfig } from "next";
+const isDev = process.env.NODE_ENV === 'development';
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-module.exports = {
+const nextConfig = {
   output: 'export',
-  basePath: '/nekopress',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  basePath: isDev ? '' : '/nekopress',
   images: {
     unoptimized: true,
   },
-}
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+};
 
-export default nextConfig;
+module.exports = nextConfig;
