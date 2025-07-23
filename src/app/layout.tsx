@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
-import { Footer } from "@/components/footer";
+import { Toaster } from "react-hot-toast";
+import ClientLayout from "@/components/client-layout";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,30 +18,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning >
-      <body
-        className={`${poppins.className} antialiased scroll-smooth`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body 
+      className={`${poppins.className} antialiased scroll-smooth`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
-          disableTransitionOnChange
         >
-          <header
-          className="sticky top-0 z-50"
-          >
-            <Navbar />
-          </header>
-          {children}
-          <Toaster />
-          <footer>
-            <Footer />
-          </footer>
+          <ClientLayout>
+            {children}
+            <Toaster
+            position="top-center"
+            />
+          </ClientLayout>
         </ThemeProvider>
       </body>
     </html>

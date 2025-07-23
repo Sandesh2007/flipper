@@ -45,22 +45,22 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     return (
-        <nav className=" bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
             {/* Desktop & Mobile Container */}
-            <div className="flex justify-between items-center p-2 w-screen">
+            <div className="flex justify-between items-center px-2 py-2 max-w-screen-xl mx-auto w-full">
                 {/* Left Side: Logo & Search */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 w-full lg:w-auto">
                     <Link href="/" className="flex gap-2 items-center">
                         <Image src={logo} alt="logo" height={40} priority />
                         <span className="font-semibold text-lg">Neko Press</span>
                     </Link>
                     {/* Search (hidden on mobile) */}
-                    <div className="flex-1 max-w-sm mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md">
-                        <div className="relative ">
+                    <div className="hidden lg:flex flex-1 max-w-sm mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md">
+                        <div className="relative w-full">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder="Find creators and content"
-                                className="pl-10 bg-transparent border-none focus:outline-none"
+                                className="pl-10 bg-transparent border-none focus:outline-none w-full"
                             />
                         </div>
                     </div>
@@ -77,7 +77,7 @@ export function Navbar() {
                             Login
                         </Link>
                         <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                            <Link href="/signup">Sign up</Link>
+                            <Link href="/login">Sign up</Link>
                         </Button>
                         <ThemeToggle />
                     </div>
@@ -88,6 +88,7 @@ export function Navbar() {
                     variant={"ghost"}
                     className="lg:hidden p-2 rounded-md"
                     onClick={() => setMobileOpen(!mobileOpen)}
+                    aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 >
                     {mobileOpen ? <X size={24} /> : <Menu size={24} />}
                 </Button>
@@ -95,17 +96,17 @@ export function Navbar() {
 
             {/* Mobile Dropdown */}
             {mobileOpen && (
-                <div className="lg:hidden flex flex-col gap-2 px-4 pb-4">
+                <div className="lg:hidden flex flex-col gap-2 px-2 pb-4 max-w-screen-xl mx-auto w-full">
                     <div className="flex flex-col gap-2">
                         <NavigationLinks />
-                        <Link href="/pricing" className="block px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
+                        <Link href="/pricing" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
                             Pricing
                         </Link>
-                        <Link href="/login" className="block px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
+                        <Link href="/login" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
                             Login
                         </Link>
-                        <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                            <Link href="/signup">Sign up</Link>
+                        <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white text-base py-3">
+                            <Link href="/login">Sign up</Link>
                         </Button>
                         <ThemeToggle />
                         {/* Search Bar */}

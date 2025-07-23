@@ -14,7 +14,7 @@ const testimonials = [
     verified: true
   },
   {
-    name: "Michael Rodriguez", 
+    name: "Michael Rodriguez",
     role: "Creative Director",
     company: "Design Studio",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
@@ -24,7 +24,7 @@ const testimonials = [
   },
   {
     name: "Emily Johnson",
-    role: "Content Manager", 
+    role: "Content Manager",
     company: "Publishing Co",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
     content: "We've increased our content engagement by 300% since switching to interactive flipbooks. The social sharing features are fantastic.",
@@ -35,7 +35,7 @@ const testimonials = [
     name: "David Park",
     role: "Sales Manager",
     company: "Real Estate Firm",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face", 
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     content: "Property brochures have never looked better. Clients love the interactive experience, and it's helped us close more deals.",
     rating: 4,
     verified: true
@@ -54,7 +54,7 @@ export const Testimonials = () => {
             Join thousands of professionals who trust our platform to bring their content to life.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((testimonial, index) => (
             <Card
@@ -64,17 +64,17 @@ export const Testimonials = () => {
               <CardContent className="p-8">
                 <div className="flex items-center gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                     />
                   ))}
                 </div>
-                
+
                 <blockquote className="text-foreground mb-6 leading-relaxed">
-                &ldquo;{testimonial.content}&rdquo;
+                  &ldquo;{testimonial.content}&rdquo;
                 </blockquote>
-                
+
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
