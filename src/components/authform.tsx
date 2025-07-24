@@ -5,9 +5,8 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { login, signInWithGoogle, signup } from "@/lib/auth-actions";
+import { createClient } from "@/lib/supabase"
 
 export default function AuthForm() {
     const searchParams = useSearchParams();
@@ -144,7 +143,7 @@ export default function AuthForm() {
                 </div>
 
                 {/* Right Panel - Form */}
-                <form action={isLogin ? login : signup} className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
+                <form className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
                         <div className="max-w-md mx-auto w-full">
                             {/* Mobile logo */}
                             <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Neko Press</div>
@@ -313,7 +312,7 @@ export default function AuthForm() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <button
                                         type="button"
-                                        onClick={() => signInWithGoogle()}
+                                        onClick={() => handleSocialLogin("google")}
                                         className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base"
                                     >
                                         <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
