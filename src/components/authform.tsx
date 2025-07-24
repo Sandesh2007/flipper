@@ -6,7 +6,8 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase"
+import { createClient } from "@/utils/supabase/client"
+import ForgotPassword from "./forgot-password";
 
 export default function AuthForm() {
     const searchParams = useSearchParams();
@@ -85,6 +86,10 @@ export default function AuthForm() {
         const { error, data } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
+                queryParams: {
+                    access_type: "offline",
+                    prompt: "consent",
+                },
                 redirectTo: `${window.location.origin}`
             }
         });
@@ -187,7 +192,7 @@ export default function AuthForm() {
                             <div className="space-y-4 sm:space-y-6">
                                 {/* Name fields - Only for signup */}
                                 <div
-                                    className={`grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4 transition-all duration-500 ease-in-out overflow-hidden ${!isLogin ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
+                                    className={`grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4 transition-all duration-500 ease-in-out overflow-hidden ${!isLogin ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
                                         }`}
                                 >
                                     <div>
@@ -248,16 +253,11 @@ export default function AuthForm() {
 
                                 {/* Forgot password - Only for login */}
                                 <div
-                                    className={`transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
+                                    className={`transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-9 opacity-100' : 'max-h-0 opacity-0'
                                         }`}
                                 >
                                     <div className="text-right">
-                                        <button
-                                            type="button"
-                                            className="text-accent-foreground hover:text-neutral-600 transition-colors text-sm"
-                                        >
-                                            Forgot password?
-                                        </button>
+                                        <ForgotPassword />
                                     </div>
                                 </div>
 

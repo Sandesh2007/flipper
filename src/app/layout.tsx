@@ -32,10 +32,10 @@ export default function RootLayout({
             enableSystem
           >
             <ClientLayout>
-              {children}
               <Toaster
                 position="top-center"
               />
+              {children}
             </ClientLayout>
           </ThemeProvider>
         </AuthProvider>

@@ -18,6 +18,7 @@ import { ThemeToggle } from "./themeToggle";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAuth } from "./auth-context";
+import { CurrentUserAvatar } from "./current-user-avatar";
 
 const readItems = [
     { title: "Latest Articles", href: "/articles", description: "Read the most recent articles and insights from our community." },
@@ -79,7 +80,7 @@ export function Navbar() {
                             <div className="flex items-center gap-2">
                                 <Link href="/profile">
                                     <Avatar>
-                                        <AvatarImage src={user.avatar_url} />
+                                        <CurrentUserAvatar/>
                                         <AvatarFallback>
                                             {user.username}
                                         </AvatarFallback>
@@ -89,11 +90,11 @@ export function Navbar() {
                             </div>
                         ) : (
                             <>
-                                <Link href="/register?mode=login" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
+                                <Link href="/auth/register?mode=login" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
                                     Login
                                 </Link>
                                 <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                                    <Link href="/register?mode=signup">Sign up</Link>
+                                    <Link href="/auth/register?mode=signup">Sign up</Link>
                                 </Button>
                             </>
                         )}
@@ -129,11 +130,11 @@ export function Navbar() {
                             </div>
                         ) : (
                             <>
-                                <Link href="/register?mode=login" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
+                                <Link href="/auth/register?mode=login" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
                                     Login
                                 </Link>
                                 <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white text-base py-3">
-                                    <Link href="/register?mode=signup">Sign up</Link>
+                                    <Link href="/auth/register?mode=signup">Sign up</Link>
                                 </Button>
                             </>
                         )}

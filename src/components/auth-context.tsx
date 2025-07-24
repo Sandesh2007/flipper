@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import type { User } from "@/lib/user";
-import { createClient } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 
 interface AuthContextType {
   user: User | null;
@@ -45,7 +45,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id,
         email: email ?? "",
         username: user_metadata?.username,
-        // avatar_url: user_metadata?.avatar_url,
+        avatar_url: user_metadata?.avatar_url,
+        bio: user_metadata?.bio,
+        location: user_metadata?.location,
         created_at: created_at,
       });
     } else {
@@ -63,7 +65,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id,
           email: email ?? "",
           username: user_metadata?.username,
-          // avatar_url: user_metadata?.avatar_url,
+          avatar_url: user_metadata?.avatar_url,
+          bio: user_metadata?.bio,
+          location: user_metadata?.location,
           created_at: created_at,
         });
       } else {

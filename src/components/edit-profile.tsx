@@ -17,6 +17,7 @@ import { Settings } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import toast from 'react-hot-toast'
 import { useAuth } from './auth-context'
+import Image from 'next/image'
 
 export default function EditProfile() {
     const { user, refreshUser } = useAuth();
@@ -129,8 +130,8 @@ export default function EditProfile() {
                         {/* {image && ( */}
                             <div className="mt-2">
                                 <Label className="text-sm text-muted-foreground mb-1 block">Preview</Label>
-                                <img
-                                    // src={image}
+                                <Image
+                                    src={user?.avatar_url || ''}
                                     alt="Profile Preview"
                                     className="w-24 h-24 rounded-full object-cover border"
                                 />

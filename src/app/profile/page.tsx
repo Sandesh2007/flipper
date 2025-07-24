@@ -1,3 +1,4 @@
+'use client'
 import EditProfile from "@/components/edit-profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,8 +8,11 @@ import {
   MessageCircle,
   Share,
 } from "lucide-react";
+import { useAuth } from "@/components/auth-context";
+import { CurrentUserAvatar } from "@/components/current-user-avatar";
 
 const UserProfile = () => {
+  const { user } = useAuth();
   const posts = [
     {
       id: 1,
@@ -34,16 +38,15 @@ const UserProfile = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage
-                src={"https://avatar.iran.liara.run/public/boy"} alt="Profile" />
-                <AvatarFallback className="text-lg bg-primary text-primary-foreground">SD</AvatarFallback>
+                <CurrentUserAvatar/>
+                <AvatarFallback className="text-lg bg-primary text-primary-foreground">{user?.username?.charAt(0) || "NULL"}</AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Sandesh</h1>
-                <p className="text-muted-foreground">Normal Developer</p>
+                <h1 className="text-2xl font-bold text-foreground">{user?.username}</h1>
+                <p className="text-muted-foreground">{user?.bio}</p>
                 <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
                   <MapPin className="h-3 w-3" />
-                  Butwal, Nepal
+                  {user?.location}
                 </div>
               </div>
             </div>
@@ -71,11 +74,11 @@ const UserProfile = () => {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={"https://avatar.iran.liara.run/public/boy"} alt="Profile" />
-                    <AvatarFallback>SD</AvatarFallback>
+                    <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="font-medium text-foreground">Sandesh</span>
+                      <span className="font-medium text-foreground">{user?.username}</span>
                       <span className="text-sm text-muted-foreground">{post.timestamp}</span>
                     </div>
                     <p className="text-foreground leading-relaxed mb-4">

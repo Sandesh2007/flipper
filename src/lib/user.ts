@@ -6,4 +6,5 @@ export interface User {
   updated_at?: string;
   bio?: string;
   username?: string;
+  location?: string;
 }

@@ -10,7 +10,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const noLayoutRoutes = ['/register'];
+  const noLayoutRoutes = ['/auth/register'];
   const isLoginPage = noLayoutRoutes.includes(pathname);
 
   return (
