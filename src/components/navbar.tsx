@@ -16,6 +16,8 @@ import {
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./themeToggle";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useAuth } from "./auth-context";
 
 const readItems = [
     { title: "Latest Articles", href: "/articles", description: "Read the most recent articles and insights from our community." },
@@ -43,7 +45,7 @@ const learnItems = [
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
-
+    const { user } = useAuth();
     return (
         <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
             {/* Desktop & Mobile Container */}
@@ -73,12 +75,28 @@ export function Navbar() {
                         <Link href="/pricing" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
                             Pricing
                         </Link>
-                        <Link href="/login" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
-                            Login
-                        </Link>
-                        <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                            <Link href="/login">Sign up</Link>
-                        </Button>
+                        {user ? (
+                            <div className="flex items-center gap-2">
+                                <Link href="/profile">
+                                    <Avatar>
+                                        <AvatarImage src={user.avatar_url} />
+                                        <AvatarFallback>
+                                            {user.username}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="font-medium">{ }</span>
+                                </Link>
+                            </div>
+                        ) : (
+                            <>
+                                <Link href="/register?mode=login" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
+                                    Login
+                                </Link>
+                                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                                    <Link href="/register?mode=signup">Sign up</Link>
+                                </Button>
+                            </>
+                        )}
                         <ThemeToggle />
                     </div>
                 </div>
@@ -102,12 +120,23 @@ export function Navbar() {
                         <Link href="/pricing" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
                             Pricing
                         </Link>
-                        <Link href="/login" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
-                            Login
-                        </Link>
-                        <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white text-base py-3">
-                            <Link href="/login">Sign up</Link>
-                        </Button>
+                        {user ? (
+                            <div className="flex items-center gap-2 px-3 py-3">
+                                <Avatar>
+                                    {user.username?.[0] || user.email[0]}
+                                </Avatar>
+                                <span className="font-medium">{user.username || user.email}</span>
+                            </div>
+                        ) : (
+                            <>
+                                <Link href="/register?mode=login" className="block px-3 py-3 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-base">
+                                    Login
+                                </Link>
+                                <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white text-base py-3">
+                                    <Link href="/register?mode=signup">Sign up</Link>
+                                </Button>
+                            </>
+                        )}
                         <ThemeToggle />
                         {/* Search Bar */}
                         <div className="flex mt-2 items-center bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md gap-2">
