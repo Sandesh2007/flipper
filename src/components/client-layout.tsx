@@ -11,17 +11,20 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
   const noLayoutRoutes = ['/auth/register'];
-  const isLoginPage = noLayoutRoutes.includes(pathname);
+  const isNoLayoutRoute = noLayoutRoutes.includes(pathname);
+
+  const noFooterRoutes = ['/home/publisher'];
+  const isNoFooterRoute = noFooterRoutes.includes(pathname);
 
   return (
     <>
-      {!isLoginPage && (
+      {!isNoLayoutRoute && (
         <header className="sticky top-0 z-50 border-b-[1px] border-neutral-700 ">
           <Navbar />
         </header>
       )}
       {children}
-      {!isLoginPage && <Footer />}
+      {!isNoFooterRoute && <Footer />}
     </>
   );
 }

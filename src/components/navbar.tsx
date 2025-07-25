@@ -50,7 +50,7 @@ export function Navbar() {
     return (
         <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full">
             {/* Desktop & Mobile Container */}
-            <div className="flex justify-between items-center px-2 py-2 max-w-screen-xl mx-auto w-full">
+            <div className="flex justify-between items-start px-2 py-2 max-w-screen-xl mx-auto w-full">
                 {/* Left Side: Logo & Search */}
                 <div className="flex items-center gap-4 w-full lg:w-auto">
                     <Link href="/" className="flex gap-2 items-center">

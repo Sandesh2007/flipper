@@ -15,7 +15,8 @@ export default function NotFound() {
         fontWeight={900}
         fontFamily="inherit"
         enableHover={true}
-        className="text-neutral-900 dark:text-neutral-50 text-4xl sm:text-6xl md:text-8xl"
+        color='gray'
+        className="text-4xl sm:text-6xl md:text-8xl"
         baseIntensity={0.18}
         hoverIntensity={0.5}
       >
@@ -26,7 +27,8 @@ export default function NotFound() {
         fontWeight={900}
         fontFamily="inherit"
         enableHover={true}
-        className="text-neutral-700 dark:text-neutral-300 text-lg sm:text-2xl md:text-4xl text-center"
+        color='gray'
+        className="text-lg sm:text-2xl md:text-4xl text-center"
         baseIntensity={0.18}
         hoverIntensity={0.5}>
         Page Not Found
