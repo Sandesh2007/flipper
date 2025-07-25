@@ -13,7 +13,7 @@ export default function ClientLayout({
   const noLayoutRoutes = ['/auth/register'];
   const isNoLayoutRoute = noLayoutRoutes.includes(pathname);
 
-  const noFooterRoutes = ['/home/publisher'];
+  const noFooterRoutes = ['/home/publisher', '/auth/register'];
   const isNoFooterRoute = noFooterRoutes.includes(pathname);
 
   return (

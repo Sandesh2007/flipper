@@ -8,7 +8,7 @@ import AuthForm from '@/components/authform'
 import React, { Suspense } from 'react'
 // import { ThemeToggle } from '@/components/themeToggle'
 
-const Login = () => {
+export default function Login() {
   return (
     <>
       {/* <header className='sticky top-0 z-50 border-b-[1px] border-neutral-700' > */}
@@ -34,5 +34,3 @@ const Login = () => {
     </>
   )
 }
-
-export default Login

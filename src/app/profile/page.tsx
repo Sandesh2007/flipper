@@ -11,7 +11,7 @@ import {
 import { useAuth } from "@/components/auth-context";
 import { CurrentUserAvatar } from "@/components/current-user-avatar";
 
-const UserProfile = () => {
+export default function UserProfile() {
   const { user } = useAuth();
   const posts = [
     {
@@ -31,6 +31,8 @@ const UserProfile = () => {
   ];
 
   return (
+    <>
+    {user && (
     <div className="min-h-screen bg-background">
       {/* Minimal Header */}
       <div className="border-b border-border/50">
@@ -39,13 +41,13 @@ const UserProfile = () => {
             <div className="flex items-center gap-4">
               <CurrentUserAvatar/>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">{user?.username}</h1>
-                <p className="text-muted-foreground">{user?.bio}</p>
+                <h1 className="text-2xl font-bold text-foreground">{user.username}</h1>
+                <p className="text-muted-foreground">{user.bio}</p>
                 <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                  {user?.location && (
+                  {user.location && (
                     <>
                       <MapPin className="h-3 w-3" />
-                      {user?.location}
+                      {user.location}
                     </>
                   )}
                 </div>
@@ -73,13 +75,10 @@ const UserProfile = () => {
             <Card key={post.id} className="shadow-soft hover:shadow-medium transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={"https://avatar.iran.liara.run/public/boy"} alt="Profile" />
-                    <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  <CurrentUserAvatar/>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="font-medium text-foreground">{user?.username}</span>
+                      <span className="font-medium text-foreground">{user.username}</span>
                       <span className="text-sm text-muted-foreground">{post.timestamp}</span>
                     </div>
                     <p className="text-foreground leading-relaxed mb-4">
@@ -107,7 +106,7 @@ const UserProfile = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-export default UserProfile;
+    )}
+    </>
+  )
+}

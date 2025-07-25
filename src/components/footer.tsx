@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import logo from "../../public/logo.svg";
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin, Youtube, TwitterIcon } from "lucide-react";
+import { useAuth } from "@/components/auth-context";
 
 const footerLinks = {
   product: [
@@ -40,9 +41,12 @@ const socialLinks = [
 ];
 
 export const Footer = () => {
+  const { user } = useAuth()
+
   return (
     <footer className="bg-secondary/50 border-t border-border">
       {/* Newsletter Section */}
+      {!user && (
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
@@ -63,6 +67,7 @@ export const Footer = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16">
