@@ -353,7 +353,7 @@ export default function AuthForm() {
                                 onClick={handleSubmit}
                                 disabled={isLoading || isTransitioning}
                             >
-                                {isLoading ? 'Loading...' : (isLogin ? 'Sign in' : 'Create account')}
+                                {isLoading ? 'Loading...' : (isLogin ? 'Log in' : 'Create account')}
                             </button>
 
                             {/* Divider */}
@@ -363,7 +363,7 @@ export default function AuthForm() {
                                 </div>
                                 <div className="relative flex justify-center text-sm">
                                     <span className="px-2 bg-neutral-50 dark:bg-neutral-900 text-muted-foreground">
-                                        Or {isLogin ? 'sign in' : 'register'} with
+                                        Or {isLogin ? 'log in' : 'register'} with
                                     </span>
                                 </div>
                             </div>

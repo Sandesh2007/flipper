@@ -1,8 +1,8 @@
 const nextConfig = {
   basePath: '',
-  // images: {
-  //   unoptimized: true,
-  // },
+  images: {
+    unoptimized: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
