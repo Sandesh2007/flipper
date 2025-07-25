@@ -171,7 +171,7 @@ export function Navbar() {
                 <>
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                        className="fixed inset-0 bg-background/70 backdrop-blur-sm z-40 lg:hidden"
                         onClick={() => setMobileOpen(false)}
                     />
 
@@ -204,63 +204,65 @@ export function Navbar() {
                         {/* Navigation Menu */}
                         <div className="flex flex-col">
                             {/* Dashboard Navigation */}
-                            <div className="px-4 py-2">
-                                <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-2">Dashboard</h3>
-                                <div className="space-y-1">
-                                    <MobileSidebarItem
-                                        icon={<Home className="w-5 h-5" />}
-                                        label="Home"
-                                        href="/"
-                                        onClick={() => setMobileOpen(false)}
-                                    />
+                            {user && (
+                                <div className="px-4 py-2">
+                                    <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-2">Dashboard</h3>
+                                    <div className="space-y-1">
+                                        <MobileSidebarItem
+                                            icon={<Home className="w-5 h-5" />}
+                                            label="Home"
+                                            href="/"
+                                            onClick={() => setMobileOpen(false)}
+                                        />
 
-                                    <div>
-                                        <div
-                                            className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md cursor-pointer"
-                                            onClick={() => setIsLibraryOpen(!isLibraryOpen)}
-                                        >
-                                            {isLibraryOpen ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
-                                            <Library className="w-5 h-5 mr-3" />
-                                            My Library
-                                        </div>
-                                        {isLibraryOpen && (
-                                            <div className="ml-6 space-y-1">
-                                                <MobileSidebarItem
-                                                    icon={<FileText className="w-4 h-4" />}
-                                                    label="Publications"
-                                                    href="/publications"
-                                                    onClick={() => setMobileOpen(false)}
-                                                />
-                                                <MobileSidebarItem
-                                                    icon={<FileText className="w-4 h-4" />}
-                                                    label="Articles"
-                                                    href="/articles"
-                                                    onClick={() => setMobileOpen(false)}
-                                                />
+                                        <div>
+                                            <div
+                                                className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md cursor-pointer"
+                                                onClick={() => setIsLibraryOpen(!isLibraryOpen)}
+                                            >
+                                                {isLibraryOpen ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+                                                <Library className="w-5 h-5 mr-3" />
+                                                My Library
                                             </div>
-                                        )}
-                                    </div>
+                                            {isLibraryOpen && (
+                                                <div className="ml-6 space-y-1">
+                                                    <MobileSidebarItem
+                                                        icon={<FileText className="w-4 h-4" />}
+                                                        label="Publications"
+                                                        href="/publications"
+                                                        onClick={() => setMobileOpen(false)}
+                                                    />
+                                                    <MobileSidebarItem
+                                                        icon={<FileText className="w-4 h-4" />}
+                                                        label="Articles"
+                                                        href="/articles"
+                                                        onClick={() => setMobileOpen(false)}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    <MobileSidebarItem
-                                        icon={<Users className="w-5 h-5" />}
-                                        label="Social Posts"
-                                        href="/social"
-                                        onClick={() => setMobileOpen(false)}
-                                    />
-                                    <MobileSidebarItem
-                                        icon={<BarChart3 className="w-5 h-5" />}
-                                        label="Statistics"
-                                        href="/stats"
-                                        onClick={() => setMobileOpen(false)}
-                                    />
+                                        <MobileSidebarItem
+                                            icon={<Users className="w-5 h-5" />}
+                                            label="Social Posts"
+                                            href="/social"
+                                            onClick={() => setMobileOpen(false)}
+                                        />
+                                        <MobileSidebarItem
+                                            icon={<BarChart3 className="w-5 h-5" />}
+                                            label="Statistics"
+                                            href="/stats"
+                                            onClick={() => setMobileOpen(false)}
+                                        />
 
-                                    <div className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md cursor-pointer">
-                                        <HelpCircle className="w-5 h-5 mr-3" />
-                                        <span>Help Center</span>
-                                        <ExternalLink className="w-4 h-4 ml-auto" />
+                                        <div className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md cursor-pointer">
+                                            <HelpCircle className="w-5 h-5 mr-3" />
+                                            <span>Help Center</span>
+                                            <ExternalLink className="w-4 h-4 ml-auto" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Main Navigation */}
                             <div className="px-4 py-2 border-t">
