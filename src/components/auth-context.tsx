@@ -1,7 +1,8 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import type { User } from "@/lib/user";
 import { createClient } from "@/utils/supabase/client";
+import toast from "react-hot-toast";
 
 interface AuthContextType {
   user: User | null;
@@ -36,25 +37,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.auth.getUser();
-    if (data.user) {
-      const { id, email, user_metadata, created_at } = data.user;
+    const { data: authData } = await supabase.auth.getUser();
+    if (authData.user) {
+      const { id, email, user_metadata, created_at } = authData.user;
+      // Fetch profile from profiles table
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .single();
       setUser({
         id,
-        email: email ?? "",
-        username: user_metadata?.username,
-        avatar_url: user_metadata?.avatar_url,
-        bio: user_metadata?.bio,
-        location: user_metadata?.location,
+        email: email ?? '',
+        username: profile?.username || user_metadata?.username,
+        avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
+        bio: profile?.bio || user_metadata?.bio,
+        location: profile?.location || user_metadata?.location,
         created_at: created_at,
       });
+      if(error) {
+        toast.error(error.message);
+        console.error(error);
+        setUser(null);
+        return;
+      }
     } else {
       setUser(null);
     }
     setLoading(false);
-  };
+  }, [supabase]);
 
   useEffect(() => {
     refreshUser();
@@ -77,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       listener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [refreshUser, supabase.auth]);
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>

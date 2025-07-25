@@ -37,16 +37,17 @@ const UserProfile = () => {
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <CurrentUserAvatar/>
-                <AvatarFallback className="text-lg bg-primary text-primary-foreground">{user?.username?.charAt(0) || "NULL"}</AvatarFallback>
-              </Avatar>
+              <CurrentUserAvatar/>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">{user?.username}</h1>
                 <p className="text-muted-foreground">{user?.bio}</p>
                 <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                  <MapPin className="h-3 w-3" />
-                  {user?.location}
+                  {user?.location && (
+                    <>
+                      <MapPin className="h-3 w-3" />
+                      {user?.location}
+                    </>
+                  )}
                 </div>
               </div>
             </div>

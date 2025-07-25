@@ -18,42 +18,56 @@ import { createClient } from '@/utils/supabase/client'
 import toast from 'react-hot-toast'
 import { useAuth } from './auth-context'
 import Image from 'next/image'
+import { v4 as uuidv4 } from 'uuid';
 
 export default function EditProfile() {
     const { user, refreshUser } = useAuth();
     const supabase = createClient();
-    // const [image, setImage] = useState(user?.avatar_url || '');
     const [open, setOpen] = useState(false);
     const [bio, setBio] = useState(user?.bio || '');
     const [username, setUsername] = useState(user?.username || '');
+    const [image, setImage] = useState<File | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
 
     useEffect(() => {
         if (user) {
           setUsername(user.username || '');
           setBio(user.bio || '');
-        //   setImage(user.avatar_url || '');
+          setAvatarUrl(user.avatar_url || '');
         }
       }, [user]);
 
-      const updateProfile = async () => {
-        if (!user?.id) return;
-      
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            username,
-            bio,
-            // avatar_url: image,
-          })
-          .eq('id', user.id);
-      
-        if (error) {
-          toast.error('Failed to update profile');
+    const updateProfile = async () => {
+      if (!user?.id) return;
+      let uploadedAvatarUrl = avatarUrl;
+      if (image) {
+        // Upload avatar to Supabase Storage
+        const fileExt = image.name.split('.').pop();
+        const fileName = `${user.id}/${uuidv4()}.${fileExt}`;
+        const {error: uploadError } = await supabase.storage.from('avatars').upload(fileName, image, { upsert: true });
+        if (uploadError) {
+          toast.error('Failed to upload avatar');
+          console.error(uploadError);
         } else {
-          toast.success('Profile updated');
+          const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+          uploadedAvatarUrl = publicUrlData.publicUrl;
         }
-      };
-      
+      }
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          username,
+          bio,
+          avatar_url: uploadedAvatarUrl,
+        })
+        .eq('id', user.id);
+      if (error) {
+        toast.error('Failed to update profile');
+      } else {
+        toast.success('Profile updated');
+        setAvatarUrl(uploadedAvatarUrl);
+      }
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -118,25 +132,32 @@ export default function EditProfile() {
 
                     <div className="space-y-2">
                         <Label htmlFor="image" className="text-sm font-medium text-muted-foreground">
-                            Profile Image URL
+                            Profile Image
                         </Label>
                         <Input
                             id="image"
+                            type="file"
+                            accept="image/*"
                             className="bg-background border border-input rounded-xl px-4 py-2 text-sm"
-                            placeholder="https://..."
-                            // value={image}
-                            // onChange={e => setImage(e.target.value)}
+                            onChange={e => {
+                              if (e.target.files && e.target.files[0]) {
+                                setImage(e.target.files[0]);
+                                setAvatarUrl(URL.createObjectURL(e.target.files[0]));
+                              }
+                            }}
                         />
-                        {/* {image && ( */}
+                        {avatarUrl && (
                             <div className="mt-2">
                                 <Label className="text-sm text-muted-foreground mb-1 block">Preview</Label>
                                 <Image
-                                    src={user?.avatar_url || ''}
+                                    src={avatarUrl}
                                     alt="Profile Preview"
+                                    width={96}
+                                    height={96}
                                     className="w-24 h-24 rounded-full object-cover border"
                                 />
                             </div>
-                        {/* )} */}
+                        )}
                     </div>
                 </div>
 

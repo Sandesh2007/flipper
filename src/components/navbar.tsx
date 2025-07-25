@@ -16,7 +16,7 @@ import {
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./themeToggle";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useAuth } from "./auth-context";
 import { CurrentUserAvatar } from "./current-user-avatar";
 
