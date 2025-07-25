@@ -14,6 +14,7 @@ export default function AuthForm() {
     const mode = searchParams.get("mode");
     const [isLoading, setLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(mode === "login");
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -22,6 +23,7 @@ export default function AuthForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const supabase = createClient();
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
@@ -31,7 +33,7 @@ export default function AuthForm() {
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        if (isLoading) return;
+        if (isLoading || isTransitioning) return;
         setLoading(true);
 
         try {
@@ -56,7 +58,7 @@ export default function AuthForm() {
                     toast.error(error.message);
                     return;
                 }
-                toast.success(`${isLogin ? 'Login' : 'Signup'} sucess`)
+                toast.success(`${isLogin ? 'Login' : 'Signup'} success`)
             }
             else {
                 const { error } = await supabase.auth.signUp({
@@ -101,6 +103,8 @@ export default function AuthForm() {
     };
 
     const handleSocialLogin = async (provider: "google" | "apple") => {
+        if (isTransitioning) return;
+        
         try {
             const { error, data } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -126,10 +130,19 @@ export default function AuthForm() {
     };
 
     const switchMode = () => {
-        setIsLogin(!isLogin);
-        setFormData({ username: "", email: "", password: "" });
-        setAgreedToTerms(false);
-        setShowPassword(false);
+        if (isTransitioning) return;
+        
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setIsLogin(!isLogin);
+            setFormData({ username: "", email: "", password: "" });
+            setAgreedToTerms(false);
+            setShowPassword(false);
+            
+            setTimeout(() => {
+                setIsTransitioning(false);
+            }, 300);
+        }, 150);
     };
 
     return (
@@ -139,7 +152,7 @@ export default function AuthForm() {
                 <div className="hidden lg:flex lg:w-1/2 relative">
                     <div className="w-full h-full bg-muted flex flex-col justify-between p-6 xl:p-8 relative overflow-hidden">
                         {/* Mountain silhouette background */}
-                        <div className="absolute inset-0 opacity-30">
+                        <div className="absolute inset-0 opacity-60">
                             <svg viewBox="0 0 400 600" className="w-full h-full">
                                 <path
                                     d="M0,400 Q100,200 200,300 Q300,150 400,250 L400,600 L0,600 Z"
@@ -179,18 +192,25 @@ export default function AuthForm() {
                         {/* Mobile logo */}
                         <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Neko Press</div>
 
-                        {/* Form Header with Animation */}
-                        <div className="relative overflow-hidden mb-8">
+                        {/* Form Header with Enhanced Animation */}
+                        <div className="relative overflow-hidden mb-8 h-20">
                             <div
-                                className={`transition-all duration-500 ease-in-out transform ${isLogin ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 absolute inset-0'
-                                    }`}
+                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
+                                    isLogin && !isTransitioning
+                                        ? 'translate-x-0 opacity-100' 
+                                        : isTransitioning && isLogin
+                                        ? 'translate-x-[-50%] opacity-0 scale-95'
+                                        : 'translate-x-full opacity-0 scale-95'
+                                }`}
                             >
                                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome back</h1>
                                 <p className="text-muted-foreground">
                                     Don&apos;t have an account?{" "}
                                     <button
+                                        type="button"
                                         onClick={switchMode}
-                                        className="text-accent-foreground hover:text-neutral-600 transition-colors underline"
+                                        disabled={isTransitioning}
+                                        className="text-accent-foreground hover:text-neutral-600 transition-colors underline disabled:opacity-50"
                                     >
                                         Sign up
                                     </button>
@@ -198,15 +218,22 @@ export default function AuthForm() {
                             </div>
 
                             <div
-                                className={`transition-all duration-500 ease-in-out transform ${!isLogin ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 absolute inset-0'
-                                    }`}
+                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
+                                    !isLogin && !isTransitioning
+                                        ? 'translate-x-0 opacity-100' 
+                                        : isTransitioning && !isLogin
+                                        ? 'translate-x-[50%] opacity-0 scale-95'
+                                        : 'translate-x-[-100%] opacity-0 scale-95'
+                                }`}
                             >
                                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create an account</h1>
                                 <p className="text-muted-foreground">
                                     Already have an account?{" "}
                                     <button
+                                        type="button"
                                         onClick={switchMode}
-                                        className="text-accent-foreground hover:text-neutral-600 transition-colors underline"
+                                        disabled={isTransitioning}
+                                        className="text-accent-foreground hover:text-neutral-600 transition-colors underline disabled:opacity-50"
                                     >
                                         Log in
                                     </button>
@@ -214,53 +241,60 @@ export default function AuthForm() {
                             </div>
                         </div>
 
-                        {/* Form with Animation */}
+                        {/* Form with Enhanced Animation */}
                         <div className="space-y-4 sm:space-y-6">
-                            {/* Name fields - Only for signup */}
+                            {/* Username field - Only for signup */}
                             <div
-                                className={`w-full transition-all duration-500 ease-in-out overflow-hidden ${!isLogin ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
-                                    }`}
+                                className={`w-full transition-all duration-600 ease-in-out overflow-hidden ${
+                                    !isLogin 
+                                        ? 'max-h-20 opacity-100 transform translate-y-0' 
+                                        : 'max-h-0 opacity-0 transform -translate-y-2'
+                                }`}
                             >
-                                <div>
+                                <div className="pb-1">
                                     <input
                                         type="text"
                                         name="username"
                                         placeholder="Username"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-colors text-sm sm:text-base"
+                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
+                                        disabled={isTransitioning}
                                     />
                                 </div>
                             </div>
 
                             {/* Email field */}
-                            <div>
+                            <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                                 <input
                                     type="email"
                                     name="email"
                                     placeholder="Email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-colors text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
+                                    disabled={isTransitioning}
                                 />
                             </div>
 
                             {/* Password field */}
-                            <div className="relative">
+                            <div className={`relative transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     placeholder={isLogin ? "Password" : "Enter your password"}
                                     value={formData.password}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-colors text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
+                                    disabled={isTransitioning}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    disabled={isTransitioning}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -268,20 +302,26 @@ export default function AuthForm() {
 
                             {/* Forgot password - Only for login */}
                             <div
-                                className={`transition-all duration-500 ease-in-out overflow-hidden ${isLogin ? 'max-h-9 block' : 'max-h-0 hidden'
-                                    }`}
+                                className={`transition-all duration-600 ease-in-out overflow-hidden ${
+                                    isLogin 
+                                        ? 'max-h-12 opacity-100 transform translate-y-0' 
+                                        : 'max-h-0 opacity-0 transform -translate-y-2'
+                                }`}
                             >
-                                <div className="text-right">
+                                <div className="text-right pb-1">
                                     <ForgotPassword />
                                 </div>
                             </div>
 
                             {/* Terms checkbox - Only for signup */}
                             <div
-                                className={`transition-all duration-500 ease-in-out overflow-hidden ${!isLogin ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
-                                    }`}
+                                className={`transition-all duration-600 ease-in-out overflow-hidden ${
+                                    !isLogin 
+                                        ? 'max-h-20 opacity-100 transform translate-y-0' 
+                                        : 'max-h-0 opacity-0 transform -translate-y-2'
+                                }`}
                             >
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-3 pb-1">
                                     <input
                                         type="checkbox"
                                         id="terms"
@@ -289,12 +329,14 @@ export default function AuthForm() {
                                         onChange={(e) => setAgreedToTerms(e.target.checked)}
                                         className="mt-1 w-4 h-4 text-accent bg-muted border-border rounded focus:ring-ring focus:ring-2"
                                         required={!isLogin}
+                                        disabled={isTransitioning}
                                     />
                                     <label htmlFor="terms" className="text-xs sm:text-sm text-muted-foreground">
                                         I agree to the{" "}
                                         <button
                                             type="button"
                                             className="text-accent-foreground hover:text-neutral-600 transition-colors underline"
+                                            disabled={isTransitioning}
                                         >
                                             Terms & Conditions
                                         </button>
@@ -305,14 +347,17 @@ export default function AuthForm() {
                             {/* Submit button */}
                             <button
                                 type="submit"
-                                className="w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base"
+                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${
+                                    (isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
+                                }`}
                                 onClick={handleSubmit}
+                                disabled={isLoading || isTransitioning}
                             >
-                                {isLogin ? 'Sign in' : 'Create account'}
+                                {isLoading ? 'Loading...' : (isLogin ? 'Sign in' : 'Create account')}
                             </button>
 
                             {/* Divider */}
-                            <div className="relative">
+                            <div className={`relative transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-border"></div>
                                 </div>
@@ -324,11 +369,12 @@ export default function AuthForm() {
                             </div>
 
                             {/* Social login buttons */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                                 <button
                                     type="button"
                                     onClick={() => handleSocialLogin("google")}
-                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base"
+                                    disabled={isTransitioning}
+                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
                                         <path
@@ -353,7 +399,8 @@ export default function AuthForm() {
                                 <button
                                     type="button"
                                     onClick={() => handleSocialLogin("apple")}
-                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base"
+                                    disabled={isTransitioning}
+                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
