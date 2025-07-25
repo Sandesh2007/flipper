@@ -39,24 +39,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/auth/') &&
-    request.nextUrl.pathname !== '/'
-  ) {
-    // no user, potentially respond by redirecting the user to the register page
-    const url = request.nextUrl.clone()
-    url.pathname = '/auth/register'
-    return NextResponse.redirect(url)
-  }
-
   const pathname = request.nextUrl.pathname
   const isProtectedRoute = protectedRoutes.includes(pathname)
 
-  const session = await supabase.auth.getUser()
-
-  if (isProtectedRoute && session.error) {
-    return NextResponse.redirect(new URL('/auth/register', request.url))
+  if (isProtectedRoute && !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/register'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
