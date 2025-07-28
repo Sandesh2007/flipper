@@ -1,20 +1,81 @@
 import { createClient } from '@/utils/supabase/client'
 import { useEffect, useState } from 'react'
+import avatar from '../../public/avatar.png'
 
 export const useCurrentUserImage = () => {
   const [image, setImage] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     const fetchUserImage = async () => {
-      const { data, error } = await createClient().auth.getSession()
-      if (error) {
-        console.error(error)
+      const supabase = createClient()
+      
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) {
+        console.error('Session error:', sessionError)
+        setImage(null)
+        return
       }
 
-      setImage(data.session?.user.user_metadata.avatar_url ?? null)
-    }
-    fetchUserImage()
-  }, [])
+      const user = sessionData.session?.user
+      if (!user) {
+        setImage(null)
+        return
+      }
 
-  return image
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single()
+
+        if (!profileError && profileData?.avatar_url) {
+          const uploadedImageUrl = profileData.avatar_url
+          
+          const img = new Image()
+          img.onload = () => {
+            console.log('Using user-uploaded avatar from Supabase storage')
+            setImage(uploadedImageUrl)
+          }
+          img.onerror = () => {
+            console.warn('User-uploaded avatar failed to load, trying Google avatar')
+            tryGoogleAvatar(user)
+          }
+          img.src = uploadedImageUrl
+          return
+        }
+
+        tryGoogleAvatar(user)
+
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+        tryGoogleAvatar(user)
+      }
+    }
+
+    const tryGoogleAvatar = (user: any) => {
+      const googleAvatarUrl = user.user_metadata?.avatar_url
+      
+      if (googleAvatarUrl) {
+        const img = new Image()
+        img.onload = () => {
+          console.log('Using Google profile avatar')
+          setImage(googleAvatarUrl)
+        }
+        img.onerror = () => {
+          console.warn('Google profile image failed to load, using local fallback')
+          setImage(null)
+        }
+        img.src = googleAvatarUrl
+      } else {
+        console.log('No Google avatar available, using local fallback')
+        setImage(null)
+      }
+    }
+
+    fetchUserImage()
+  }, [retryCount])
+
+  return image || avatar.src
 }

@@ -8,34 +8,68 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   refreshUser: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_CACHE_KEY = "nekopress_user";
+const USER_CACHE_EXPIRY = 1000 * 60 * 60; // 1 hour
+
+// Helper to get cached user with expiry check
+function getCachedUser(): User | null {
+  const cached = localStorage.getItem(USER_CACHE_KEY);
+  if (!cached) return null;
+  try {
+    const { user, ts } = JSON.parse(cached);
+    if (!user || !ts) return null;
+    if (Date.now() - ts > USER_CACHE_EXPIRY) {
+      localStorage.removeItem(USER_CACHE_KEY);
+      return null;
+    }
+    return user;
+  } catch {
+    return null;
+  }
+}
+
+// Helper to set cached user with timestamp
+function setCachedUser(user: User | null) {
+  if (user) {
+    localStorage.setItem(USER_CACHE_KEY, JSON.stringify({ user, ts: Date.now() }));
+  } else {
+    localStorage.removeItem(USER_CACHE_KEY);
+  }
+}
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
-  // Load user from cache on mount
+  // Load user from cache on mount (with expiry)
   useEffect(() => {
-    const cached = localStorage.getItem(USER_CACHE_KEY);
-    if (cached) {
-      try {
-        setUser(JSON.parse(cached));
-      } catch {}
+    const cachedUser = getCachedUser();
+    if (cachedUser) {
+      setUser(cachedUser);
     }
   }, []);
 
   // Cache user whenever it changes
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(USER_CACHE_KEY);
-    }
+    setCachedUser(user);
   }, [user]);
+
+  // Multi-tab sync: listen for storage changes
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === USER_CACHE_KEY) {
+        const cachedUser = getCachedUser();
+        setUser(cachedUser);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   const refreshUser = useCallback(async () => {
     setLoading(true);
@@ -48,15 +82,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .select('*')
         .eq('id', id)
         .single();
-      setUser({
+      const newUser = {
         id,
         email: email ?? '',
-        username: profile?.username || user_metadata?.username,
+        username: profile?.username || user_metadata?.full_name || user_metadata?.username,
         avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
         bio: profile?.bio || user_metadata?.bio,
         location: profile?.location || user_metadata?.location,
         created_at: created_at,
-      });
+      };
+      setUser(newUser);
       if(error) {
         toast.error(error.message);
         console.error(error);
@@ -77,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser({
           id,
           email: email ?? "",
-          username: user_metadata?.username,
+          username: user_metadata?.full_name || user_metadata?.username,
           avatar_url: user_metadata?.avatar_url,
           bio: user_metadata?.bio,
           location: user_metadata?.location,
@@ -93,12 +128,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [refreshUser, supabase.auth]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, refreshUser, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Export setUser for optimistic UI updates
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

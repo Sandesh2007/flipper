@@ -11,12 +11,11 @@ export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 sm:px-8 gap-6">
       <FuzzyText
-        fontSize="clamp(2.5rem, 10vw, 8rem)"
+        fontSize="clamp(3rem, 20vw, 6rem)"
         fontWeight={900}
         fontFamily="inherit"
         enableHover={true}
         color='gray'
-        className="text-4xl sm:text-6xl md:text-8xl"
         baseIntensity={0.18}
         hoverIntensity={0.5}
       >
@@ -28,7 +27,6 @@ export default function NotFound() {
         fontFamily="inherit"
         enableHover={true}
         color='gray'
-        className="text-lg sm:text-2xl md:text-4xl text-center"
         baseIntensity={0.18}
         hoverIntensity={0.5}>
         Page Not Found
