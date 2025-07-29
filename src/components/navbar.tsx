@@ -36,12 +36,6 @@ import { CurrentUserAvatar } from "./current-user-avatar";
 import { useState, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-const readItems = [
-    { title: "Latest Articles", href: "/articles", description: "Read the most recent articles and insights from our community." },
-    { title: "Trending Topics", href: "/trending", description: "Discover what's popular and trending in your areas of interest." },
-    { title: "Featured Stories", href: "/featured", description: "Handpicked stories and content from top creators." },
-];
-
 const features = [
     { title: "Content Creation", href: "/features/creation", description: "Powerful tools to create and publish your content." },
     { title: "Analytics Dashboard", href: "/features/analytics", description: "Track your content performance and audience engagement." },
@@ -147,6 +141,9 @@ export function Navbar() {
                     <div className="hidden lg:flex items-center gap-4">
                         <NavigationLinks />
                         <div className="flex items-center gap-2">
+                            <Link href="/discover" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-sm">
+                                Discover
+                            </Link>
                             <Link href="/pricing" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-sm">
                                 Pricing
                             </Link>
@@ -334,6 +331,9 @@ export function Navbar() {
 
                             {/* User Section */}
                             <div className="px-4 py-4 border-t mt-auto">
+                                <Link href="/discover" className="block px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-sm mb-2" onClick={() => setMobileOpen(false)}>
+                                    Discover
+                                </Link>
                                 <Link href="/pricing" className="block px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-sm mb-2" onClick={() => setMobileOpen(false)}>
                                     Pricing
                                 </Link>
@@ -379,7 +379,6 @@ function NavigationLinks() {
     return (
         <NavigationMenu>
             <NavigationMenuList className="flex items-center gap-2">
-                <Dropdown title="Read" items={readItems} />
                 <Dropdown title="Features" items={features} />
                 <Dropdown title="Use Cases" items={useCases} />
                 <Dropdown title="Learn" items={learnItems} />
@@ -391,7 +390,6 @@ function NavigationLinks() {
 function MobileNavigationLinks({ onClose }: { onClose: () => void }) {
     return (
         <div className="space-y-1">
-            <MobileDropdown title="Read" items={readItems} onClose={onClose} />
             <MobileDropdown title="Features" items={features} onClose={onClose} />
             <MobileDropdown title="Use Cases" items={useCases} onClose={onClose} />
             <MobileDropdown title="Learn" items={learnItems} onClose={onClose} />
@@ -399,7 +397,7 @@ function MobileNavigationLinks({ onClose }: { onClose: () => void }) {
     );
 }
 
-function Dropdown({ title, items }: { title: string; items: typeof readItems }) {
+function Dropdown({ title, items }: { title: string; items: typeof features | typeof useCases | typeof learnItems }) {
     return (
         <NavigationMenuItem>
             <NavigationMenuTrigger className="bg-transparent text-sm">
@@ -418,7 +416,7 @@ function Dropdown({ title, items }: { title: string; items: typeof readItems }) 
     );
 }
 
-function MobileDropdown({ title, items, onClose }: { title: string; items: typeof readItems; onClose: () => void }) {
+function MobileDropdown({ title, items, onClose }: { title: string; items: typeof features | typeof useCases | typeof learnItems; onClose: () => void }) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (

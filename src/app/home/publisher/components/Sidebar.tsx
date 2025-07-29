@@ -27,7 +27,7 @@ export default function Sidebar() {
     <aside className="hidden lg:flex w-64 bg-neutral-200 dark:bg-neutral-800 flex-col">
       <div className="p-4">
         <Link href="/home/create">
-        <Button variant="outline" className="w-full text-neutral-900 dark:text-neutral-100">
+        <Button variant="outline" className="w-full cursor-pointer text-neutral-900 dark:text-neutral-100">
           <Upload className="w-4 h-4 mr-2" />
           Upload
         </Button>

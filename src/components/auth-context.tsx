@@ -43,11 +43,22 @@ function setCachedUser(user: User | null) {
   }
 }
 
+// Helper to check if username is valid
+function isUsernameValid(username: string | undefined): boolean {
+  return !!(
+    username &&
+    username === username.toLowerCase() &&
+    !username.includes(' ') &&
+    /^[a-z0-9_]+$/.test(username)
+  );
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const router = useRouter();
+
   // Load user from cache on mount (with expiry)
   useEffect(() => {
     const cachedUser = getCachedUser();
@@ -78,28 +89,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: authData } = await supabase.auth.getUser();
     if (authData.user) {
       const { id, email, user_metadata, created_at } = authData.user;
+      
       // Fetch profile from profiles table
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', id)
         .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load user profile');
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      // Create user object prioritizing database profile over metadata
       const newUser = {
         id,
         email: email ?? '',
-        username: profile?.username || user_metadata?.full_name || user_metadata?.username,
+        username: profile?.username || null, // Only use database username, never fallback to metadata
         avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
         bio: profile?.bio || user_metadata?.bio,
         location: profile?.location || user_metadata?.location,
         created_at: created_at,
       };
+
       setUser(newUser);
-      if(error) {
-        toast.error(error.message);
-        console.error(error);
-        setUser(null);
-        return;
-      }
     } else {
       setUser(null);
     }
@@ -108,18 +125,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     refreshUser();
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const { id, email, user_metadata, created_at } = session.user;
-        setUser({
+        
+        // Fetch profile from database immediately after auth state change
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching profile on auth change:', error);
+        }
+
+        // Create user object prioritizing database profile
+        const newUser = {
           id,
           email: email ?? "",
-          username: user_metadata?.full_name || user_metadata?.username,
-          avatar_url: user_metadata?.avatar_url,
-          bio: user_metadata?.bio,
-          location: user_metadata?.location,
+          username: profile?.username || null, // Only use database username
+          avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
+          bio: profile?.bio || user_metadata?.bio,
+          location: profile?.location || user_metadata?.location,
           created_at: created_at,
-        });
+        };
+
+        setUser(newUser);
       } else {
         setUser(null);
       }
@@ -131,14 +163,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading && user) {
-      // If username is missing or invalid, redirect to set-username page
-      const invalid =
-        !user.username ||
-        user.username !== user.username.toLowerCase() ||
-        user.username.includes(' ') ||
-        !/^[a-z0-9_]+$/.test(user.username);
-      if (invalid && typeof window !== 'undefined' && window.location.pathname !== '/set-username') {
-        router.replace('/set-username');
+      // Check if user has a valid username in the database
+      const hasValidUsername = isUsernameValid(user.username);
+      
+      if (!hasValidUsername && typeof window !== 'undefined' && window.location.pathname !== '/set-username') {
+        // Add a small delay to prevent race conditions
+        const timeoutId = setTimeout(() => {
+          // Double-check the pathname in case user navigated away
+          if (window.location.pathname !== '/set-username') {
+            router.replace('/set-username');
+          }
+        }, 100);
+        
+        return () => clearTimeout(timeoutId);
       }
     }
   }, [user, loading, router]);

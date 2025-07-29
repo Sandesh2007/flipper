@@ -7,7 +7,7 @@ import { createClient } from '@/utils/supabase/client';
 export default function PublicLandingPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [publications, setPublications] = useState<any[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -27,6 +27,7 @@ export default function PublicLandingPage() {
         })
       );
       setUsers(usersWithPubs);
+      setPublications(publications);
       setLoading(false);
     };
     fetchData();
@@ -38,8 +39,8 @@ export default function PublicLandingPage() {
         <h1 className="text-3xl font-bold mb-8 text-center text-foreground">Discover Publications</h1>
         {loading ? (
           <div className="text-muted-foreground text-center">Loading...</div>
-        ) : users.length === 0 ? (
-          <div className="text-muted-foreground text-center">No users or publications found.</div>
+        ) : publications.length === 0 ? (
+          <div className="text-muted-foreground text-center">No publications found.</div>
         ) : (
           <div className="space-y-10">
             {users.map((user) => (
@@ -79,4 +80,4 @@ export default function PublicLandingPage() {
       </div>
     </div>
   );
-} 
+}

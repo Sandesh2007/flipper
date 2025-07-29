@@ -56,7 +56,7 @@ export default function PublicProfileByUsernamePage() {
                 {profile.bio && <p className="text-muted-foreground">{profile.bio}</p>}
                 {profile.location && <div className="text-sm text-muted-foreground mt-1">{profile.location}</div>}
                 <Button
-                  className="mt-2"
+                  className="mt-2 cursor-pointer"
                   variant="outline"
                   size="sm"
                   onClick={() => {
