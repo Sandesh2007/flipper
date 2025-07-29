@@ -20,7 +20,7 @@ export const CurrentUserAvatar = () => {
   }
 
   return (
-    <Avatar>
+    <Avatar className="h-10 w-10">
       <AvatarImage 
         src={profileImage}
         alt={initials} 

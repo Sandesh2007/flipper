@@ -229,13 +229,13 @@ export function Navbar() {
                                                     <MobileSidebarItem
                                                         icon={<FileText className="w-4 h-4" />}
                                                         label="Publications"
-                                                        href="/publications"
+                                                        href="/home/publisher/publications"
                                                         onClick={() => setMobileOpen(false)}
                                                     />
                                                     <MobileSidebarItem
                                                         icon={<FileText className="w-4 h-4" />}
                                                         label="Articles"
-                                                        href="/articles"
+                                                        href="/home/publisher/articles"
                                                         onClick={() => setMobileOpen(false)}
                                                     />
                                                 </div>
@@ -245,13 +245,13 @@ export function Navbar() {
                                         <MobileSidebarItem
                                             icon={<Users className="w-5 h-5" />}
                                             label="Social Posts"
-                                            href="/social"
+                                            href="/home/publisher/social"
                                             onClick={() => setMobileOpen(false)}
                                         />
                                         <MobileSidebarItem
                                             icon={<BarChart3 className="w-5 h-5" />}
                                             label="Statistics"
-                                            href="/stats"
+                                            href="/home/publisher/statistics"
                                             onClick={() => setMobileOpen(false)}
                                         />
 
@@ -263,12 +263,6 @@ export function Navbar() {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Main Navigation */}
-                            <div className="px-4 py-2 border-t">
-                                <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-2">Explore</h3>
-                                <MobileNavigationLinks onClose={() => setMobileOpen(false)} />
-                            </div>
 
                             {/* User Section */}
                             <div className="px-4 py-4 border-t mt-auto">

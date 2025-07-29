@@ -18,6 +18,11 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
+  const handleFileUpload = (file: File) => {
+    // Redirect to upload page when file is uploaded
+    router.push("/home/publisher/upload");
+  };
+
   if (!loading && user) {
     // add a loader here
     return (
@@ -30,7 +35,7 @@ export default function Home() {
   return (
     <main className="p-4 ">
       {/* Upload files section */}
-      <FileUpload />
+      <FileUpload onFileUpload={handleFileUpload} />
       <SupportedFormats />
       <ConversionInfo />
       <Testimonials />
