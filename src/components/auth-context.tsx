@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode, useCa
 import type { User } from "@/lib/user";
 import { createClient } from "@/utils/supabase/client";
 import toast from "react-hot-toast";
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -46,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  const router = useRouter();
   // Load user from cache on mount (with expiry)
   useEffect(() => {
     const cachedUser = getCachedUser();
@@ -126,6 +128,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       listener?.subscription.unsubscribe();
     };
   }, [refreshUser, supabase.auth]);
+
+  useEffect(() => {
+    if (!loading && user) {
+      // If username is missing or invalid, redirect to set-username page
+      const invalid =
+        !user.username ||
+        user.username !== user.username.toLowerCase() ||
+        user.username.includes(' ') ||
+        !/^[a-z0-9_]+$/.test(user.username);
+      if (invalid && typeof window !== 'undefined' && window.location.pathname !== '/set-username') {
+        router.replace('/set-username');
+      }
+    }
+  }, [user, loading, router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser, setUser }}>

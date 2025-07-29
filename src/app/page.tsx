@@ -20,7 +20,7 @@ export default function Home() {
 
   const handleFileUpload = (file: File) => {
     // Redirect to upload page when file is uploaded
-    router.push("/home/publisher/upload");
+    router.push("/home/create");
   };
 
   if (!loading && user) {

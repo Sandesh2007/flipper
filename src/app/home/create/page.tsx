@@ -36,21 +36,39 @@ export default function CreatePublicationPage() {
     const supabase = createClient();
     let pdfPath = '';
     let thumbPath = '';
+    let pdfPublicUrl = '';
+    let thumbPublicUrl = '';
     try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('User not authenticated');
       if (pdf) {
         pdfPath = `pdfs/${Date.now()}_${pdf.name}`;
         const { error: uploadError } = await supabase.storage.from('publications').upload(pdfPath, pdf);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from('publications').getPublicUrl(pdfPath);
-        setPdfUrl(urlData.publicUrl);
+        pdfPublicUrl = urlData.publicUrl;
+        setPdfUrl(pdfPublicUrl);
       }
       if (thumb) {
         thumbPath = `thumbs/${Date.now()}_${thumb.name}`;
         const { error: uploadError } = await supabase.storage.from('publications').upload(thumbPath, thumb);
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage.from('publications').getPublicUrl(thumbPath);
-        setThumbUrl(urlData.publicUrl);
+        thumbPublicUrl = urlData.publicUrl;
+        setThumbUrl(thumbPublicUrl);
       }
+      // Insert publication row
+      const { error: insertError } = await supabase.from('publications').insert([
+        {
+          user_id: user.id,
+          title,
+          description,
+          pdf_url: pdfPublicUrl,
+          thumb_url: thumbPublicUrl,
+        }
+      ]);
+      if (insertError) throw insertError;
       setPublished(true);
       handleNext();
     } catch (e: any) {

@@ -33,6 +33,8 @@ import Link from "next/link";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useAuth } from "./auth-context";
 import { CurrentUserAvatar } from "./current-user-avatar";
+import { useState, useRef } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 const readItems = [
     { title: "Latest Articles", href: "/articles", description: "Read the most recent articles and insights from our community." },
@@ -62,6 +64,26 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
     const { user } = useAuth();
+    const [search, setSearch] = useState('');
+    const [results, setResults] = useState<any[]>([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    const handleSearch = async (value: string) => {
+        setSearch(value);
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        if (!value) {
+            setResults([]);
+            setShowDropdown(false);
+            return;
+        }
+        searchTimeout.current = setTimeout(async () => {
+            const supabase = createClient();
+            const { data } = await supabase.from('profiles').select('username,avatar_url').ilike('username', `%${value}%`).limit(5);
+            setResults(data || []);
+            setShowDropdown(true);
+        }, 200);
+    };
 
     // Close mobile menu when screen becomes large
     React.useEffect(() => {
@@ -87,13 +109,36 @@ export function Navbar() {
                         </Link>
 
                         {/* Search (hidden on small mobile, shown on tablet+) */}
-                        <div className="hidden sm:flex lg:flex flex-1 max-w-xs lg:max-w-sm mx-2 lg:mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md">
+                        <div className="hidden sm:flex lg:flex flex-1 max-w-xs lg:max-w-sm mx-2 lg:mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md relative">
                             <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Find creators and content"
                                     className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
+                                    value={search}
+                                    onChange={e => handleSearch(e.target.value)}
+                                    onFocus={() => search && setShowDropdown(true)}
+                                    onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                                 />
+                                {showDropdown && results.length > 0 && (
+                                    <div className="absolute left-0 right-0 top-10 z-50 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                        {results.map((profile) => (
+                                            <Link
+                                                key={profile.username}
+                                                href={`/profile/${profile.username}`}
+                                                className="flex items-center gap-3 px-4 py-2 hover:bg-muted transition"
+                                                onClick={() => setShowDropdown(false)}
+                                            >
+                                                {profile.avatar_url ? (
+                                                    <img src={profile.avatar_url} alt="avatar" className="w-7 h-7 rounded-full object-cover border border-border" />
+                                                ) : (
+                                                    <div className="w-7 h-7 rounded-full bg-muted border border-border" />
+                                                )}
+                                                <span className="font-medium text-foreground">{profile.username}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -161,7 +206,30 @@ export function Navbar() {
                         <Input
                             placeholder="Find creators and content"
                             className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
+                            value={search}
+                            onChange={e => handleSearch(e.target.value)}
+                            onFocus={() => search && setShowDropdown(true)}
+                            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                         />
+                        {showDropdown && results.length > 0 && (
+                            <div className="absolute left-0 right-0 top-10 z-50 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                {results.map((profile) => (
+                                    <Link
+                                        key={profile.username}
+                                        href={`/profile/${profile.username}`}
+                                        className="flex items-center gap-3 px-4 py-2 hover:bg-muted transition"
+                                        onClick={() => setShowDropdown(false)}
+                                    >
+                                        {profile.avatar_url ? (
+                                            <img src={profile.avatar_url} alt="avatar" className="w-7 h-7 rounded-full object-cover border border-border" />
+                                        ) : (
+                                            <div className="w-7 h-7 rounded-full bg-muted border border-border" />
+                                        )}
+                                        <span className="font-medium text-foreground">{profile.username}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>

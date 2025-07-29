@@ -31,6 +31,7 @@ export default function EditProfile() {
     const [image, setImage] = useState<File | null>(null);
     const currentProfileImage = useCurrentUserImage();
     const [avatarUrl, setAvatarUrl] = useState(currentProfileImage);
+    const [usernameError, setUsernameError] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -43,6 +44,30 @@ export default function EditProfile() {
 
     const handleCountryChange = (country: Country) => {
         setLocation(country.name);
+    };
+
+    const validateUsername = async (username: string) => {
+        if (username !== username.toLowerCase()) {
+            setUsernameError('Username must be lowercase.');
+            return false;
+        }
+        if (!/^[a-z0-9_]+$/.test(username)) {
+            setUsernameError('Username can only contain lowercase letters, numbers, and underscores.');
+            return false;
+        }
+        if (username.includes(' ')) {
+            setUsernameError('Username cannot contain spaces.');
+            return false;
+        }
+        // Check uniqueness
+        const supabase = createClient();
+        const { data } = await supabase.from('profiles').select('id').eq('username', username);
+        if (data && data.length > 0) {
+            setUsernameError('Username is already taken.');
+            return false;
+        }
+        setUsernameError('');
+        return true;
     };
 
     const updateProfile = async () => {
@@ -118,7 +143,7 @@ export default function EditProfile() {
             const { error } = await supabase
                 .from('profiles')
                 .update({
-                    username,
+                    username: username.toLowerCase(), // Ensure lowercase
                     bio,
                     location,
                     avatar_url: uploadedAvatarUrl,
@@ -184,8 +209,9 @@ export default function EditProfile() {
                             id="name"
                             className="bg-background border border-input rounded-xl px-4 py-2 text-sm"
                             value={username}
-                            onChange={e => setUsername(e.target.value)}
+                            onChange={e => setUsername(e.target.value.toLowerCase())}
                         />
+                        {usernameError && <div className="text-red-500 text-xs mt-1">{usernameError}</div>}
                     </div>
 
                     <div className="space-y-2">
@@ -259,6 +285,7 @@ export default function EditProfile() {
                 <DialogFooter>
                     <Button
                         onClick={async () => {
+                            if (!(await validateUsername(username))) return;
                             toast.promise(
                                 updateProfile()
                                     .catch((error) => {
