@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import InfoDialog from "./dialog"
+import { useRouter } from "next/navigation"
 
 export default function DashboardMain() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("Publications")
   const tabs = ["Publications", "Articles", "Social posts"]
 
@@ -16,7 +18,7 @@ export default function DashboardMain() {
         <div className="block lg:hidden">
           <div className="text-center">
             <h1 className="text-xl sm:text-2xl font-bold mb-4">Add a file</h1>
-            <Button className="w-full sm:w-auto bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600">
+            <Button className="w-full sm:w-auto bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600" onClick={() => router.push('/home/create')}>
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
               Upload a file
             </Button>
@@ -40,7 +42,7 @@ export default function DashboardMain() {
         <div className="hidden lg:flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-4">Add a file</h1>
-            <Button className="bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600">
+            <Button className="bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600" onClick={() => router.push('/home/create')}>
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
               Upload a file
             </Button>
