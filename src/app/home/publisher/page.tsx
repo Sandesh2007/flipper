@@ -1,8 +1,5 @@
-import React from 'react'
-import Dashboard from './dashboard'
+import DashboardMain from "./components/DashboardMain"
 
-export default function PublisherPage(){
-  return (
-    <Dashboard />
-  )
+export default function PublisherPage() {
+  return <DashboardMain />
 }
