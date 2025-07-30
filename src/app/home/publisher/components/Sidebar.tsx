@@ -15,7 +15,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/auth-context"
+import { useAuth } from "@/components/auth/auth-context"
 
 export default function Sidebar() {
   const [isLibraryOpen, setIsLibraryOpen] = useState(true)

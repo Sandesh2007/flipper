@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import FuzzyText from '@/components/fuzzy-text';
+import FuzzyText from '@/components/features/fuzzy-text';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

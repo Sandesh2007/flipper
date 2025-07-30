@@ -1,5 +1,5 @@
 // app/protected/layout.tsx
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from "@/lib/database/supabase/client"
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const supabase =  await createClient()

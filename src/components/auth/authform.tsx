@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { ArrowLeft, Eye, EyeOff, X } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
-import { createClient } from "@/utils/supabase/client"
+import { createBrowserClient } from "@/lib/database"
 import ForgotPassword from "./forgot-password";
 
 export default function AuthForm() {
@@ -22,7 +22,7 @@ export default function AuthForm() {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
-    const supabase = createClient();
+    const supabase = createBrowserClient();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

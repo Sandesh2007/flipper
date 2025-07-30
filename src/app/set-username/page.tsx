@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@/utils/supabase/client';
-import { useAuth } from '@/components/auth-context';
-import { toast } from 'sonner';
+import { createClient } from '@/lib/database/supabase/client';
+import { useAuth } from '@/components';
+import { toast } from 'react-hot-toast';
 
 export default function SetUsernamePage() {
   const { user, refreshUser } = useAuth();

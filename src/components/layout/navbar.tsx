@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import logo from "../../public/logo.svg";
+import logo from "../../../public/logo.svg";
 import Image from "next/image";
 import {
     Search,
@@ -18,7 +18,7 @@ import {
     ChevronRight,
     ExternalLink
 } from "lucide-react";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
 import {
     NavigationMenu,
@@ -26,15 +26,19 @@ import {
     NavigationMenuItem,
     NavigationMenuList,
     NavigationMenuTrigger,
-} from "./ui/navigation-menu";
-import { Button } from "./ui/button";
-import { ThemeToggle } from "./themeToggle";
+} from "../ui/navigation-menu";
+import { Button } from "../ui/button";
+import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { useAuth } from "./auth-context";
-import { CurrentUserAvatar } from "./current-user-avatar";
+import { useAuth } from "../auth/auth-context";
+import { CurrentUserAvatar } from "../features/current-user-avatar";
 import { useState, useRef } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/database/supabase/client';
+
+interface SearchResult {
+    username: string;
+    avatar_url: string | null;
+}
 
 const features = [
     { title: "Content Creation", href: "/features/creation", description: "Powerful tools to create and publish your content." },
@@ -59,7 +63,7 @@ export function Navbar() {
     const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
     const { user } = useAuth();
     const [search, setSearch] = useState('');
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<SearchResult[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -110,7 +114,7 @@ export function Navbar() {
                                     placeholder="Find creators and content"
                                     className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
                                     value={search}
-                                    onChange={e => handleSearch(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
                                     onFocus={() => search && setShowDropdown(true)}
                                     onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                                 />
@@ -124,7 +128,13 @@ export function Navbar() {
                                                 onClick={() => setShowDropdown(false)}
                                             >
                                                 {profile.avatar_url ? (
-                                                    <img src={profile.avatar_url} alt="avatar" className="w-7 h-7 rounded-full object-cover border border-border" />
+                                                    <Image
+                                                        src={profile.avatar_url}
+                                                        alt="avatar"
+                                                        width={28}
+                                                        height={28}
+                                                        className="w-7 h-7 rounded-full object-cover border border-border"
+                                                    />
                                                 ) : (
                                                     <div className="w-7 h-7 rounded-full bg-muted border border-border" />
                                                 )}
@@ -150,7 +160,7 @@ export function Navbar() {
                             {user ? (
                                 <div className="flex items-center gap-2">
                                     <Link href="/profile" className="flex items-center gap-2">
-                                            <CurrentUserAvatar />
+                                        <CurrentUserAvatar />
                                     </Link>
                                 </div>
                             ) : (
@@ -171,12 +181,7 @@ export function Navbar() {
                     <div className="flex items-center gap-2 lg:hidden">
                         {user && (
                             <Link href="/profile" className="flex items-center gap-2">
-                                <Avatar className="h-8 w-8">
-                                    <CurrentUserAvatar />
-                                    <AvatarFallback className="text-xs">
-                                        {user.username?.[0] || user.email[0]}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <CurrentUserAvatar />
                             </Link>
                         )}
                         <ThemeToggle />
@@ -199,7 +204,7 @@ export function Navbar() {
                             placeholder="Find creators and content"
                             className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
                             value={search}
-                            onChange={e => handleSearch(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
                             onFocus={() => search && setShowDropdown(true)}
                             onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                         />
@@ -213,7 +218,13 @@ export function Navbar() {
                                         onClick={() => setShowDropdown(false)}
                                     >
                                         {profile.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="avatar" className="w-7 h-7 rounded-full object-cover border border-border" />
+                                            <Image
+                                                src={profile.avatar_url}
+                                                alt="avatar"
+                                                width={28}
+                                                height={28}
+                                                className="w-7 h-7 rounded-full object-cover border border-border"
+                                            />
                                         ) : (
                                             <div className="w-7 h-7 rounded-full bg-muted border border-border" />
                                         )}
@@ -334,12 +345,7 @@ export function Navbar() {
                                 </Link>
                                 {user ? (
                                     <Link href="/profile" className="flex items-center gap-3 px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition">
-                                        <Avatar className="h-8 w-8">
-                                            <CurrentUserAvatar />
-                                            <AvatarFallback className="text-xs">
-                                                {user.username?.[0] || user.email[0]}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <CurrentUserAvatar />
                                         <span className="font-medium text-sm truncate">{user.username || user.email}</span>
                                     </Link>
                                 ) : (
@@ -382,16 +388,6 @@ function NavigationLinks() {
     );
 }
 
-function MobileNavigationLinks({ onClose }: { onClose: () => void }) {
-    return (
-        <div className="space-y-1">
-            <MobileDropdown title="Features" items={features} onClose={onClose} />
-            <MobileDropdown title="Use Cases" items={useCases} onClose={onClose} />
-            <MobileDropdown title="Learn" items={learnItems} onClose={onClose} />
-        </div>
-    );
-}
-
 function Dropdown({ title, items }: { title: string; items: typeof features | typeof useCases | typeof learnItems }) {
     return (
         <NavigationMenuItem>
@@ -411,7 +407,8 @@ function Dropdown({ title, items }: { title: string; items: typeof features | ty
     );
 }
 
-function MobileDropdown({ title, items, onClose }: { title: string; items: typeof features | typeof useCases | typeof learnItems; onClose: () => void }) {
+/*
+function _MobileDropdown({ title, items, onClose }: { title: string; items: typeof features | typeof useCases | typeof learnItems; onClose: () => void }) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
@@ -440,6 +437,7 @@ function MobileDropdown({ title, items, onClose }: { title: string; items: typeo
         </div>
     );
 }
+*/
 
 function MobileSidebarItem({
     icon,

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "react-hot-toast";
-import ClientLayout from "@/components/client-layout";
-import { AuthProvider } from "@/components/auth-context";
+import ClientLayout from "@/components/layout/client-layout";
+import { AuthProvider } from "@/components/auth/auth-context";
 
 const poppins = Poppins({
   subsets: ["latin"],

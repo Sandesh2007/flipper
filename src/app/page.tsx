@@ -3,8 +3,8 @@
 import { ConversionInfo } from "@/components/sections/conversion-info";
 import { FileUpload } from "@/components/sections/file-upload-section";
 import { SupportedFormats } from "@/components/sections/supported-section";
-import { Testimonials } from "@/components/testimonials";
-import { useAuth } from "@/components/auth-context";
+import { Testimonials } from "@/components/features/testimonials";
+import { useAuth } from "@/components/auth/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -18,7 +18,7 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = () => {
     // Redirect to upload page when file is uploaded
     router.push("/home/create");
   };

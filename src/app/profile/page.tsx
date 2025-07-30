@@ -1,11 +1,9 @@
 'use client'
-import EditProfile from "@/components/edit-profile";
+import EditProfile from "@/components/forms/edit-profile";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   MapPin,
   Heart,
-  MessageCircle,
-  Share,
   Pencil,
   Trash2,
   Save,
@@ -13,16 +11,32 @@ import {
   Grid3X3,
   List,
 } from "lucide-react";
-import { useAuth } from "@/components/auth-context";
-import { CurrentUserAvatar } from "@/components/current-user-avatar";
+import { useAuth } from "@/components/auth/auth-context";
+import { CurrentUserAvatar } from "@/components/features/current-user-avatar";
 import { useEffect, useState, useRef } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
+
+interface Publication {
+  id: string;
+  title: string;
+  description: string;
+  pdf_url: string;
+  thumb_url: string | null;
+  created_at: string;
+  user_id: string;
+}
+
+interface LikeRow {
+  publication_id: string;
+  user_id: string;
+}
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const [publications, setPublications] = useState<any[]>([]);
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -33,7 +47,7 @@ export default function UserProfile() {
   const [actionLoading, setActionLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [likes, setLikes] = useState<Record<string, number>>({});
-  const [userLikes, setUserLikes] = useState<Record<string, boolean>>({});
+  // const [userLikes] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchPublications = async () => {
@@ -45,7 +59,7 @@ export default function UserProfile() {
         setPublications(data);
         
         // Fetch likes for these publications
-        const pubIds = data.map((p: any) => p.id);
+        const pubIds = data.map((p: Publication) => p.id);
         if (pubIds.length > 0) {
           const { data: allLikes } = await supabase
             .from('publication_likes')
@@ -54,13 +68,13 @@ export default function UserProfile() {
 
           // Count likes per publication
           const likeMap: Record<string, number> = {};
-          allLikes?.forEach((row: any) => {
+          allLikes?.forEach((row: LikeRow) => {
             likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
           });
           setLikes(likeMap);
           
           // Set user likes (since this is the user's own profile, they can't like their own publications)
-          setUserLikes({});
+          // setUserLikes({});
         }
       }
       setLoading(false);
@@ -68,7 +82,7 @@ export default function UserProfile() {
     fetchPublications();
   }, [user]);
 
-  const startEdit = (pub: any) => {
+  const startEdit = (pub: Publication) => {
     setEditingId(pub.id);
     setEditTitle(pub.title);
     setEditDescription(pub.description);
@@ -82,7 +96,7 @@ export default function UserProfile() {
     setEditThumb(null);
     setEditThumbUrl('');
   };
-  const handleEditSave = async (pub: any) => {
+  const handleEditSave = async (pub: Publication) => {
     setActionLoading(true);
     let thumbUrl = editThumbUrl;
     if (editThumb) {
@@ -102,7 +116,7 @@ export default function UserProfile() {
     }
     setActionLoading(false);
   };
-  const handleDelete = async (pub: any) => {
+  const handleDelete = async (pub: Publication) => {
     if (!window.confirm('Are you sure you want to delete this publication?')) return;
     setActionLoading(true);
     const supabase = createClient();
@@ -182,9 +196,11 @@ export default function UserProfile() {
                       <Card className="hover:shadow-lg transition cursor-pointer h-full flex flex-col">
                         <CardContent className="p-2 flex flex-col items-center justify-center h-full">
                           {pub.thumb_url ? (
-                            <img 
+                            <Image 
                               src={pub.thumb_url} 
                               alt={pub.title} 
+                              width={300}
+                              height={128}
                               className="w-full h-32 object-cover rounded mb-2 border border-border" 
                               onError={(e) => {
                                 console.log('Publication thumbnail failed to load:', pub.title, 'URL:', pub.thumb_url);
@@ -251,7 +267,7 @@ export default function UserProfile() {
                             onChange={e => setEditThumb(e.target.files?.[0] || null)}
                           />
                           <div className="w-20 h-28 flex items-center justify-center bg-muted text-muted-foreground rounded border border-border cursor-pointer mr-2" onClick={() => editThumbInputRef.current?.click()}>
-                            {editThumb ? <img src={URL.createObjectURL(editThumb)} alt="New Thumb" className="w-20 h-28 object-cover rounded" /> : (editThumbUrl ? <img src={editThumbUrl} alt="Thumb" className="w-20 h-28 object-cover rounded" onError={(e) => {
+                            {editThumb ? <Image src={URL.createObjectURL(editThumb)} alt="New Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" /> : (editThumbUrl ? <Image src={editThumbUrl} alt="Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" onError={(e) => {
                               console.log('Edit thumbnail failed to load:', editThumbUrl);
                               e.currentTarget.style.display = 'none';
                               e.currentTarget.parentElement!.textContent = 'No Image';
@@ -271,9 +287,11 @@ export default function UserProfile() {
                       ) : (
                         <>
                           {pub.thumb_url ? (
-                            <img 
+                            <Image 
                               src={pub.thumb_url} 
                               alt="Thumbnail" 
+                              width={80}
+                              height={112}
                               className="w-20 h-28 object-cover rounded border border-border" 
                               onError={(e) => {
                                 console.log('Publication thumbnail failed to load:', pub.title, 'URL:', pub.thumb_url);

@@ -1,10 +1,11 @@
 "use client"
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { createClient } from '@/utils/supabase/client';
-import { CheckCircle, FileText, Image as ImageIcon, UploadCloud, ArrowRight, ArrowLeft, Share2 } from 'lucide-react';
+import { createClient } from '@/lib/database/supabase/client';
+import { CheckCircle, FileText, Image as ImageIcon, UploadCloud } from 'lucide-react';
 
 const steps = [
   'Upload',
@@ -18,14 +19,12 @@ export default function CreatePublicationPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [pdf, setPdf] = useState<File | null>(null);
-  const [thumb, setThumb] = useState<File | null>(null);
   const [published, setPublished] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [thumbUrl, setThumbUrl] = useState('');
+  const [thumbUrl] = useState('');
   const [error, setError] = useState('');
   const pdfInputRef = useRef<HTMLInputElement>(null);
-  const thumbInputRef = useRef<HTMLInputElement>(null);
 
   const handleNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
@@ -35,9 +34,7 @@ export default function CreatePublicationPage() {
     setUploading(true);
     const supabase = createClient();
     let pdfPath = '';
-    let thumbPath = '';
     let pdfPublicUrl = '';
-    let thumbPublicUrl = '';
     try {
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -50,14 +47,6 @@ export default function CreatePublicationPage() {
         pdfPublicUrl = urlData.publicUrl;
         setPdfUrl(pdfPublicUrl);
       }
-      if (thumb) {
-        thumbPath = `thumbs/${Date.now()}_${thumb.name}`;
-        const { error: uploadError } = await supabase.storage.from('publications').upload(thumbPath, thumb);
-        if (uploadError) throw uploadError;
-        const { data: urlData } = supabase.storage.from('publications').getPublicUrl(thumbPath);
-        thumbPublicUrl = urlData.publicUrl;
-        setThumbUrl(thumbPublicUrl);
-      }
       // Insert publication row
       const { error: insertError } = await supabase.from('publications').insert([
         {
@@ -65,14 +54,14 @@ export default function CreatePublicationPage() {
           title,
           description,
           pdf_url: pdfPublicUrl,
-          thumb_url: thumbPublicUrl,
         }
       ]);
       if (insertError) throw insertError;
       setPublished(true);
       handleNext();
-    } catch (e: any) {
-      setError(e.message || 'Upload failed');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Upload failed';
+      setError(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -129,13 +118,9 @@ export default function CreatePublicationPage() {
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
-                {thumb ? (
-                  <img src={URL.createObjectURL(thumb)} alt="Thumbnail preview" className="w-24 h-24 object-cover rounded-xl border border-border shadow" />
-                ) : (
-                  <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border">
-                    <ImageIcon className="w-10 h-10 text-muted-foreground" />
-                  </div>
-                )}
+                <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border">
+                  <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                </div>
                 <div>
                   <div className="font-semibold text-lg text-foreground">{title}</div>
                   <div className="text-muted-foreground text-sm mt-1">{description}</div>
@@ -164,7 +149,17 @@ export default function CreatePublicationPage() {
                   <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(pdfUrl)}>Copy</Button>
                 </div>
               </div>
-              {thumbUrl && <div className="mt-2"><img src={thumbUrl} alt="PDF Thumbnail" className="mx-auto max-h-40 rounded-xl border border-border shadow" /></div>}
+              {thumbUrl && (
+                <div className="mt-2">
+                  <Image 
+                    src={thumbUrl} 
+                    alt="PDF Thumbnail" 
+                    width={160}
+                    height={160}
+                    className="mx-auto max-h-40 rounded-xl border border-border shadow" 
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

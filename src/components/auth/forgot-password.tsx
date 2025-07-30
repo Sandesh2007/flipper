@@ -1,15 +1,15 @@
 'use client'
 import React, { useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { Button } from './ui/button';
-import { Dialog, DialogHeader, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from './ui/dialog';
+import { createBrowserClient } from '@/lib/database'
+import { Button } from '../ui/button';
+import { Dialog, DialogHeader, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Mail } from 'lucide-react';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import toast from 'react-hot-toast';
 
 export default function ForgotPassword() {
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
 

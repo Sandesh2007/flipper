@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import type { User } from "@/lib/user";
-import { createClient } from "@/utils/supabase/client";
+import { createBrowserClient } from "@/lib/database";
 import toast from "react-hot-toast";
 import { useRouter } from 'next/navigation';
 
@@ -56,7 +56,7 @@ function isUsernameValid(username: string | undefined): boolean {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   const router = useRouter();
 
   // Load user from cache on mount (with expiry)
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       listener?.subscription.unsubscribe();
     };
-  }, [refreshUser, supabase.auth]);
+  }, [refreshUser, supabase]);
 
   useEffect(() => {
     if (!loading && user) {

@@ -1,17 +1,34 @@
 "use client"
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/database/supabase/client';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Heart } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+
+interface UserProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
+}
+
+interface Publication {
+  id: string;
+  title: string;
+  description: string;
+  pdf_url: string;
+  thumb_url: string | null;
+  created_at: string;
+}
 
 export default function PublicProfileByUsernamePage() {
   const params = useParams();
   const username = (params?.username as string)?.toLowerCase();
-  const [profile, setProfile] = useState<any>(null);
-  const [publications, setPublications] = useState<any[]>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -48,7 +65,13 @@ export default function PublicProfileByUsernamePage() {
           <div className="mb-8 border-b border-border/50 pb-6">
             <div className="flex items-center gap-4 mb-2">
               {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-border" />
+                <Image 
+                  src={profile.avatar_url} 
+                  alt="Avatar" 
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-full object-cover border border-border" 
+                />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-muted border border-border" />
               )}
@@ -82,7 +105,13 @@ export default function PublicProfileByUsernamePage() {
               <Card key={pub.id} className="shadow-soft hover:shadow-medium transition-shadow">
                 <CardContent className="p-4 flex gap-4 items-center">
                   {pub.thumb_url ? (
-                    <img src={pub.thumb_url} alt="Thumbnail" className="w-20 h-28 object-cover rounded border border-border" />
+                    <Image 
+                      src={pub.thumb_url} 
+                      alt="Thumbnail" 
+                      width={80}
+                      height={112}
+                      className="w-20 h-28 object-cover rounded border border-border" 
+                    />
                   ) : (
                     <div className="w-20 h-28 flex items-center justify-center bg-muted text-muted-foreground rounded border border-border">No Image</div>
                   )}

@@ -1,20 +1,31 @@
 "use client"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import InfoDialog from "./dialog"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/components/auth-context"
-import { createClient } from "@/utils/supabase/client"
+import { useAuth } from "@/components/auth/auth-context"
+import { createClient } from "@/lib/database/supabase/client"
 import { FileText, Eye, Edit, Trash2, Calendar } from "lucide-react"
 import Link from "next/link"
+
+interface Publication {
+  id: string;
+  title: string;
+  description: string;
+  pdf_url: string;
+  thumb_url: string | null;
+  created_at: string;
+  user_id: string;
+}
 
 export default function DashboardMain() {
   const router = useRouter();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("Publications")
-  const [publications, setPublications] = useState<any[]>([]);
+  const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const tabs = ["Publications", "Articles", "Social posts"]
 
@@ -157,9 +168,11 @@ export default function DashboardMain() {
                       {publications.map((pub) => (
                         <div key={pub.id} className="flex items-center gap-4 p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-700">
                           {pub.thumb_url ? (
-                            <img 
+                            <Image 
                               src={pub.thumb_url} 
                               alt="Thumbnail" 
+                              width={64}
+                              height={80}
                               className="w-16 h-20 object-cover rounded border border-neutral-200 dark:border-neutral-600"
                             />
                           ) : (

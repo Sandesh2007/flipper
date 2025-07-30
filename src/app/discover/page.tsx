@@ -1,15 +1,42 @@
 "use client"
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { createClient } from '@/utils/supabase/client';
-import { useAuth } from '@/components/auth-context';
+import { createClient } from '@/lib/database/supabase/client';
+import { useAuth } from '@/components/auth/auth-context';
 import { Button } from '@/components/ui/button';
 import { Heart, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+interface UserProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  publications: Publication[];
+}
+
+interface DatabaseUserProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+interface Publication {
+  id: string;
+  user_id: string;
+  title: string;
+  thumb_url: string | null;
+  created_at: string;
+}
+
+interface LikeRow {
+  publication_id: string;
+  user_id: string;
+}
+
 export default function PublicLandingPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [userLikes, setUserLikes] = useState<Record<string, boolean>>({});
@@ -26,7 +53,7 @@ export default function PublicLandingPage() {
         // Fetch all users
         const { data: profiles } = await supabase.from('profiles').select('id,username,avatar_url');
         console.log('Profiles fetched:', profiles?.length);
-        console.log('Sample profile data:', profiles?.slice(0, 3).map(p => ({ username: p.username })));
+        console.log('Sample profile data:', profiles?.slice(0, 3).map((p: DatabaseUserProfile) => ({ username: p.username })));
         
         if (!profiles) {
           setUsers([]);
@@ -39,8 +66,8 @@ export default function PublicLandingPage() {
         console.log('Publications fetched:', allPubs?.length);
         
         // Group publications by user
-        const pubsByUser: Record<string, any[]> = {};
-        allPubs?.forEach((pub: any) => {
+        const pubsByUser: Record<string, Publication[]> = {};
+        allPubs?.forEach((pub: Publication) => {
           if (!pubsByUser[pub.user_id]) pubsByUser[pub.user_id] = [];
           if (pubsByUser[pub.user_id].length < 6) {
             pubsByUser[pub.user_id].push(pub);
@@ -50,17 +77,17 @@ export default function PublicLandingPage() {
         console.log('Publications grouped by user:', Object.keys(pubsByUser).length, 'users have publications');
 
         // Attach publications to users
-        const usersWithPubs = profiles.map((userProfile: any) => ({
+        const usersWithPubs = profiles.map((userProfile: DatabaseUserProfile) => ({
           ...userProfile,
           publications: pubsByUser[userProfile.id] || [],
         }));
         
-        console.log('Users with publications:', usersWithPubs.map(u => ({ username: u.username, pubCount: u.publications.length })));
+        console.log('Users with publications:', usersWithPubs.map((u: UserProfile) => ({ username: u.username, pubCount: u.publications.length })));
         
         setUsers(usersWithPubs);
 
         // Gather all publication ids
-        const pubIds = allPubs?.map((p: any) => p.id) || [];
+        const pubIds = allPubs?.map((p: Publication) => p.id) || [];
         if (pubIds.length > 0) {
           
           // Fetch all likes for these publications
@@ -73,7 +100,7 @@ export default function PublicLandingPage() {
 
           // Count likes per publication
           const likeMap: Record<string, number> = {};
-          allLikes?.forEach((row: any) => {
+          allLikes?.forEach((row: LikeRow) => {
             likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
           });
           setLikes(likeMap);
@@ -81,7 +108,7 @@ export default function PublicLandingPage() {
           // Only fetch user likes if user is logged in
           if (user) {
             const userLikeMap: Record<string, boolean> = {};
-            allLikes?.forEach((row: any) => {
+            allLikes?.forEach((row: LikeRow) => {
               if (row.user_id === user.id) {
                 userLikeMap[row.publication_id] = true;
               }
@@ -180,9 +207,11 @@ export default function PublicLandingPage() {
                 <div key={userProfile.id} className="mb-8 p-4 rounded-lg border border-border bg-card shadow-sm">
                   <Link href={`/profile/${userProfile.username}`} className="flex items-center gap-3 mb-3 hover:underline group">
                     {userProfile.avatar_url ? (
-                      <img 
+                      <Image 
                         src={userProfile.avatar_url} 
                         alt={`${userProfile.username}'s avatar`}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-full object-cover border border-border group-hover:ring-2 group-hover:ring-primary/20 transition-all" 
                         onError={(e) => {
                           console.log('Avatar failed to load for:', userProfile.username, 'URL:', userProfile.avatar_url);
@@ -191,7 +220,7 @@ export default function PublicLandingPage() {
                         }}
                       />
                     ) : null}
-                    <div className={`w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center group-hover:ring-2 group-hover:ring-primary/20 transition-all ${userProfile.avatar_url ? 'hidden' : ''}`}>
+                    <div className={`w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center transition-all ${userProfile.avatar_url ? 'hidden' : ''}`}>
                       <span className="text-muted-foreground text-sm">
                         {userProfile.username.charAt(0).toUpperCase()}
                       </span>
@@ -202,7 +231,7 @@ export default function PublicLandingPage() {
                     </span>
                   </Link>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-2">
-                    {userProfile.publications.map((pub: any) => {
+                    {userProfile.publications.map((pub: Publication) => {
                       const isUploader = user && user.id === pub.user_id;
                       const liked = userLikes[pub.id] || false;
                       const likeCount = likes[pub.id] || 0;
@@ -212,7 +241,13 @@ export default function PublicLandingPage() {
                             <Card className="hover:shadow-lg transition cursor-pointer h-full flex flex-col">
                               <CardContent className="p-2 flex flex-col items-center justify-center h-full">
                                 {pub.thumb_url ? (
-                                  <img src={pub.thumb_url} alt={pub.title} className="w-full h-32 object-cover rounded mb-2 border border-border" />
+                                  <Image 
+                                    src={pub.thumb_url} 
+                                    alt={pub.title} 
+                                    width={300}
+                                    height={128}
+                                    className="w-full h-32 object-cover rounded mb-2 border border-border" 
+                                  />
                                 ) : (
                                   <div className="w-full h-32 flex items-center justify-center bg-muted text-muted-foreground rounded mb-2 border border-border text-xs">No Preview</div>
                                 )}
@@ -220,29 +255,29 @@ export default function PublicLandingPage() {
                               </CardContent>
                             </Card>
                           </Link>
-                          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 bg-background/80 backdrop-blur-sm rounded px-1 py-0.5">
+                          <div className="absolute top-2 right-2 flex items-center gap-1 z-10 rounded px-1 py-0.5">
                             <span className="text-xs text-foreground font-medium">{likeCount}</span>
                             {user ? (
                               !isUploader && (
                                 liked ? (
                                   <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleUnlike(pub.id)} aria-label="Unlike">
-                                    <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+                                    <Heart className="w-4 h-4 text-red-500 fill-red-500" />
                                   </Button>
                                 ) : (
                                   <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleLike(pub.id)} aria-label="Like">
-                                    <Heart className="w-3 h-3" />
+                                    <Heart className="w-4 h-4" />
                                   </Button>
                                 )
                               )
                             ) : (
                               // Not logged in: show disabled like button
                               <Button size="icon" variant="ghost" className="h-6 w-6" disabled aria-label="Login to like publications">
-                                <Heart className="w-3 h-3" />
+                                <Heart className="w-4 h-4" />
                               </Button>
                             )}
                             {user && isUploader && (
                               <div className="h-6 w-6 flex items-center justify-center">
-                                <Heart className="w-3 h-3 text-gray-400" />
+                                <Heart className="w-4 h-4 text-gray-400" />
                               </div>
                             )}
                           </div>

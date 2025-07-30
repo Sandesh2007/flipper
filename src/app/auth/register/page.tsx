@@ -1,7 +1,7 @@
 'use client'
 
 // Some parts are commented out because they can be readded later if my mind changed ^_^
-import AuthForm from '@/components/authform'
+import { AuthForm } from '@/components'
 // import Image from 'next/image'
 // import logo from "../../../public/logo.svg";
 // import Link from 'next/link'

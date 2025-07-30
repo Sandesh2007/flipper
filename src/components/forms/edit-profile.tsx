@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Settings, Upload } from 'lucide-react'
-import { createClient } from '@/utils/supabase/client'
+import { createBrowserClient } from '@/lib/database'
 import toast from 'react-hot-toast'
-import { useAuth } from './auth-context'
+import { useAuth } from '../auth/auth-context'
 import { useCurrentUserImage } from '@/hooks/use-current-user-image'
 import Image from 'next/image'
 import { v4 as uuidv4 } from 'uuid';
@@ -23,7 +23,7 @@ import { CountryDropdown, Country } from '@/components/ui/country-dropdown'
 
 export default function EditProfile() {
     const { user, refreshUser } = useAuth();
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const [open, setOpen] = useState(false);
     const [bio, setBio] = useState(user?.bio || '');
     const [username, setUsername] = useState(user?.username || '');
@@ -60,7 +60,7 @@ export default function EditProfile() {
             return false;
         }
         // Check uniqueness
-        const supabase = createClient();
+        const supabase = createBrowserClient();
         const { data } = await supabase.from('profiles').select('id').eq('username', username);
         if (data && data.length > 0) {
             setUsernameError('Username is already taken.');

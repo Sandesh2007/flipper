@@ -1,10 +1,10 @@
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/database/supabase/client'
 import { useEffect, useState } from 'react'
 import avatar from '../../public/avatar.png'
 
 export const useCurrentUserImage = () => {
   const [image, setImage] = useState<string | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
+  const [retryCount] = useState(0)
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -54,7 +54,7 @@ export const useCurrentUserImage = () => {
       }
     }
 
-    const tryGoogleAvatar = (user: any) => {
+    const tryGoogleAvatar = (user: { user_metadata?: { avatar_url?: string } }) => {
       const googleAvatarUrl = user.user_metadata?.avatar_url
       
       if (googleAvatarUrl) {

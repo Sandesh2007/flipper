@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import logo from "../../public/logo.svg";
+import logo from "../../../public/logo.svg";
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin, Youtube, TwitterIcon } from "lucide-react";
-import { useAuth } from "@/components/auth-context";
+import { useAuth } from "../auth/auth-context";
 
 const footerLinks = {
   product: [
