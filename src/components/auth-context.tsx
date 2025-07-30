@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const newUser = {
         id,
         email: email ?? '',
-        username: profile?.username || null, // Only use database username, never fallback to metadata
+        username: profile?.username || (user_metadata?.username ? user_metadata.username.replace(/\s+/g, '') : null), // Remove spaces from Google username
         avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
         bio: profile?.bio || user_metadata?.bio,
         location: profile?.location || user_metadata?.location,
@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const newUser = {
           id,
           email: email ?? "",
-          username: profile?.username || null, // Only use database username
+          username: profile?.username || (user_metadata?.username ? user_metadata.username.replace(/\s+/g, '') : null), // Remove spaces from Google username
           avatar_url: profile?.avatar_url || user_metadata?.avatar_url,
           bio: profile?.bio || user_metadata?.bio,
           location: profile?.location || user_metadata?.location,

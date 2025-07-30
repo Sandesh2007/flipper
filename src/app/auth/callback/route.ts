@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         .eq('id', user.id)
         .single()
 
-      // If no profile or no valid username, redirect to set-username
+      // If no profile username then redirect to set-username
       if (!profile?.username) {
         return NextResponse.redirect(`${origin}/set-username`)
       }

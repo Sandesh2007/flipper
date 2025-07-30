@@ -72,6 +72,9 @@ export default function EditProfile() {
 
     const updateProfile = async () => {
         if (!user?.id) return;
+        // Remove spaces from username before saving
+        const sanitizedUsername = username.replace(/\s+/g, '');
+        if (!(await validateUsername(sanitizedUsername))) return;
         
         let uploadedAvatarUrl = avatarUrl;
         
@@ -143,7 +146,7 @@ export default function EditProfile() {
             const { error } = await supabase
                 .from('profiles')
                 .update({
-                    username: username.toLowerCase(), // Ensure lowercase
+                    username: sanitizedUsername.toLowerCase(), // THis ensures lowercase and no spaces
                     bio,
                     location,
                     avatar_url: uploadedAvatarUrl,

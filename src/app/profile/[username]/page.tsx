@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { Heart } from 'lucide-react';
 
 export default function PublicProfileByUsernamePage() {
   const params = useParams();
@@ -20,7 +21,7 @@ export default function PublicProfileByUsernamePage() {
       setLoading(true);
       setNotFound(false);
       const supabase = createClient();
-      // Fetch user profile info by username (always lowercase)
+      // Fetch user profile info by username always lowercase
       const { data: userData } = await supabase.from('profiles').select('*').eq('username', username).single();
       if (!userData) {
         setNotFound(true);
@@ -79,7 +80,7 @@ export default function PublicProfileByUsernamePage() {
           <div className="space-y-6">
             {publications.map((pub) => (
               <Card key={pub.id} className="shadow-soft hover:shadow-medium transition-shadow">
-                <CardContent className="p-6 flex gap-4 items-center">
+                <CardContent className="p-4 flex gap-4 items-center">
                   {pub.thumb_url ? (
                     <img src={pub.thumb_url} alt="Thumbnail" className="w-20 h-28 object-cover rounded border border-border" />
                   ) : (

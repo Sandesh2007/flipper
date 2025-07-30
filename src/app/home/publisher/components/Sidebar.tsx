@@ -24,7 +24,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex w-64 bg-neutral-200 dark:bg-neutral-800 flex-col">
+    <aside className="hidden lg:flex w-64  bg-neutral-200 dark:bg-neutral-800 flex-col">
       <div className="p-4">
         <Link href="/home/create">
         <Button variant="outline" className="w-full cursor-pointer text-neutral-900 dark:text-neutral-100">
@@ -35,7 +35,7 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 px-4 space-y-1">
         <Link href="/home/publisher">
-          <SidebarItem 
+          <SidebarItem
             icon={<Home className="w-5 h-5 mr-3" />} 
             label="Home" 
             isActive={pathname === "/home/publisher"}

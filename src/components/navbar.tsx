@@ -150,12 +150,7 @@ export function Navbar() {
                             {user ? (
                                 <div className="flex items-center gap-2">
                                     <Link href="/profile" className="flex items-center gap-2">
-                                        <Avatar className="h-8 w-8">
                                             <CurrentUserAvatar />
-                                            <AvatarFallback className="text-xs">
-                                                {user.username?.[0] || user.email[0]}
-                                            </AvatarFallback>
-                                        </Avatar>
                                     </Link>
                                 </div>
                             ) : (
