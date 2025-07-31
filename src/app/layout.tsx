@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "react-hot-toast";
 import ClientLayout from "@/components/layout/client-layout";
 import { AuthProvider } from "@/components/auth/auth-context";
+import { PdfUploadProvider } from '@/components';
+import { NetworkStatus } from "@/components/features/network-status";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -24,21 +26,24 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${poppins.className} antialiased scroll-smooth`}>
-        <AuthProvider>
+        <PdfUploadProvider>
+          <AuthProvider>
 
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-          >
-            <ClientLayout>
-              <Toaster
-                position="top-center"
-              />
-              {children}
-            </ClientLayout>
-          </ThemeProvider>
-        </AuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+            >
+              <ClientLayout>
+                <Toaster
+                  position="top-center"
+                />
+                <NetworkStatus/>
+                {children}
+              </ClientLayout>
+            </ThemeProvider>
+          </AuthProvider>
+        </PdfUploadProvider>
       </body>
     </html>
   );

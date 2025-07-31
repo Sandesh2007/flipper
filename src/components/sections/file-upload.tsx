@@ -1,18 +1,23 @@
+'use client';
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Upload, FileText, CheckCircle } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { usePdfUpload } from "../PdfUploadContext";
 
-interface FileUploadProps {
-  onFileUpload?: (file: File) => void;
-}
-
-export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
+export const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const router = useRouter();
+  const {setPdf} = usePdfUpload(); 
+
+  function onConvertClick(file: File) {
+    setPdf({file, name: file.name, lastModified: file.lastModified});
+    router.push("/home/create");
+  }
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -29,15 +34,13 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
             clearInterval(interval);
             setUploading(false);
             setUploadedFile(file);
-            onFileUpload?.(file);
-            toast.success("PDF uploaded successfully!");
             return 100;
           }
           return prev + 10;
         });
       }, 200);
     },
-    [onFileUpload]
+    [onConvertClick]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -67,8 +70,8 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
             {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
           </p>
           <div className="flex gap-3 justify-center">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setUploadedFile(null);
                 setUploadProgress(0);
@@ -76,7 +79,9 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
             >
               Upload Another
             </Button>
-            <Button className="bg-gradient-hero bg-neutral-700 dark:bg-neutral-50 shadow-soft">
+            <Button
+              onClick={() => onConvertClick(uploadedFile!)}
+              className="bg-gradient-hero bg-neutral-700 dark:bg-neutral-50 shadow-soft cursor-pointer">
               Convert to Flipbook
             </Button>
           </div>
@@ -110,11 +115,10 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
     <div className="w-full max-w-2xl mx-auto">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300 bg-gradient-card shadow-soft hover:shadow-upload ${
-          isDragActive
-            ? "border-primary bg-primary/5 shadow-glow"
-            : "border-primary/20 hover:border-primary/40"
-        }`}
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300 bg-gradient-card shadow-soft hover:shadow-upload ${isDragActive
+          ? "border-primary bg-primary/5 shadow-glow"
+          : "border-primary/20 hover:border-primary/40"
+          }`}
       >
         <input {...getInputProps()} id="file-input" />
         <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10">

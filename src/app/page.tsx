@@ -1,7 +1,7 @@
 "use client";
 
 import { ConversionInfo } from "@/components/sections/conversion-info";
-import { FileUpload } from "@/components/sections/file-upload-section";
+import { FileUpload } from "@/components/sections/file-upload";
 import { SupportedFormats } from "@/components/sections/supported-section";
 import { Testimonials } from "@/components/features/testimonials";
 import { useAuth } from "@/components/auth/auth-context";
@@ -18,11 +18,6 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
-  const handleFileUpload = () => {
-    // Redirect to upload page when file is uploaded
-    router.push("/home/create");
-  };
-
   if (!loading && user) {
     // add a loader here
     return (
@@ -35,7 +30,7 @@ export default function Home() {
   return (
     <main className="p-4 ">
       {/* Upload files section */}
-      <FileUpload onFileUpload={handleFileUpload} />
+      <FileUpload />
       <SupportedFormats />
       <ConversionInfo />
       <Testimonials />

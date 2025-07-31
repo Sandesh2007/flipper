@@ -101,4 +101,6 @@ import { Navbar } from "@/components/layout";
 - Middleware has been moved to `lib/middleware.ts`
 - Index files provide clean, centralized exports
 
-This organization makes the codebase more maintainable, scalable, and easier to navigate for developers. 
+This organization makes the codebase more maintainable, scalable, and easier to navigate for developers
+
+<!-- EOF -->

@@ -10,6 +10,7 @@ import { useAuth } from "@/components/auth/auth-context"
 import { createClient } from "@/lib/database/supabase/client"
 import { FileText, Eye, Edit, Trash2, Calendar } from "lucide-react"
 import Link from "next/link"
+import { usePdfUpload } from '@/components';
 
 interface Publication {
   id: string;
@@ -24,6 +25,7 @@ interface Publication {
 export default function DashboardMain() {
   const router = useRouter();
   const { user } = useAuth();
+  const { setPdf } = usePdfUpload();
   const [activeTab, setActiveTab] = useState("Publications")
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +63,15 @@ export default function DashboardMain() {
     }
   };
 
+  // Add a handler for file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setPdf({ file, name: file.name, lastModified: file.lastModified });
+      router.push('/home/create');
+    }
+  };
+
   return (
     <main className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8">
       <section className="bg-neutral-200 dark:bg-neutral-800 rounded-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
@@ -72,6 +83,16 @@ export default function DashboardMain() {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
               Upload a file
             </Button>
+            <input
+              type="file"
+              accept="application/pdf"
+              style={{ display: 'none' }}
+              ref={el => {
+                // @ts-ignore
+                if (el) window.fileInputRef = el;
+              }}
+              onChange={handleFileSelect}
+            />
             <div className="mt-4">
               <p className="text-sm text-neutral-600 dark:text-neutral-300">
                 Supported:&nbsp;

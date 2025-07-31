@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
       // If no profile username then redirect to set-username
       if (!profile?.username) {
-        return NextResponse.redirect(`${origin}/set-username`)
+        return NextResponse.redirect(`${origin}`) // may add another url in future (meh im bored rn)
       }
     }
   }

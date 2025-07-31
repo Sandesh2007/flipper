@@ -161,24 +161,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [refreshUser, supabase]);
 
-  useEffect(() => {
-    if (!loading && user) {
+  // useEffect(() => {
+  //   if (!loading && user) {
       // Check if user has a valid username in the database
-      const hasValidUsername = isUsernameValid(user.username);
+  //     const hasValidUsername = isUsernameValid(user.username);
       
-      if (!hasValidUsername && typeof window !== 'undefined' && window.location.pathname !== '/set-username') {
+  //     if (!hasValidUsername && typeof window !== 'undefined' && window.location.pathname !== '/set-username') {
         // Add a small delay to prevent race conditions
-        const timeoutId = setTimeout(() => {
+  //       const timeoutId = setTimeout(() => {
           // Double-check the pathname in case user navigated away
-          if (window.location.pathname !== '/set-username') {
-            router.replace('/set-username');
-          }
-        }, 100);
+  //         if (window.location.pathname !== '/set-username') {
+  //           router.replace('/set-username');
+  //         }
+  //       }, 100);
         
-        return () => clearTimeout(timeoutId);
-      }
-    }
-  }, [user, loading, router]);
+  //       return () => clearTimeout(timeoutId);
+  //     }
+  //   }
+  // }, [user, loading, router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser, setUser }}>

@@ -1,15 +1,17 @@
 'use client'
 
 import { useState } from "react";
-import { ArrowLeft, Eye, EyeOff, X } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, UserRound, X } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/database"
 import ForgotPassword from "./forgot-password";
+import { toastify } from "../toastify";
 
 export default function AuthForm() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const mode = searchParams.get("mode");
     const [isLoading, setLoading] = useState(false);
@@ -23,11 +25,14 @@ export default function AuthForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const supabase = createBrowserClient();
+    const next = searchParams.get('next');
+    const [error, setError] = useState('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value} = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
     };
 
@@ -41,6 +46,51 @@ export default function AuthForm() {
                 toast.error("Please fill in all fields");
                 return;
             }
+            if (formData.username !== formData.username.toLowerCase()) {
+                setError('Username must be lowercase.');
+                return;
+            }
+
+            if (!/^[a-z0-9_]+$/.test(formData.username)) {
+                setError('Username can only contain lowercase letters, numbers, and underscores.');
+                return;
+            }
+            if (formData.username.includes(' ')) {
+                setError('Username cannot contain spaces.');
+                return;
+            }
+
+            if (!isLogin) {
+                const { data: usernameData, error: usernameError } = await supabase
+                    .from("profiles")
+                    .select("id")
+                    .eq("username", formData.username);
+
+                if (usernameError) {
+                    toastify.error(`something is cooked ${usernameError.message} `)
+                }
+
+                if (usernameData && usernameData.length > 0) {
+                    setError("Username is already taken.");
+                    setLoading(false);
+                    return;
+                }
+
+                const { data: emailData, error: emailError } = await supabase
+                    .from("profiles")
+                    .select("id")
+                    .eq("email", formData.email);
+
+                if (emailError) {
+                    toastify.error(`something is cooked ${emailError.message} `)
+                }
+                if (emailData && emailData.length > 0) {
+                    setError("Email is already registered.");
+                    setLoading(false);
+                    return;
+                }
+            }
+
 
             if (!isLogin && !agreedToTerms) {
                 toast.error(`Please agree to the Terms & Conditions`);
@@ -59,6 +109,8 @@ export default function AuthForm() {
                     return;
                 }
                 toast.success(`${isLogin ? 'Login' : 'Signup'} success`)
+                // Redirect back to /create if page have 'next' param
+                router.replace(next || '/home/publisher');
             }
             else {
                 const { error } = await supabase.auth.signUp({
@@ -93,6 +145,9 @@ export default function AuthForm() {
                 }
                 else {
                     toast.success("Signup successful! Please check your email to verify.");
+                    setTimeout(() => {
+                        router.replace(next || 'home/publisher');
+                    }, 2000);
                 }
             }
         } catch (err) {
@@ -104,7 +159,7 @@ export default function AuthForm() {
 
     const handleSocialLogin = async (provider: "google" | "apple") => {
         if (isTransitioning) return;
-        
+
         try {
             const { error, data } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -131,14 +186,14 @@ export default function AuthForm() {
 
     const switchMode = () => {
         if (isTransitioning) return;
-        
+
         setIsTransitioning(true);
         setTimeout(() => {
             setIsLogin(!isLogin);
             setFormData({ username: "", email: "", password: "" });
             setAgreedToTerms(false);
             setShowPassword(false);
-            
+
             setTimeout(() => {
                 setIsTransitioning(false);
             }, 300);
@@ -195,13 +250,12 @@ export default function AuthForm() {
                         {/* Form Header with Enhanced Animation */}
                         <div className="relative overflow-hidden mb-8 h-20">
                             <div
-                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-                                    isLogin && !isTransitioning
-                                        ? 'translate-x-0 opacity-100' 
-                                        : isTransitioning && isLogin
+                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${isLogin && !isTransitioning
+                                    ? 'translate-x-0 opacity-100'
+                                    : isTransitioning && isLogin
                                         ? 'translate-x-[-50%] opacity-0 scale-95'
                                         : 'translate-x-full opacity-0 scale-95'
-                                }`}
+                                    }`}
                             >
                                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome back</h1>
                                 <p className="text-muted-foreground">
@@ -218,13 +272,12 @@ export default function AuthForm() {
                             </div>
 
                             <div
-                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-                                    !isLogin && !isTransitioning
-                                        ? 'translate-x-0 opacity-100' 
-                                        : isTransitioning && !isLogin
+                                className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${!isLogin && !isTransitioning
+                                    ? 'translate-x-0 opacity-100'
+                                    : isTransitioning && !isLogin
                                         ? 'translate-x-[50%] opacity-0 scale-95'
                                         : 'translate-x-[-100%] opacity-0 scale-95'
-                                }`}
+                                    }`}
                             >
                                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create an account</h1>
                                 <p className="text-muted-foreground">
@@ -244,12 +297,12 @@ export default function AuthForm() {
                         {/* Form with Enhanced Animation */}
                         <div className="space-y-4 sm:space-y-6">
                             {/* Username field - Only for signup */}
+                            {!isLogin && error && (<div className="text-red-500 text-xs text-center">{error}</div>)}
                             <div
-                                className={`w-full transition-all duration-600 ease-in-out overflow-hidden ${
-                                    !isLogin 
-                                        ? 'max-h-20 opacity-100 transform translate-y-0' 
-                                        : 'max-h-0 opacity-0 transform -translate-y-2'
-                                }`}
+                                className={`w-full transition-all duration-600 ease-in-out overflow-hidden ${!isLogin
+                                    ? 'max-h-20 opacity-100 transform translate-y-0'
+                                    : 'max-h-0 opacity-0 transform -translate-y-2'
+                                    }`}
                             >
                                 <div className="pb-1">
                                     <input
@@ -299,14 +352,14 @@ export default function AuthForm() {
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
+                            {isLogin && error && <div className="text-red-500 text-xs text-center">{error}</div>}
 
                             {/* Forgot password - Only for login */}
                             <div
-                                className={`transition-all duration-600 ease-in-out overflow-hidden ${
-                                    isLogin 
-                                        ? 'max-h-12 opacity-100 transform translate-y-0' 
-                                        : 'max-h-0 opacity-0 transform -translate-y-2'
-                                }`}
+                                className={`transition-all duration-600 ease-in-out overflow-hidden ${isLogin
+                                    ? 'max-h-12 opacity-100 transform translate-y-0'
+                                    : 'max-h-0 opacity-0 transform -translate-y-2'
+                                    }`}
                             >
                                 <div className="text-right pb-1">
                                     <ForgotPassword />
@@ -315,11 +368,10 @@ export default function AuthForm() {
 
                             {/* Terms checkbox - Only for signup */}
                             <div
-                                className={`transition-all duration-600 ease-in-out overflow-hidden ${
-                                    !isLogin 
-                                        ? 'max-h-20 opacity-100 transform translate-y-0' 
-                                        : 'max-h-0 opacity-0 transform -translate-y-2'
-                                }`}
+                                className={`transition-all duration-600 ease-in-out overflow-hidden ${!isLogin
+                                    ? 'max-h-20 opacity-100 transform translate-y-0'
+                                    : 'max-h-0 opacity-0 transform -translate-y-2'
+                                    }`}
                             >
                                 <div className="flex items-start gap-3 pb-1">
                                     <input
@@ -347,9 +399,8 @@ export default function AuthForm() {
                             {/* Submit button */}
                             <button
                                 type="submit"
-                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${
-                                    (isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
-                                }`}
+                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
+                                    }`}
                                 onClick={handleSubmit}
                                 disabled={isLoading || isTransitioning}
                             >
