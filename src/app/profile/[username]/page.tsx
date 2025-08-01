@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/database/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface UserProfile {
   id: string;
@@ -32,6 +33,7 @@ export default function PublicProfileByUsernamePage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,7 +120,12 @@ export default function PublicProfileByUsernamePage() {
                   <div className="flex-1">
                     <div className="font-semibold text-lg text-foreground">{pub.title}</div>
                     <div className="text-muted-foreground text-sm mb-2">{pub.description}</div>
-                    <a href={pub.pdf_url} target="_blank" rel="noopener noreferrer" className="text-primary underline text-sm">View PDF</a>
+                    <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}`)}
+                    className='cursor-pointer'
+                    >View Publication</Button>
                     <div className="text-xs text-muted-foreground mt-1">{new Date(pub.created_at).toLocaleString()}</div>
                   </div>
                 </CardContent>

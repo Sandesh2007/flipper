@@ -15,7 +15,8 @@ import {
     Upload,
     ChevronDown,
     ChevronRight,
-    ExternalLink
+    ExternalLink,
+    RefreshCw
 } from "lucide-react";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
 
@@ -24,11 +25,13 @@ import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
     const { user } = useAuth();
+    const router = useRouter();
 
     // Close mobile menu when screen becomes large
     React.useEffect(() => {
@@ -52,6 +55,13 @@ export function Navbar() {
                             <Image src={logo} alt="logo" height={32} width={32} className="sm:h-10 sm:w-10" priority />
                             <span className="font-semibold text-base sm:text-lg">Neko Press</span>
                         </Link>
+                        <Button
+                            variant="outline"
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => router.refresh()}
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
                     </div>
 
                     {/* Desktop Menu */}

@@ -2,46 +2,76 @@
 import { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import useDFlip from '../hooks/useDearFlip';
+import { useTheme } from 'next-themes';
 
 // Main component
 const DFlipViewer = ({
-    pdfURL = '/pdf/the-three-musketeers.pdf',
-    pdfFile = null, // New prop for File object
+    pdfFile = null,
     options = {}
 }: {
-    pdfURL?: string;
     pdfFile?: File | null;
     options?: any;
 }) => {
     const containerRef = useRef(null);
     const [dataUrl, setDataUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const { theme, resolvedTheme } = useTheme();
 
     // Convert File to data URL
     useEffect(() => {
         if (pdfFile) {
             setIsLoading(true);
+            setIsReady(false);
+            
             const reader = new FileReader();
             reader.onload = (e) => {
                 const result = e.target?.result as string;
                 setDataUrl(result);
                 setIsLoading(false);
+                // Add a small delay to ensure the data URL is fully processed
+                setTimeout(() => setIsReady(true), 100);
             };
             reader.onerror = () => {
                 console.error('Error reading PDF file');
                 setIsLoading(false);
+                setIsReady(false);
             };
             reader.readAsDataURL(pdfFile);
         } else {
             setDataUrl(null);
+            setIsReady(false);
         }
     }, [pdfFile]);
 
-    // Determine which URL to use
-    const finalPdfURL = dataUrl || pdfURL;
+    // Get theme-aware colors
+    const getThemeColors = () => {
+        if (typeof window === 'undefined') return {};
+        
+        const isDark = resolvedTheme === 'dark';
+        const computedStyle = getComputedStyle(document.documentElement);
+        
+        return {
+            backgroundColor: isDark 
+                ? 'rgb(23, 23, 23)' 
+                : 'rgb(248, 250, 252)', 
+            controlsColor: isDark 
+                ? 'rgb(255, 255, 255)'
+                : 'rgb(64, 64, 64)',
+            textColor: isDark 
+                ? 'rgb(255, 255, 255)'
+                : 'rgb(23, 23, 23)'
+        };
+    };
 
-    // Use the custom hook
-    useDFlip(containerRef, finalPdfURL, options);
+    // Merge theme-aware options
+    const themeAwareOptions = {
+        ...getThemeColors(),
+        ...options
+    };
+
+    // Use the custom hook only when dataUrl is available and ready
+    useDFlip(containerRef, (isReady && dataUrl) ? dataUrl : '', themeAwareOptions);
 
     if (isLoading) {
         return (
@@ -58,14 +88,13 @@ const DFlipViewer = ({
         <div
             ref={containerRef}
             className="dflip-container"
-            data-pdf-url={finalPdfURL}
+            data-pdf-url={dataUrl}
         />
     );
 };
 
 DFlipViewer.propTypes = {
-    pdfURL: PropTypes.string,
-    pdfFile: PropTypes.object, // File object
+    pdfFile: PropTypes.object,
     options: PropTypes.object
 };
 

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { createClient } from '@/lib/database/supabase/client';
 import { CheckCircle, FileText, Image as ImageIcon, UploadCloud } from 'lucide-react';
-import { Label, usePdfUpload } from '@/components';
+import { DFlipViewer, Label, usePdfUpload } from '@/components';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { toastify } from '@/components/toastify';
@@ -14,6 +14,7 @@ import { toastify } from '@/components/toastify';
 const steps = [
   'Upload',
   'Details',
+  'Preview',
   'Review',
   'Share',
 ];
@@ -64,7 +65,7 @@ export default function CreatePublicationPage() {
 
   const handlePublish = async () => {
     console.log("Uploading started");
-    
+
     setError('');
     setUploading(true);
     const supabase = createClient();
@@ -131,7 +132,7 @@ export default function CreatePublicationPage() {
           setPdf(pdfMeta.file);
           setPdfCtx(pdfMeta);
         }
-      } catch {}
+      } catch { }
       localStorage.removeItem('nekopress_publish_redirect');
     }
   }, [setPdfCtx]);
@@ -186,6 +187,33 @@ export default function CreatePublicationPage() {
           )}
           {step === 2 && (
             <div className="flex flex-col gap-6">
+              <h2 className="text-xl font-semibold text-center">Preview your PDF</h2>
+              {pdf ? (
+                <div className="border rounded-lg overflow-hidden">
+                  <DFlipViewer
+                    pdfFile={pdf}
+                    options={{
+                      webgl: true,
+                      autoEnableOutline: true,
+                      backgroundColor: "rgb(245, 245, 245)",
+                      pageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 2,
+                      singlePageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 0,
+                      responsive: true
+                    }}
+                  />
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center">No PDF selected for preview.</p>
+              )}
+              <div className="flex gap-2 justify-between mt-2">
+                <Button variant="secondary" onClick={handleBack} className='cursor-pointer'>Back</Button>
+                <Button onClick={handleNext} disabled={!pdf} className="cursor-pointer">Next</Button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
                 <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border">
                   <ImageIcon className="w-10 h-10 text-muted-foreground" />
@@ -193,7 +221,7 @@ export default function CreatePublicationPage() {
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Title</Label>
                   <div id='title' className="font-semibold text-lg text-foreground">{title}</div>
-                  
+
                   <Label className="text-sm mt-2 font-medium text-gray-400">Description</Label>
                   <div id='description' className="text-foreground text-lg mt-1">{description}</div>
                   <div className="mt-2 flex items-center gap-2 border border-border rounded-lg p-2 bg-muted">
@@ -204,11 +232,11 @@ export default function CreatePublicationPage() {
               </div>
               <div className="flex gap-2 justify-between mt-2">
                 <Button variant="secondary" onClick={handleBack} disabled={uploading} className='cursor-pointer'>Back</Button>
-                <Button onClick={handlePublish} disabled={uploading} className={uploading? '' : 'cursor-pointer'} > {uploading ? 'Publishing...' : 'Publish'} </Button>
+                <Button onClick={handlePublish} disabled={uploading} className={uploading ? '' : 'cursor-pointer'} > {uploading ? 'Publishing...' : 'Publish'} </Button>
               </div>
             </div>
           )}
-          {step === 3 && published && (
+          {step === 4 && published && (
             <div className="flex flex-col gap-6 items-center text-center">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-2">
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
