@@ -31,6 +31,7 @@ export default function CreatePublicationPage() {
   const [error, setError] = useState('');
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const [hasShownToast, setHasShownToast] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const { pdf: pdfCtx, setPdf: setPdfCtx, clearPdf, loadStoredPdf, storedPdfData } = usePdfUpload();
   const router = useRouter();
@@ -39,6 +40,9 @@ export default function CreatePublicationPage() {
   // Add beforeunload warning to prevent accidental data loss
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isCompleted || (step === 4 && published)) {
+        return;
+      }
       // Only show warning if user has made progress
       if (pdf || title.trim() || description.trim() || step > 0) {
         e.preventDefault();
@@ -49,7 +53,7 @@ export default function CreatePublicationPage() {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [pdf, title, description, step]);
+  }, [pdf, title, description, step, isCompleted, published]);
 
   useEffect(() => {
     const initializePdf = async () => {
@@ -353,8 +357,9 @@ export default function CreatePublicationPage() {
               )}
               <div>
                 <span>Failed to view preview ??</span>
+                &nbsp;&nbsp;&nbsp;
               <Button onClick={handleRetry} className="cursor-pointer">
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="w-4 h-4" />
               </Button>
               </div>
               <div className="flex gap-2 justify-between mt-2">
@@ -396,10 +401,21 @@ export default function CreatePublicationPage() {
               <div className="text-lg font-bold text-green-700 dark:text-green-400">Publication Created!</div>
               <div className="w-full">
                 <div className="text-muted-foreground text-xs mb-1">Share your publication link:</div>
-                <div className="flex gap-2 items-center justify-center">
-                  <Input value={pdfUrl} readOnly className="bg-muted border-border" />
-                  <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(pdfUrl)} className='cursor-pointer' >Copy</Button>
+                <div className="flex flex-col gap-2 items-center justify-center">
+                  <span
+                  onClick={() => {navigator.clipboard.writeText(`/view?pdf=${pdfUrl}`); toastify.success("Copied to clipboard!");}} 
+                  className="bg-muted border-border rounded-2xl cursor-pointer p-2" >{`nekopress.vercel.app/view?pdf=${pdfUrl}`}</span>
+                  <Button size="sm" variant="outline" onClick={() => {window.open(`/view?pdf=${pdfUrl}`, '_blank');}} className='cursor-pointer' >View</Button>
                 </div>
+                <Button
+                className='w-full mt-2 cursor-pointer'
+                onClick={() => {
+                  setIsCompleted(true);
+                  window.location.href = `/`; 
+                }}
+                >
+                Finish
+                </Button>
               </div>
               {thumbUrl && (
                 <div className="mt-2">
