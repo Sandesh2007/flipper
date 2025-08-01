@@ -63,6 +63,8 @@ export default function CreatePublicationPage() {
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
 
   const handlePublish = async () => {
+    console.log("Uploading started");
+    
     setError('');
     setUploading(true);
     const supabase = createClient();

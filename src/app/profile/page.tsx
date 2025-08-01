@@ -18,16 +18,7 @@ import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-
-interface Publication {
-  id: string;
-  title: string;
-  description: string;
-  pdf_url: string;
-  thumb_url: string | null;
-  created_at: string;
-  user_id: string;
-}
+import { usePublications } from "@/components";
 
 interface LikeRow {
   publication_id: string;
@@ -36,8 +27,7 @@ interface LikeRow {
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const [publications, setPublications] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { publications, loading, updatePublication, deletePublication } = usePublications();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
@@ -47,48 +37,40 @@ export default function UserProfile() {
   const [actionLoading, setActionLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [likes, setLikes] = useState<Record<string, number>>({});
-  // const [userLikes] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const fetchPublications = async () => {
-      if (!user) return;
-      setLoading(true);
+    const fetchLikes = async () => {
+      if (!user || publications.length === 0) return;
+      
       const supabase = createClient();
-      const { data, error } = await supabase.from('publications').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-      if (!error && data) {
-        setPublications(data);
-        
-        // Fetch likes for these publications
-        const pubIds = data.map((p: Publication) => p.id);
-        if (pubIds.length > 0) {
-          const { data: allLikes } = await supabase
-            .from('publication_likes')
-            .select('publication_id, user_id')
-            .in('publication_id', pubIds);
+      const pubIds = publications.map((p) => p.id);
+      
+      if (pubIds.length > 0) {
+        const { data: allLikes } = await supabase
+          .from('publication_likes')
+          .select('publication_id, user_id')
+          .in('publication_id', pubIds);
 
-          // Count likes per publication
-          const likeMap: Record<string, number> = {};
-          allLikes?.forEach((row: LikeRow) => {
-            likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-          });
-          setLikes(likeMap);
-          
-          // Set user likes (since this is the user's own profile, they can't like their own publications)
-          // setUserLikes({});
-        }
+        // Count likes per publication
+        const likeMap: Record<string, number> = {};
+        allLikes?.forEach((row: LikeRow) => {
+          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
+        });
+        setLikes(likeMap);
       }
-      setLoading(false);
     };
-    fetchPublications();
-  }, [user]);
+    
+    fetchLikes();
+  }, [user, publications]);
 
-  const startEdit = (pub: Publication) => {
+  const startEdit = (pub: any) => {
     setEditingId(pub.id);
     setEditTitle(pub.title);
     setEditDescription(pub.description);
     setEditThumbUrl(pub.thumb_url || '');
     setEditThumb(null);
   };
+  
   const cancelEdit = () => {
     setEditingId(null);
     setEditTitle('');
@@ -96,7 +78,8 @@ export default function UserProfile() {
     setEditThumb(null);
     setEditThumbUrl('');
   };
-  const handleEditSave = async (pub: Publication) => {
+  
+  const handleEditSave = async (pub: any) => {
     setActionLoading(true);
     let thumbUrl = editThumbUrl;
     if (editThumb) {
@@ -111,18 +94,18 @@ export default function UserProfile() {
     const supabase = createClient();
     const { error } = await supabase.from('publications').update({ title: editTitle, description: editDescription, thumb_url: thumbUrl }).eq('id', pub.id);
     if (!error) {
-      setPublications((prev) => prev.map((p) => p.id === pub.id ? { ...p, title: editTitle, description: editDescription, thumb_url: thumbUrl } : p));
+      updatePublication(pub.id, { title: editTitle, description: editDescription, thumb_url: thumbUrl });
       cancelEdit();
     }
     setActionLoading(false);
   };
-  const handleDelete = async (pub: Publication) => {
+  const handleDelete = async (pub: any) => {
     if (!window.confirm('Are you sure you want to delete this publication?')) return;
     setActionLoading(true);
     const supabase = createClient();
     const { error } = await supabase.from('publications').delete().eq('id', pub.id);
     if (!error) {
-      setPublications((prev) => prev.filter((p) => p.id !== pub.id));
+      deletePublication(pub.id);
     }
     setActionLoading(false);
   };
@@ -218,7 +201,7 @@ export default function UserProfile() {
                       </Card>
                       
                       {/* Like count and action buttons overlay */}
-                      <div className="absolute top-2 right-2 flex items-center gap-1 z-10 bg-background/80 backdrop-blur-sm rounded px-1 py-0.5">
+                      <div className="absolute top-2 right-2 flex items-center gap-1 z-10 rounded px-1 py-0.5">
                         <span className="text-xs text-foreground font-medium">{likeCount}</span>
                         <div className="h-6 w-6 flex items-center justify-center">
                           <Heart className="w-3 h-3 text-gray-400" />

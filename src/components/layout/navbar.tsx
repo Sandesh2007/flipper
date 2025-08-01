@@ -4,7 +4,6 @@ import * as React from "react";
 import logo from "../../../public/logo.svg";
 import Image from "next/image";
 import {
-    Search,
     Menu,
     X,
     Home,
@@ -18,7 +17,6 @@ import {
     ChevronRight,
     ExternalLink
 } from "lucide-react";
-import { Input } from "../ui/input";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
 import {
     NavigationMenu,
@@ -32,18 +30,13 @@ import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
-import { useState, useRef } from 'react';
-import { createClient } from '@/lib/database/supabase/client';
-
-interface SearchResult {
-    username: string;
-    avatar_url: string | null;
-}
+import { useState } from 'react';
 
 const features = [
     { title: "Content Creation", href: "/features/creation", description: "Powerful tools to create and publish your content." },
     { title: "Analytics Dashboard", href: "/features/analytics", description: "Track your content performance and audience engagement." },
     { title: "Community Features", href: "/features/community", description: "Connect with other creators and build your audience." },
+    { title: "Community", href: "/community", description: "Discover and explore publications from our community." },
 ];
 
 const useCases = [
@@ -62,26 +55,6 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
     const { user } = useAuth();
-    const [search, setSearch] = useState('');
-    const [results, setResults] = useState<SearchResult[]>([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
-
-    const handleSearch = async (value: string) => {
-        setSearch(value);
-        if (searchTimeout.current) clearTimeout(searchTimeout.current);
-        if (!value) {
-            setResults([]);
-            setShowDropdown(false);
-            return;
-        }
-        searchTimeout.current = setTimeout(async () => {
-            const supabase = createClient();
-            const { data } = await supabase.from('profiles').select('username,avatar_url').ilike('username', `%${value}%`).limit(5);
-            setResults(data || []);
-            setShowDropdown(true);
-        }, 200);
-    };
 
     // Close mobile menu when screen becomes large
     React.useEffect(() => {
@@ -99,52 +72,12 @@ export function Navbar() {
             <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b">
                 {/* Desktop & Mobile Container */}
                 <div className="flex justify-between items-center px-3 sm:px-4 py-3 max-w-screen-xl mx-auto w-full">
-                    {/* Left Side: Logo & Search */}
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 lg:flex-initial">
+                    {/* Left Side: Logo */}
+                    <div className="flex items-center gap-3 sm:gap-4">
                         <Link href="/" className="flex gap-2 items-center flex-shrink-0">
                             <Image src={logo} alt="logo" height={32} width={32} className="sm:h-10 sm:w-10" priority />
                             <span className="font-semibold text-base sm:text-lg">Neko Press</span>
                         </Link>
-
-                        {/* Search (hidden on small mobile, shown on tablet+) */}
-                        <div className="hidden sm:flex lg:flex flex-1 max-w-xs lg:max-w-sm mx-2 lg:mx-4 bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md relative">
-                            <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    placeholder="Find creators and content"
-                                    className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
-                                    value={search}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
-                                    onFocus={() => search && setShowDropdown(true)}
-                                    onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                                />
-                                {showDropdown && results.length > 0 && (
-                                    <div className="absolute left-0 right-0 top-10 z-50 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                        {results.map((profile) => (
-                                            <Link
-                                                key={profile.username}
-                                                href={`/profile/${profile.username}`}
-                                                className="flex items-center gap-3 px-4 py-2 hover:bg-muted transition"
-                                                onClick={() => setShowDropdown(false)}
-                                            >
-                                                {profile.avatar_url ? (
-                                                    <Image
-                                                        src={profile.avatar_url}
-                                                        alt="avatar"
-                                                        width={28}
-                                                        height={28}
-                                                        className="w-7 h-7 rounded-full object-cover border border-border"
-                                                    />
-                                                ) : (
-                                                    <div className="w-7 h-7 rounded-full bg-muted border border-border" />
-                                                )}
-                                                <span className="font-medium text-foreground">{profile.username}</span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
 
                     {/* Desktop Menu */}
@@ -196,45 +129,7 @@ export function Navbar() {
                     </div>
                 </div>
 
-                {/* Mobile Search Bar (visible on small screens) */}
-                <div className="block sm:hidden px-3 pb-3">
-                    <div className="relative bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md">
-                        <Search className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Find creators and content"
-                            className="pl-10 bg-transparent border-none focus:outline-none w-full text-sm"
-                            value={search}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
-                            onFocus={() => search && setShowDropdown(true)}
-                            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                        />
-                        {showDropdown && results.length > 0 && (
-                            <div className="absolute left-0 right-0 top-10 z-50 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                {results.map((profile) => (
-                                    <Link
-                                        key={profile.username}
-                                        href={`/profile/${profile.username}`}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-muted transition"
-                                        onClick={() => setShowDropdown(false)}
-                                    >
-                                        {profile.avatar_url ? (
-                                            <Image
-                                                src={profile.avatar_url}
-                                                alt="avatar"
-                                                width={28}
-                                                height={28}
-                                                className="w-7 h-7 rounded-full object-cover border border-border"
-                                            />
-                                        ) : (
-                                            <div className="w-7 h-7 rounded-full bg-muted border border-border" />
-                                        )}
-                                        <span className="font-medium text-foreground">{profile.username}</span>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {/* Mobile Search Bar removed */}
             </nav>
 
             {/* Mobile Slide-out Menu */}
@@ -406,38 +301,6 @@ function Dropdown({ title, items }: { title: string; items: typeof features | ty
         </NavigationMenuItem>
     );
 }
-
-/*
-function _MobileDropdown({ title, items, onClose }: { title: string; items: typeof features | typeof useCases | typeof learnItems; onClose: () => void }) {
-    const [isOpen, setIsOpen] = React.useState(false);
-
-    return (
-        <div>
-            <div
-                className="flex items-center justify-between px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md cursor-pointer"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span className="text-sm font-medium">{title}</span>
-                {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-            </div>
-            {isOpen && (
-                <div className="ml-4 mt-1 space-y-1">
-                    {items.map((item) => (
-                        <Link
-                            key={item.title}
-                            href={item.href}
-                            className="block px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
-                            onClick={onClose}
-                        >
-                            {item.title}
-                        </Link>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
-*/
 
 function MobileSidebarItem({
     icon,

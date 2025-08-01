@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import { PublicationsTab } from "@/components"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -10,7 +11,7 @@ export default function PublicationsPage() {
         <p className="text-neutral-600 dark:text-neutral-300 mb-4">
           Manage and publish your content here.
         </p>
-        <Button className="bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600">
+        <Button className="bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600 cursor-pointer">
           Create New Publication
         </Button>
       </section>
@@ -19,15 +20,7 @@ export default function PublicationsPage() {
         <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Your Publications</h2>
         <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
           <CardContent className="p-4 sm:p-6">
-            <div className="text-center py-8">
-              <h3 className="text-xl font-semibold mb-2">No Publications Yet</h3>
-              <p className="text-neutral-500 dark:text-neutral-400 mb-4">
-                Start creating your first publication to get started.
-              </p>
-              <Button variant="outline">
-                Create Your First Publication
-              </Button>
-            </div>
+            <PublicationsTab/>
           </CardContent>
         </Card>
       </section>
