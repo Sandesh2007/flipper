@@ -30,6 +30,7 @@ const DFlipViewer = ({
                 setDataUrl(result);
                 setIsLoading(false);
                 // Add a small delay to ensure the data URL is fully processed
+                // Or else it will cause `pdf not loaded error` which is very annoying ;)
                 setTimeout(() => setIsReady(true), 100);
             };
             reader.onerror = () => {
@@ -49,7 +50,6 @@ const DFlipViewer = ({
         if (typeof window === 'undefined') return {};
         
         const isDark = resolvedTheme === 'dark';
-        const computedStyle = getComputedStyle(document.documentElement);
         
         return {
             backgroundColor: isDark 

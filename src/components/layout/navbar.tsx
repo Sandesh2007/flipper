@@ -25,13 +25,11 @@ import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
-import { useRouter } from "next/navigation";
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
     const { user } = useAuth();
-    const router = useRouter();
 
     // Close mobile menu when screen becomes large
     React.useEffect(() => {
@@ -57,8 +55,10 @@ export function Navbar() {
                         </Link>
                         <Button
                             variant="outline"
-                            className="flex items-center gap-2 cursor-pointer"
-                            onClick={() => router.refresh()}
+                            size="sm"
+                            className="flex items-center gap-2 cursor-pointer hover:bg-accent transition-colors"
+                            onClick={() => window.location.reload()}
+                            aria-label="Refresh page"
                         >
                             <RefreshCw className="h-4 w-4" />
                         </Button>
@@ -95,19 +95,22 @@ export function Navbar() {
 
                     {/* Mobile Controls */}
                     <div className="flex items-center gap-2 lg:hidden">
+                        <ThemeToggle />
                         {user && (
-                            <Link href="/profile" className="flex items-center gap-2">
+                            <Link href="/profile" className="flex items-center gap-2 p-1 rounded-full hover:bg-accent transition-colors" aria-label="Go to profile">
                                 <CurrentUserAvatar />
                             </Link>
                         )}
                         <ThemeToggle />
                         <Button
                             variant="ghost"
-                            className="p-2 rounded-md"
+                            size="icon"
                             onClick={() => setMobileOpen(!mobileOpen)}
+                            className="lg:hidden hover:bg-accent transition-colors"
                             aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                            aria-expanded={mobileOpen}
                         >
-                            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </Button>
                     </div>
                 </div>

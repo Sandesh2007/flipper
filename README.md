@@ -8,3 +8,6 @@ How pdf is shown after processing
 
 How publication info is managed across all pages
 - See [PublicationsContext](src/components/PublicationsContext.md)
+
+Fresh new components added yeyeeyye
+- See [UX_IMPROVEMENTS](UX_IMPROVEMENTS.md)
