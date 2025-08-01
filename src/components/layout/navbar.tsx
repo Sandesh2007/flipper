@@ -18,38 +18,12 @@ import {
     ExternalLink
 } from "lucide-react";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-} from "../ui/navigation-menu";
+
 import { Button } from "../ui/button";
 import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
-import { useState } from 'react';
-
-const features = [
-    { title: "Content Creation", href: "/features/creation", description: "Powerful tools to create and publish your content." },
-    { title: "Analytics Dashboard", href: "/features/analytics", description: "Track your content performance and audience engagement." },
-    { title: "Community Features", href: "/features/community", description: "Connect with other creators and build your audience." },
-    { title: "Community", href: "/community", description: "Discover and explore publications from our community." },
-];
-
-const useCases = [
-    { title: "Bloggers", href: "/use-cases/bloggers", description: "Perfect for personal and professional blogging." },
-    { title: "Businesses", href: "/use-cases/business", description: "Scale your content marketing and brand presence." },
-    { title: "Educators", href: "/use-cases/education", description: "Share knowledge and create educational content." },
-];
-
-const learnItems = [
-    { title: "Getting Started", href: "/learn/getting-started", description: "Learn the basics of using our platform effectively." },
-    { title: "Best Practices", href: "/learn/best-practices", description: "Tips and strategies from successful creators." },
-    { title: "Video Tutorials", href: "/learn/tutorials", description: "Step-by-step video guides for all features." },
-];
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -82,7 +56,6 @@ export function Navbar() {
 
                     {/* Desktop Menu */}
                     <div className="hidden lg:flex items-center gap-4">
-                        <NavigationLinks />
                         <div className="flex items-center gap-2">
                             <Link href="/discover" className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 transition text-sm">
                                 Discover
@@ -268,37 +241,6 @@ export function Navbar() {
                 </>
             )}
         </>
-    );
-}
-
-function NavigationLinks() {
-    return (
-        <NavigationMenu>
-            <NavigationMenuList className="flex items-center gap-2">
-                <Dropdown title="Features" items={features} />
-                <Dropdown title="Use Cases" items={useCases} />
-                <Dropdown title="Learn" items={learnItems} />
-            </NavigationMenuList>
-        </NavigationMenu>
-    );
-}
-
-function Dropdown({ title, items }: { title: string; items: typeof features | typeof useCases | typeof learnItems }) {
-    return (
-        <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent text-sm">
-                {title}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-                <ul className="grid w-[300px] gap-3 p-4 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {items.map((item) => (
-                        <ListItem key={item.title} title={item.title} href={item.href}>
-                            {item.description}
-                        </ListItem>
-                    ))}
-                </ul>
-            </NavigationMenuContent>
-        </NavigationMenuItem>
     );
 }
 
