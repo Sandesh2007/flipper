@@ -7,28 +7,20 @@ import { useAuth } from "../auth/auth-context";
 
 const footerLinks = {
   product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Templates", href: "#templates" },
-    { name: "Integrations", href: "#integrations" }
+    { name: "Features", href: "/" },
+    { name: "Pricing", href: "/pricing" },
   ],
   resources: [
-    { name: "Help Center", href: "#help" },
     { name: "Blog", href: "#blog" },
-    { name: "Community", href: "#community" },
-    { name: "API Docs", href: "#api" }
+    { name: "Community", href: "/discover" },
   ],
   company: [
     { name: "About", href: "#about" },
-    { name: "Careers", href: "#careers" },
-    { name: "Press", href: "#press" },
     { name: "Contact", href: "#contact" }
   ],
   legal: [
     { name: "Privacy", href: "#privacy" },
     { name: "Terms", href: "#terms" },
-    { name: "Security", href: "#security" },
-    { name: "Cookies", href: "#cookies" }
   ]
 };
 
@@ -60,7 +52,7 @@ export const Footer = () => {
                 className="flex-1 bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 !outline-none !border-none focus:outline-none focus:border-none focus:ring-0"
                 type="email"
               />
-              <Button className="bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 hover:bg-neutral-300 dark:hover:bg-neutral-600">
+              <Button className="bg-blue-700 text-neutral-100 hover:bg-blue-600 ">
                 Subscribe
               </Button>
             </div>

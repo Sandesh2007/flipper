@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from "react";
-import { ArrowLeft, Eye, EyeOff, UserRound, X } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, X } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/database"
 import ForgotPassword from "./forgot-password";
-import { toastify } from "../toastify";
 
 export default function AuthForm() {
     const router = useRouter();
@@ -29,75 +28,116 @@ export default function AuthForm() {
     const [error, setError] = useState('');
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value} = e.target;
+        const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
+        // Clear error when user starts typing
+        if (error) setError('');
     };
 
-    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const validateForm = () => {
+        // Basic field validation
+        if (!isLogin && (!formData.email || !formData.password || !formData.username)) {
+            setError("Please fill in all fields");
+            return false;
+        }
+        
+        if (isLogin && (!formData.email || !formData.password)) {
+            setError("Please fill in all fields");
+            return false;
+        }
+
+        // Username validation (only for signup)
+        if (!isLogin) {
+            if (!/^[a-z0-9_]+$/.test(formData.username)) {
+                setError('Username can only contain lowercase letters, numbers, and underscores.');
+                return false;
+            }
+            
+            if (formData.username.length < 3) {
+                setError('Username must be at least 3 characters long.');
+                return false;
+            }
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Please enter a valid email address.');
+            return false;
+        }
+
+        // Password validation
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long.');
+            return false;
+        }
+
+        // Terms validation (only for signup)
+        if (!isLogin && !agreedToTerms) {
+            setError("Please agree to the Terms & Conditions");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (isLoading || isTransitioning) return;
+
+        // Clear previous errors
+        setError('');
+        
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+
         setLoading(true);
 
         try {
-            if (!isLogin && (!formData.email || !formData.password || !formData.username)) {
-                toast.error("Please fill in all fields");
-                return;
-            }
-            if (formData.username !== formData.username.toLowerCase()) {
-                setError('Username must be lowercase.');
-                return;
-            }
+            const { email, password, username } = formData;
 
-            if (!/^[a-z0-9_]+$/.test(formData.username)) {
-                setError('Username can only contain lowercase letters, numbers, and underscores.');
-                return;
-            }
-            if (formData.username.includes(' ')) {
-                setError('Username cannot contain spaces.');
-                return;
-            }
-
+            // Check for existing username/email only for signup
             if (!isLogin) {
+                // Check if username exists
                 const { data: usernameData, error: usernameError } = await supabase
                     .from("profiles")
                     .select("id")
-                    .eq("username", formData.username);
+                    .eq("username", username)
+                    .single();
 
-                if (usernameError) {
-                    toastify.error(`something is cooked ${usernameError.message} `)
-                }
-
-                if (usernameData && usernameData.length > 0) {
-                    setError("Username is already taken.");
-                    setLoading(false);
+                if (usernameError && usernameError.code !== 'PGRST116') {
+                    // PGRST116 is "not found" which is what we want
+                    setError(`Database error: ${usernameError.message}`);
                     return;
                 }
 
+                if (usernameData) {
+                    setError("Username is already taken.");
+                    return;
+                }
+
+                // Check if email exists
                 const { data: emailData, error: emailError } = await supabase
                     .from("profiles")
                     .select("id")
-                    .eq("email", formData.email);
+                    .eq("email", email)
+                    .single();
 
-                if (emailError) {
-                    toastify.error(`something is cooked ${emailError.message} `)
+                if (emailError && emailError.code !== 'PGRST116') {
+                    setError(`Database error: ${emailError.message}`);
+                    return;
                 }
-                if (emailData && emailData.length > 0) {
+
+                if (emailData) {
                     setError("Email is already registered.");
-                    setLoading(false);
                     return;
                 }
             }
-
-
-            if (!isLogin && !agreedToTerms) {
-                toast.error(`Please agree to the Terms & Conditions`);
-                return;
-            }
-
-            const { email, password, username } = formData;
 
             if (isLogin) {
                 const { error } = await supabase.auth.signInWithPassword({
@@ -105,24 +145,23 @@ export default function AuthForm() {
                     password,
                 });
                 if (error) {
-                    toast.error(error.message);
+                    setError(error.message);
                     return;
                 }
-                toast.success(`${isLogin ? 'Login' : 'Signup'} success`)
-                // Redirect back to /create if page have 'next' param
+                toast.success('Login successful!');
                 router.replace(next || '/home/publisher');
-            }
-            else {
+            } else {
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
                     options: {
                         data: {
                             username: username,
-                            email: formData.email as string,
+                            email: email,
                         }
                     }
                 });
+                
                 if (error) {
                     toast.custom(
                         (t) => (
@@ -140,26 +179,29 @@ export default function AuthForm() {
                                 </div>
                             </div>
                         ),
-                        { duration: 3000 }
+                        { duration: 5000 }
                     );
-                }
-                else {
+                    return;
+                } else {
                     toast.success("Signup successful! Please check your email to verify.");
                     setTimeout(() => {
-                        router.replace(next || 'home/publisher');
+                        router.replace(next || '/home/publisher');
                     }, 2000);
                 }
             }
         } catch (err) {
-            toast.error(err instanceof Error ? err.message : "An error occurred");
+            const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+            setError(errorMessage);
+            console.error('Auth error:', err);
         } finally {
             setLoading(false);
         }
     };
 
     const handleSocialLogin = async (provider: "google" | "apple") => {
-        if (isTransitioning) return;
+        if (isTransitioning || isLoading) return;
 
+        setLoading(true);
         try {
             const { error, data } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -172,15 +214,17 @@ export default function AuthForm() {
                 }
             });
             if (error) {
-                toast.error(error.message);
+                setError(error.message);
                 return;
             }
             if (data.url) {
                 window.location.href = data.url;
             }
         } catch (err) {
-            toast.error("An error occurred during social login");
-            console.error(err);
+            setError("An error occurred during social login");
+            console.error('Social login error:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -188,6 +232,8 @@ export default function AuthForm() {
         if (isTransitioning) return;
 
         setIsTransitioning(true);
+        setError(''); // Clear errors when switching modes
+        
         setTimeout(() => {
             setIsLogin(!isLogin);
             setFormData({ username: "", email: "", password: "" });
@@ -201,7 +247,7 @@ export default function AuthForm() {
     };
 
     return (
-        <div className="h-fit bg-background flex items-center justify-center p-4 ">
+        <div className="h-fit bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-6xl bg-card rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
                 {/* Left Panel - Image (Hidden on mobile, shown on lg+) */}
                 <div className="hidden lg:flex lg:w-1/2 relative">
@@ -242,7 +288,7 @@ export default function AuthForm() {
                 </div>
 
                 {/* Right Panel - Form */}
-                <form className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
+                <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
                     <div className="max-w-md mx-auto w-full">
                         {/* Mobile logo */}
                         <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Neko Press</div>
@@ -294,10 +340,16 @@ export default function AuthForm() {
                             </div>
                         </div>
 
+                        {/* Error Display */}
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+                            </div>
+                        )}
+
                         {/* Form with Enhanced Animation */}
-                        <div className="space-y-4 sm:space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             {/* Username field - Only for signup */}
-                            {!isLogin && error && (<div className="text-red-500 text-xs text-center">{error}</div>)}
                             <div
                                 className={`w-full transition-all duration-600 ease-in-out overflow-hidden ${!isLogin
                                     ? 'max-h-20 opacity-100 transform translate-y-0'
@@ -312,7 +364,8 @@ export default function AuthForm() {
                                         value={formData.username}
                                         onChange={handleInputChange}
                                         className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
-                                        disabled={isTransitioning}
+                                        disabled={isTransitioning || isLoading}
+                                        autoComplete="username"
                                     />
                                 </div>
                             </div>
@@ -327,7 +380,8 @@ export default function AuthForm() {
                                     onChange={handleInputChange}
                                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
-                                    disabled={isTransitioning}
+                                    disabled={isTransitioning || isLoading}
+                                    autoComplete="email"
                                 />
                             </div>
 
@@ -341,18 +395,19 @@ export default function AuthForm() {
                                     onChange={handleInputChange}
                                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
-                                    disabled={isTransitioning}
+                                    disabled={isTransitioning || isLoading}
+                                    autoComplete={isLogin ? "current-password" : "new-password"}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    disabled={isTransitioning}
+                                    disabled={isTransitioning || isLoading}
                                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
-                            {isLogin && error && <div className="text-red-500 text-xs text-center">{error}</div>}
 
                             {/* Forgot password - Only for login */}
                             <div
@@ -381,14 +436,14 @@ export default function AuthForm() {
                                         onChange={(e) => setAgreedToTerms(e.target.checked)}
                                         className="mt-1 w-4 h-4 text-accent bg-muted border-border rounded focus:ring-ring focus:ring-2"
                                         required={!isLogin}
-                                        disabled={isTransitioning}
+                                        disabled={isTransitioning || isLoading}
                                     />
                                     <label htmlFor="terms" className="text-xs sm:text-sm text-muted-foreground">
                                         I agree to the{" "}
                                         <button
                                             type="button"
                                             className="text-accent-foreground hover:text-neutral-600 transition-colors underline"
-                                            disabled={isTransitioning}
+                                            disabled={isTransitioning || isLoading}
                                         >
                                             Terms & Conditions
                                         </button>
@@ -401,67 +456,66 @@ export default function AuthForm() {
                                 type="submit"
                                 className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
                                     }`}
-                                onClick={handleSubmit}
                                 disabled={isLoading || isTransitioning}
                             >
                                 {isLoading ? 'Loading...' : (isLogin ? 'Log in' : 'Create account')}
                             </button>
+                        </form>
 
-                            {/* Divider */}
-                            <div className={`relative transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-border"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-neutral-50 dark:bg-neutral-900 text-muted-foreground">
-                                        Or {isLogin ? 'log in' : 'register'} with
-                                    </span>
-                                </div>
+                        {/* Divider */}
+                        <div className={`relative mt-6 transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-border"></div>
                             </div>
-
-                            {/* Social login buttons */}
-                            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
-                                <button
-                                    type="button"
-                                    onClick={() => handleSocialLogin("google")}
-                                    disabled={isTransitioning}
-                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
-                                        <path
-                                            fill="currentColor"
-                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                        />
-                                    </svg>
-                                    <span>Google</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleSocialLogin("apple")}
-                                    disabled={isTransitioning}
-                                    className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
-                                    </svg>
-                                    <span>Apple</span>
-                                </button>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-neutral-50 dark:bg-neutral-900 text-muted-foreground">
+                                    Or {isLogin ? 'log in' : 'register'} with
+                                </span>
                             </div>
                         </div>
+
+                        {/* Social login buttons */}
+                        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-6 transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
+                            <button
+                                type="button"
+                                onClick={() => handleSocialLogin("google")}
+                                disabled={isTransitioning || isLoading}
+                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
+                                    <path
+                                        fill="currentColor"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                    />
+                                    <path
+                                        fill="currentColor"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                    />
+                                    <path
+                                        fill="currentColor"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                    />
+                                    <path
+                                        fill="currentColor"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    />
+                                </svg>
+                                <span>Google</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSocialLogin("apple")}
+                                disabled={isTransitioning || isLoading}
+                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
+                                </svg>
+                                <span>Apple</span>
+                            </button>
+                        </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );
