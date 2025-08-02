@@ -7,6 +7,7 @@ import { createClient } from '@/lib/database/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface UserProfile {
   id: string;
@@ -98,7 +99,7 @@ export default function PublicProfileByUsernamePage() {
         )}
         <h2 className="text-xl font-bold mb-4 text-foreground">Publications</h2>
         {loading ? (
-          <div className="text-muted-foreground">Loading...</div>
+          <LoadingSpinner size='md' className='self-center' text='Loading profile' />
         ) : publications.length === 0 ? (
           <div className="text-muted-foreground">No publications yet.</div>
         ) : (
@@ -123,7 +124,7 @@ export default function PublicProfileByUsernamePage() {
                     <Button 
                     variant="outline"
                     size="sm"
-                    onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}`)}
+                    onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
                     className='cursor-pointer'
                     >View Publication</Button>
                     <div className="text-xs text-muted-foreground mt-1">{new Date(pub.created_at).toLocaleString()}</div>

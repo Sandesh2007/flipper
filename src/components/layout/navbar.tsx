@@ -25,14 +25,16 @@ import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isLibraryOpen, setIsLibraryOpen] = React.useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [isLibraryOpen, setIsLibraryOpen] = useState(false);
     const { user } = useAuth();
+    const homePage = user ? "/home/publisher" : "/";
 
     // Close mobile menu when screen becomes large
-    React.useEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 1024) {
                 setMobileOpen(false);
@@ -49,7 +51,7 @@ export function Navbar() {
                 <div className="flex justify-between items-center px-3 sm:px-4 py-3 max-w-screen-xl mx-auto w-full">
                     {/* Left Side: Logo */}
                     <div className="flex items-center gap-3 sm:gap-4">
-                        <Link href="/" className="flex gap-2 items-center flex-shrink-0">
+                        <Link href={homePage} className="flex gap-2 items-center flex-shrink-0">
                             <Image src={logo} alt="logo" height={32} width={32} className="sm:h-10 sm:w-10" priority />
                             <span className="font-semibold text-base sm:text-lg">Neko Press</span>
                         </Link>

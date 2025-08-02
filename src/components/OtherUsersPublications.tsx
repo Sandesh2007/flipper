@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,92 +58,154 @@ export default function OtherUsersPublications({
   const [userLikes, setUserLikes] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  
+  const isMountedRef = useRef(true);
+  
+  const fetchControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const supabase = createClient();
-        
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id,username,avatar_url')
-          .limit(maxUsers);
-        
-        if (!profiles) {
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      if (fetchControllerRef.current) {
+        fetchControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    if (!isMountedRef.current) return;
+    
+    if (fetchControllerRef.current) {
+      fetchControllerRef.current.abort();
+    }
+    
+    fetchControllerRef.current = new AbortController();
+    const signal = fetchControllerRef.current.signal;
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const supabase = createClient();
+      
+      // Check if component is still mounted before proceeding
+      if (!isMountedRef.current || signal.aborted) return;
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id,username,avatar_url')
+        .limit(maxUsers);
+      
+      if (profilesError) throw profilesError;
+      if (!isMountedRef.current || signal.aborted) return;
+      
+      if (!profiles) {
+        if (isMountedRef.current) {
           setUsers([]);
           setLoading(false);
-          return;
         }
-        
-        const { data: allPubs } = await supabase
-          .from('publications')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        // Group publications by user
-        const pubsByUser: Record<string, Publication[]> = {};
-        allPubs?.forEach((pub: Publication) => {
-          if (!pubsByUser[pub.user_id]) pubsByUser[pub.user_id] = [];
-          if (pubsByUser[pub.user_id].length < maxPublicationsPerUser) {
-            pubsByUser[pub.user_id].push(pub);
-          }
+        return;
+      }
+      
+      const { data: allPubs, error: pubsError } = await supabase
+        .from('publications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (pubsError) throw pubsError;
+      if (!isMountedRef.current || signal.aborted) return;
+
+      // Group publications by user
+      const pubsByUser: Record<string, Publication[]> = {};
+      allPubs?.forEach((pub: Publication) => {
+        if (!pubsByUser[pub.user_id]) pubsByUser[pub.user_id] = [];
+        if (pubsByUser[pub.user_id].length < maxPublicationsPerUser) {
+          pubsByUser[pub.user_id].push(pub);
+        }
+      });
+
+      // Attach publications to users
+      const usersWithPubs = profiles
+        .map((userProfile: DatabaseUserProfile) => ({
+          ...userProfile,
+          publications: pubsByUser[userProfile.id] || [],
+        }))
+        .filter(userProfile => userProfile.publications.length > 0);
+      
+      if (!isMountedRef.current || signal.aborted) return;
+      setUsers(usersWithPubs);
+
+      // Gather all publication ids
+      const pubIds = allPubs?.map((p: Publication) => p.id) || [];
+      if (pubIds.length > 0) {
+        // Fetch all likes for these publications
+        const { data: allLikes, error: likesError } = await supabase
+          .from('publication_likes')
+          .select('publication_id, user_id')
+          .in('publication_id', pubIds);
+
+        if (likesError) throw likesError;
+        if (!isMountedRef.current || signal.aborted) return;
+
+        // Count likes per publication
+        const likeMap: Record<string, number> = {};
+        allLikes?.forEach((row: LikeRow) => {
+          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
         });
-
-        // Attach publications to users
-        const usersWithPubs = profiles
-          .map((userProfile: DatabaseUserProfile) => ({
-            ...userProfile,
-            publications: pubsByUser[userProfile.id] || [],
-          }))
-          .filter(userProfile => userProfile.publications.length > 0); // Only show users with publications
         
-        setUsers(usersWithPubs);
-
-        // Gather all publication ids
-        const pubIds = allPubs?.map((p: Publication) => p.id) || [];
-        if (pubIds.length > 0) {
-          // Fetch all likes for these publications
-          const { data: allLikes } = await supabase
-            .from('publication_likes')
-            .select('publication_id, user_id')
-            .in('publication_id', pubIds);
-
-          // Count likes per publication
-          const likeMap: Record<string, number> = {};
-          allLikes?.forEach((row: LikeRow) => {
-            likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-          });
+        if (isMountedRef.current) {
           setLikes(likeMap);
-          
-          // Only fetch user likes if user is logged in
-          if (user) {
-            const userLikeMap: Record<string, boolean> = {};
-            allLikes?.forEach((row: LikeRow) => {
-              if (row.user_id === user.id) {
-                userLikeMap[row.publication_id] = true;
-              }
-            });
-            setUserLikes(userLikeMap);
-          } else {
-            setUserLikes({});
-          }
         }
+        
+        // Only fetch user likes if user is logged in
+        if (user && isMountedRef.current) {
+          const userLikeMap: Record<string, boolean> = {};
+          allLikes?.forEach((row: LikeRow) => {
+            if (row.user_id === user.id) {
+              userLikeMap[row.publication_id] = true;
+            }
+          });
+          setUserLikes(userLikeMap);
+        } else if (isMountedRef.current) {
+          setUserLikes({});
+        }
+      }
+      
+      if (isMountedRef.current) {
         setLoading(false);
-      } catch (err) {
-        console.error('Error fetching data:', err);
+      }
+    } catch (err: any) {
+      // Don't show error if request was aborted (component unmounted)
+      if (err.name === 'AbortError' || !isMountedRef.current) {
+        return;
+      }
+      
+      console.error('Error fetching data:', err);
+      if (isMountedRef.current) {
         setError('Failed to load data. Please try again.');
         setLoading(false);
       }
-    };
+    }
+  }, [user?.id, maxUsers, maxPublicationsPerUser]); // Fixed dependency array
+
+  // Reset state and fetch data when component mounts or key props change
+  useEffect(() => {
+    // Reset state when component mounts or key dependencies change
+    setUsers([]);
+    setLikes({});
+    setUserLikes({});
+    setError(null);
+    
     fetchData();
-  }, [user, maxUsers, maxPublicationsPerUser]);
+  }, [fetchData]);
 
   const handleLike = async (pubId: string) => {
     if (!user) return;
     const supabase = createClient();
 
+    // Optimistic update
     setUserLikes((prev) => ({ ...prev, [pubId]: true }));
     setLikes((prev) => ({ ...prev, [pubId]: (prev[pubId] || 0) + 1 }));
     
@@ -160,6 +222,8 @@ export default function OtherUsersPublications({
   const handleUnlike = async (pubId: string) => {
     if (!user) return;
     const supabase = createClient();
+    
+    // Optimistic update
     setUserLikes((prev) => ({ ...prev, [pubId]: false }));
     setLikes((prev) => ({ ...prev, [pubId]: Math.max((prev[pubId] || 1) - 1, 0) }));
     
@@ -172,6 +236,10 @@ export default function OtherUsersPublications({
       setLikes((prev) => ({ ...prev, [pubId]: (prev[pubId] || 0) + 1 }));
     }
   };
+
+  const handleRetry = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <div className={`${className}`}>
@@ -195,7 +263,7 @@ export default function OtherUsersPublications({
       ) : error ? (
         <div className="text-center text-red-500">
           {error}
-          <Button className="ml-2" onClick={() => window.location.reload()}>
+          <Button className="ml-2" onClick={handleRetry}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
           </Button>

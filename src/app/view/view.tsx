@@ -15,15 +15,18 @@ export default function View() {
     const [error, setError] = useState<string | null>(null);
     const [retryCount, setRetryCount] = useState(0);
     const [viewerHeight, setViewerHeight] = useState('600px');
-    
+    const [isMounted, setIsMounted] = useState(true);
+    const [somethingWentWrong, setSomethingWentWrong] = useState(false);
+
     const searchParams = useSearchParams();
     const router = useRouter();
     const { pdf: pdfContext, loadStoredPdf } = usePdfUpload();
-    
+
     const pdfId = searchParams?.get('id');
     const pdfName = searchParams?.get('name');
     const pdfUrl = searchParams?.get('pdf');
-    
+    const publicationTitle = searchParams?.get('title');
+
     const calculateViewerHeight = useCallback(() => {
         if (typeof window !== 'undefined') {
             const headerHeight = 64;
@@ -32,25 +35,26 @@ export default function View() {
             setViewerHeight(`${Math.max(400, availableHeight)}px`);
         }
     }, []);
-    
+
     // Handle window resize
     useEffect(() => {
         calculateViewerHeight();
-        
+
         const handleResize = () => {
             calculateViewerHeight();
         };
-        
+
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', handleResize);
             return () => window.removeEventListener('resize', handleResize);
         }
     }, [calculateViewerHeight]);
-    
+
     const loadPdfFile = useCallback(async () => {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
-        
+
         try {
             // First check if we have a PDF URL from query parameters
             if (pdfUrl) {
@@ -59,38 +63,42 @@ export default function View() {
                     if (!response.ok) {
                         throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
                     }
-                    
+
                     const blob = await response.blob();
                     if (blob.type !== 'application/pdf') {
                         throw new Error('The provided URL does not point to a valid PDF file');
                     }
-                    
+
                     // Extract filename from URL or use default
                     const urlParts = pdfUrl.split('/');
                     const filename = decodeURIComponent(urlParts[urlParts.length - 1]) || 'document.pdf';
-                    
+
                     // Create a File object from the blob
                     const file = new File([blob], filename, { type: 'application/pdf' });
-                    setPdfFile(file);
-                    toast.success(`Loaded "${filename}"`);
+                    if (isMounted) {
+                        setPdfFile(file);
+                        toast.success(`Loaded "${filename}"`);
+                    }
                     return;
                 } catch (fetchError) {
                     console.error('Error fetching PDF from URL:', fetchError);
                     throw new Error(`Failed to load PDF from URL: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
                 }
             }
-            
+
             // Try to load from context if available
             if (pdfContext?.file) {
-                setPdfFile(pdfContext.file);
-                toast.success(`Loaded "${pdfContext.name || pdfContext.file.name}"`);
+                if (isMounted) {
+                    setPdfFile(pdfContext.file);
+                    toast.success(`Loaded "${pdfContext.name || pdfContext.file.name}"`);
+                }
                 return;
             }
-            
+
             // Try to load from localStorage
             try {
                 const storedFile = await loadStoredPdf();
-                if (storedFile) {
+                if (storedFile && isMounted) {
                     setPdfFile(storedFile);
                     toast.success(`Loaded "${storedFile.name}" from storage`);
                     return;
@@ -98,30 +106,34 @@ export default function View() {
             } catch (storageError) {
                 console.warn('Failed to load from storage:', storageError);
             }
-            
+
             // If we have URL parameters, try to load based on them
             if (pdfId || pdfName) {
                 throw new Error(`PDF with ${pdfId ? `ID: ${pdfId}` : `name: ${pdfName}`} not found`);
             }
-            
+
             // No PDF found anywhere
             throw new Error('No PDF file available to view');
-            
+
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to load PDF file';
-            setError(errorMessage);
-            toast.error(errorMessage);
+            if (isMounted) {
+                setError(errorMessage);
+                toast.error(errorMessage);
+            }
             console.error('PDF loading error:', err);
         } finally {
-            setIsLoading(false);
+            if (isMounted) {
+                setIsLoading(false);
+            }
         }
-    }, [pdfUrl, pdfContext, loadStoredPdf, pdfId, pdfName]);
-    
+    }, [pdfUrl, pdfContext, loadStoredPdf, pdfId, pdfName, isMounted]);
+
     const handleReload = useCallback(() => {
         setRetryCount(prev => prev + 1);
         loadPdfFile();
     }, [loadPdfFile]);
-    
+
     const handleGoBack = useCallback(() => {
         if (window.history.length > 1) {
             router.back();
@@ -129,15 +141,30 @@ export default function View() {
             router.push('/'); // Fallback to home page
         }
     }, [router]);
-    
+
     useEffect(() => {
         const timer = setTimeout(() => {
             loadPdfFile();
         }, 300);
-        
+
         return () => clearTimeout(timer);
     }, [loadPdfFile, retryCount]);
-    
+
+    // Cleanup effect to handle component unmounting
+    useEffect(() => {
+        return () => {
+            setIsMounted(false);
+            setPdfFile(null);
+        };
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSomethingWentWrong(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [isLoading]);
+
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
@@ -145,11 +172,26 @@ export default function View() {
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                     <h2 className="text-xl font-semibold">Loading PDF...</h2>
                     <p className="text-muted-foreground">Please wait while we prepare your document</p>
+                    {somethingWentWrong && (
+                        <div
+                        className='flex flex-col justify-center gap-4'
+                        >
+                        <p className="text-muted-foreground">Stuck on loading??</p>
+                        <Button onClick={
+                            () => {
+                                window.location.reload();
+                            }
+                        } className="gap-2 cursor-pointer">
+                            <RefreshCw className="h-4 w-4" />
+                            Reload
+                        </Button>
+                        </div>
+                        )}
                 </div>
             </div>
         );
     }
-    
+
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -180,7 +222,7 @@ export default function View() {
             </div>
         );
     }
-    
+
     if (!pdfFile) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -195,7 +237,7 @@ export default function View() {
             </div>
         );
     }
-    
+
     // Show PDF viewer
     return (
         <div className="min-h-screen bg-background flex flex-col">
@@ -210,7 +252,7 @@ export default function View() {
                         <div className="flex items-center gap-2 min-w-0">
                             <FileText className="h-5 w-5 text-primary flex-shrink-0" />
                             <h1 className="text-lg font-semibold truncate">
-                                {pdfFile.name || 'PDF Viewer'}
+                                Publication: {publicationTitle || pdfName || pdfFile.name}
                             </h1>
                         </div>
                     </div>
@@ -220,9 +262,9 @@ export default function View() {
                     </Button>
                 </div>
             </div>
-            
+
             {/* PDF Viewer */}
-            <div className="flex-1 container py-6">
+            <div className="flex-1 self-center container py-6">
                 <div className="border rounded-lg overflow-hidden bg-card h-full">
                     <DFlipViewer
                         key={`${pdfFile.name}-${pdfFile.size}-${retryCount}`} // Well force it to rerender if pdfFile changes

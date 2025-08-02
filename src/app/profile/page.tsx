@@ -2,23 +2,17 @@
 import EditProfile from "@/components/forms/edit-profile";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  MapPin,
-  Heart,
-  Pencil,
-  Trash2,
-  Save,
-  X,
-  Grid3X3,
-  List,
+  MapPin, Heart, Pencil, Trash2, Save, X, Grid3X3, List,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-context";
 import { CurrentUserAvatar } from "@/components/features/current-user-avatar";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { usePublications } from "@/components";
+import { useRouter } from "next/navigation";
 
 interface LikeRow {
   publication_id: string;
@@ -28,38 +22,45 @@ interface LikeRow {
 export default function UserProfile() {
   const { user } = useAuth();
   const { publications, loading, updatePublication, deletePublication } = usePublications();
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editThumb, setEditThumb] = useState<File | null>(null);
   const [editThumbUrl, setEditThumbUrl] = useState('');
   const editThumbInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
   const [actionLoading, setActionLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [likes, setLikes] = useState<Record<string, number>>({});
+  const [originalOrder, setOriginalOrder] = useState<string[]>([]);
+
+  // Save original publication order once
+  useEffect(() => {
+    if (publications.length > 0 && originalOrder.length === 0) {
+      setOriginalOrder(publications.map((p) => p.id));
+    }
+  }, [publications]);
 
   useEffect(() => {
     const fetchLikes = async () => {
       if (!user || publications.length === 0) return;
-      
       const supabase = createClient();
       const pubIds = publications.map((p) => p.id);
-      
-      if (pubIds.length > 0) {
-        const { data: allLikes } = await supabase
-          .from('publication_likes')
-          .select('publication_id, user_id')
-          .in('publication_id', pubIds);
 
-        // Count likes per publication
-        const likeMap: Record<string, number> = {};
-        allLikes?.forEach((row: LikeRow) => {
-          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-        });
-        setLikes(likeMap);
-      }
+      const { data: allLikes } = await supabase
+        .from('publication_likes')
+        .select('publication_id, user_id')
+        .in('publication_id', pubIds);
+
+      const likeMap: Record<string, number> = {};
+      allLikes?.forEach((row: LikeRow) => {
+        likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
+      });
+
+      setLikes(likeMap);
     };
-    
     fetchLikes();
   }, [user, publications]);
 
@@ -70,7 +71,7 @@ export default function UserProfile() {
     setEditThumbUrl(pub.thumb_url || '');
     setEditThumb(null);
   };
-  
+
   const cancelEdit = () => {
     setEditingId(null);
     setEditTitle('');
@@ -78,50 +79,97 @@ export default function UserProfile() {
     setEditThumb(null);
     setEditThumbUrl('');
   };
-  
+
   const handleEditSave = async (pub: any) => {
     setActionLoading(true);
     let thumbUrl = editThumbUrl;
+
     if (editThumb) {
       const supabase = createClient();
       const thumbPath = `thumbs/${Date.now()}_${editThumb.name}`;
-      const { error: uploadError } = await supabase.storage.from('publications').upload(thumbPath, editThumb);
+      const { error: uploadError } = await supabase
+        .storage
+        .from('publications')
+        .upload(thumbPath, editThumb);
+
       if (!uploadError) {
         const { data: urlData } = supabase.storage.from('publications').getPublicUrl(thumbPath);
         thumbUrl = urlData.publicUrl;
       }
     }
+
     const supabase = createClient();
-    const { error } = await supabase.from('publications').update({ title: editTitle, description: editDescription, thumb_url: thumbUrl }).eq('id', pub.id);
+    const { error } = await supabase
+      .from('publications')
+      .update({
+        title: editTitle,
+        description: editDescription,
+        thumb_url: thumbUrl,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', pub.id);
+
     if (!error) {
-      updatePublication(pub.id, { title: editTitle, description: editDescription, thumb_url: thumbUrl });
+      updatePublication(pub.id, {
+        title: editTitle,
+        description: editDescription,
+        thumb_url: thumbUrl,
+      });
       cancelEdit();
     }
+
     setActionLoading(false);
   };
+
   const handleDelete = async (pub: any) => {
     if (!window.confirm('Are you sure you want to delete this publication?')) return;
     setActionLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.from('publications').delete().eq('id', pub.id);
+    const { error } = await supabase
+      .from('publications')
+      .delete()
+      .eq('id', pub.id);
     if (!error) {
       deletePublication(pub.id);
     }
     setActionLoading(false);
   };
 
+  const sortedPublications = useMemo(() => {
+    let pubs = [...publications];
+
+    if (editingId) {
+      const editingPubIndex = pubs.findIndex(p => p.id === editingId);
+      if (editingPubIndex > -1) {
+        const [editingPub] = pubs.splice(editingPubIndex, 1);
+        pubs.unshift(editingPub);
+      }
+    } else {
+      pubs.sort((a, b) => {
+        const aTime = new Date(a.created_at).getTime();
+        const bTime = new Date(b.created_at).getTime();
+        return bTime - aTime; // Newest first
+      });
+    }
+
+    return pubs;
+  }, [publications, editingId]);
+
+  // 🔽 UI Rendering
   return (
     <>
       {user && (
         <div className="min-h-screen bg-background">
-          {/* Minimal Header */}
+          {/* Profile Header */}
           <div className="border-b border-border/50">
             <div className="max-w-2xl mx-auto px-4 py-8">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <CurrentUserAvatar/>
+                  <CurrentUserAvatar />
                   <div>
-                    <h1 className="text-2xl font-bold text-foreground">{user.username || user.email}</h1>
+                    <h1 className="text-2xl font-bold text-foreground">
+                      {user.username || user.email}
+                    </h1>
                     <p className="text-muted-foreground">{user.bio}</p>
                     <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
                       {user.location && (
@@ -159,10 +207,10 @@ export default function UserProfile() {
                 </Button>
               </div>
             </div>
-            
+
             {loading ? (
               <div className="text-muted-foreground">Loading...</div>
-            ) : publications.length === 0 ? (
+            ) : sortedPublications.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-4">
                 <div className="text-muted-foreground">No publications yet.</div>
                 <Link href="/home/create">
@@ -170,23 +218,22 @@ export default function UserProfile() {
                 </Link>
               </div>
             ) : viewMode === 'grid' ? (
-              // Grid View (similar to discover page)
+              // Grid View
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {publications.map((pub) => {
+                {sortedPublications.map((pub) => {
                   const likeCount = likes[pub.id] || 0;
                   return (
                     <div key={pub.id} className="relative group">
                       <Card className="hover:shadow-lg transition cursor-pointer h-full flex flex-col">
                         <CardContent className="p-2 flex flex-col items-center justify-center h-full">
                           {pub.thumb_url ? (
-                            <Image 
-                              src={pub.thumb_url} 
-                              alt={pub.title} 
+                            <Image
+                              src={pub.thumb_url}
+                              alt={pub.title}
                               width={300}
                               height={128}
-                              className="w-full h-32 object-cover rounded mb-2 border border-border" 
+                              className="w-full h-32 object-cover rounded mb-2 border border-border"
                               onError={(e) => {
-                                console.log('Publication thumbnail failed to load:', pub.title, 'URL:', pub.thumb_url);
                                 e.currentTarget.style.display = 'none';
                                 e.currentTarget.nextElementSibling?.classList.remove('hidden');
                               }}
@@ -199,29 +246,25 @@ export default function UserProfile() {
                           <div className="text-xs text-muted-foreground text-center line-clamp-1">{pub.description}</div>
                         </CardContent>
                       </Card>
-                      
-                      {/* Like count and action buttons overlay */}
+
                       <div className="absolute top-2 right-2 flex items-center gap-1 z-10 rounded px-1 py-0.5">
                         <span className="text-xs text-foreground font-medium">{likeCount}</span>
-                        <div className="h-6 w-6 flex items-center justify-center">
-                          <Heart className="w-3 h-3 text-gray-400" />
-                        </div>
+                        <Heart className="w-3 h-3 text-gray-400" />
                       </div>
-                      
-                      {/* Edit/Delete buttons overlay */}
+
                       <div className="absolute bottom-2 left-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          size="sm" 
-                          variant="secondary" 
+                        <Button
+                          size="sm"
+                          variant="secondary"
                           className="flex-1 h-6 text-xs"
-                          onClick={() => startEdit(pub)}
+                          onClick={() => { setViewMode('list'); startEdit(pub); }}
                         >
                           <Pencil className="w-3 h-3 mr-1" />
                           Edit
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="destructive" 
+                        <Button
+                          size="sm"
+                          variant="destructive"
                           className="flex-1 h-6 text-xs"
                           onClick={() => handleDelete(pub)}
                           disabled={actionLoading}
@@ -235,9 +278,9 @@ export default function UserProfile() {
                 })}
               </div>
             ) : (
-              // List View (existing detailed view)
+              // List View
               <div className="space-y-6">
-                {publications.map((pub) => (
+                {sortedPublications.map((pub) => (
                   <Card key={pub.id} className="mb-8 p-4 rounded-lg border border-border bg-card shadow-sm">
                     <CardContent className="p-6 flex gap-4 items-center">
                       {editingId === pub.id ? (
@@ -250,16 +293,17 @@ export default function UserProfile() {
                             onChange={e => setEditThumb(e.target.files?.[0] || null)}
                           />
                           <div className="w-20 h-28 flex items-center justify-center bg-muted text-muted-foreground rounded border border-border cursor-pointer mr-2" onClick={() => editThumbInputRef.current?.click()}>
-                            {editThumb ? <Image src={URL.createObjectURL(editThumb)} alt="New Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" /> : (editThumbUrl ? <Image src={editThumbUrl} alt="Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" onError={(e) => {
-                              console.log('Edit thumbnail failed to load:', editThumbUrl);
-                              e.currentTarget.style.display = 'none';
-                              e.currentTarget.parentElement!.textContent = 'No Image';
-                            }} /> : 'No Image')}
+                            {editThumb ? (
+                              <Image src={URL.createObjectURL(editThumb)} alt="New Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" />
+                            ) : editThumbUrl ? (
+                              <Image src={editThumbUrl} alt="Thumb" width={80} height={112} className="w-20 h-28 object-cover rounded" />
+                            ) : (
+                              'No Image'
+                            )}
                           </div>
                           <div className="flex-1">
                             <input className="font-semibold text-lg text-foreground bg-muted border border-border rounded px-2 py-1 mb-2 w-full" value={editTitle} onChange={e => setEditTitle(e.target.value)} />
                             <textarea className="text-muted-foreground text-sm mb-2 bg-muted border border-border rounded px-2 py-1 w-full" value={editDescription} onChange={e => setEditDescription(e.target.value)} />
-                            <a href={pub.pdf_url} target="_blank" rel="noopener noreferrer" className="text-primary underline text-sm">View PDF</a>
                             <div className="text-xs text-muted-foreground mt-1">{new Date(pub.created_at).toLocaleString()}</div>
                             <div className="flex gap-2 mt-2">
                               <Button size="sm" variant="outline" onClick={() => handleEditSave(pub)} disabled={actionLoading}><Save className="mr-1" />Save</Button>
@@ -270,26 +314,27 @@ export default function UserProfile() {
                       ) : (
                         <>
                           {pub.thumb_url ? (
-                            <Image 
-                              src={pub.thumb_url} 
-                              alt="Thumbnail" 
+                            <Image
+                              src={pub.thumb_url}
+                              alt="Thumbnail"
                               width={80}
                               height={112}
-                              className="w-20 h-28 object-cover rounded border border-border" 
-                              onError={(e) => {
-                                console.log('Publication thumbnail failed to load:', pub.title, 'URL:', pub.thumb_url);
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                              }}
+                              className="w-20 h-28 object-cover rounded border border-border"
                             />
-                          ) : null}
-                          <div className={`w-20 h-28 flex items-center justify-center bg-muted text-muted-foreground rounded border border-border ${pub.thumb_url ? 'hidden' : ''}`}>
-                            No Image
-                          </div>
+                          ) : (
+                            <div className="w-20 h-28 flex items-center justify-center bg-muted text-muted-foreground rounded border border-border">
+                              No Image
+                            </div>
+                          )}
                           <div className="flex-1">
                             <div className="font-semibold text-lg text-foreground">{pub.title}</div>
                             <div className="text-muted-foreground text-sm mb-2">{pub.description}</div>
-                            <a href={pub.pdf_url} target="_blank" rel="noopener noreferrer" className="text-primary underline text-sm">View PDF</a>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
+                              className='cursor-pointer'
+                            >View Publication</Button>
                             <div className="text-xs text-muted-foreground mt-1">{new Date(pub.created_at).toLocaleString()}</div>
                             <div className="flex gap-2 mt-2">
                               <Button size="sm" variant="outline" onClick={() => startEdit(pub)}><Pencil className="mr-1" />Edit</Button>
@@ -307,5 +352,5 @@ export default function UserProfile() {
         </div>
       )}
     </>
-  )
+  );
 }

@@ -238,7 +238,7 @@ export default function PublicationsTab() {
                                         variant="ghost"
                                         size="sm"
                                         className='cursor-pointer'
-                                        onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}`)}
+                                        onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
                                     >
                                         <Eye className="w-4 h-4" />
                                     </Button>
