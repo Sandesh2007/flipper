@@ -48,8 +48,7 @@ function isUsernameValid(username: string | undefined): boolean {
   return !!(
     username &&
     username === username.toLowerCase() &&
-    !username.includes(' ') &&
-    /^[a-z0-9_]+$/.test(username)
+    /^[a-z0-9_\s]+$/.test(username)
   );
 }
 

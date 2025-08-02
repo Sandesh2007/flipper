@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/auth-context"
 import { createClient } from "@/lib/database/supabase/client"
 import Link from "next/link"
 import { PublicationsTab, usePdfUpload, usePublications } from '@/components';
+import { Upload, FileText, Users, BarChart3, Sparkles, Zap, BookOpen, TrendingUp } from 'lucide-react';
 
 export default function DashboardMain() {
   const router = useRouter();
@@ -27,110 +28,183 @@ export default function DashboardMain() {
   };
 
   return (
-    <main className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8">
-      <section className="bg-neutral-200 dark:bg-neutral-800 rounded-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
-        {/* Mobile Layout - No drag & drop section */}
-        <div className="block lg:hidden">
-          <div className="text-center">
-            <h1 className="text-xl sm:text-2xl font-bold mb-4">Add a file</h1>
-            <Button className="w-full sm:w-auto bg-neutral-300 cursor-pointer dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600" onClick={() => router.push('/home/create')}>
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
-              Upload a file
-            </Button>
-            <input
-              type="file"
-              accept="application/pdf"
-              style={{ display: 'none' }}
-              ref={el => {
-                // @ts-ignore
-                if (el) window.fileInputRef = el;
-              }}
-              onChange={handleFileSelect}
-            />
-            <div className="mt-4">
-              <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                Supported:&nbsp;
+    <main className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-background via-background to-primary/5 min-h-screen">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+      <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+      
+      <div className="relative">
+        {/* Upload Section */}
+        <section className="rounded-3xl bg-gradient-card border border-border/50 shadow-soft p-6 sm:p-8 mb-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500">
+          {/* Card Background Glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          
+          {/* Mobile Layout */}
+          <div className="block lg:hidden relative">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Create New Publication</span>
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-gradient-hero">Add a New File</h1>
+              <p className="text-muted-foreground mb-6">Transform your PDF into an interactive flipbook</p>
+              
+              <Button 
+                className="w-full sm:w-auto bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn" 
+                onClick={() => router.push('/home/create')}
+              >
+                <Upload className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />
+                Upload a File
+              </Button>
+              
+              <input
+                type="file"
+                accept="application/pdf"
+                style={{ display: 'none' }}
+                ref={el => {
+                  // @ts-ignore
+                  if (el) window.fileInputRef = el;
+                }}
+                onChange={handleFileSelect}
+              />
+              
+              <div className="mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Supported:&nbsp;
+                  <Tooltip>
+                    <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
+                    <TooltipContent className="bg-gradient-card border border-border/50 rounded-xl p-3">
+                      <p className="text-sm">.pdf, .doc, .docx, .pptx</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </p>
+              </div>
+              
+              <div className="flex justify-center mt-6">
+                <InfoDialog />
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Create New Publication</span>
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-gradient-hero">Add a New File</h1>
+              <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
+              
+              <Button 
+                className="bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn" 
+                onClick={() => router.push('/home/create')}
+              >
+                <Upload className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />
+                Upload a File
+              </Button>
+            </div>
+            
+            <div className="text-center lg:text-right">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-4">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Drag & Drop</span>
+              </div>
+              
+              <h2 className="text-xl font-semibold mb-2">Quick Upload</h2>
+              <p className="text-muted-foreground">
+                Upload a .pdf or other&nbsp;
                 <Tooltip>
-                  <TooltipTrigger className="underline cursor-pointer">file types</TooltipTrigger>
-                  <TooltipContent className="bg-neutral-200 text-black dark:bg-neutral-800 dark:text-white rounded-md">
-                    <p>.pdf, .doc, .docx, .pptx</p>
+                  <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
+                  <TooltipContent className="bg-gradient-card border border-border/50 rounded-xl p-3">
+                    <p className="text-sm">.pdf, .doc, .docx, .pptx</p>
                   </TooltipContent>
                 </Tooltip>
               </p>
             </div>
-            <div className="flex justify-center mt-4">
+            
+            <div className="flex items-center gap-2">
               <InfoDialog />
             </div>
           </div>
-        </div>
-        {/* Desktop Layout - With drag & drop */}
-        <div className="hidden lg:flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4">Add a file</h1>
-            <Button className="bg-neutral-300 dark:bg-neutral-700 cursor-pointer hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600" onClick={() => router.push('/home/create')}>
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
-              Upload a file
-            </Button>
-          </div>
-          <div className="text-center">
-            <h2 className="text-lg sm:text-xl font-semibold mb-2">Drag & Drop</h2>
-            <p className="text-neutral-600 dark:text-neutral-300">
-              Upload a .pdf or other&nbsp;
-              <Tooltip>
-                <TooltipTrigger className="underline cursor-pointer">file types</TooltipTrigger>
-                <TooltipContent className="bg-neutral-200 text-black dark:bg-neutral-800 dark:text-white rounded-md">
-                  <p>.pdf, .doc, .docx, .pptx</p>
-                </TooltipContent>
-              </Tooltip>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <InfoDialog />
-          </div>
-        </div>
-      </section>
-      <section>
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Recent Work</h2>
-        <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 lg:mb-6">
-          {tabs.map((tab) => (
-            <Button
-              key={tab}
-              variant="outline"
-              size="sm"
-              className={`
-                text-xs sm:text-sm
-                ${
-                  activeTab === tab
-                    ? "bg-neutral-300 dark:bg-neutral-700 border-neutral-400 dark:border-neutral-600 text-neutral-800 dark:text-neutral-100"
-                    : "border-neutral-400 dark:border-neutral-600 text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-700"
-                }
-              `}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </Button>
-          ))}
-        </div>
-        <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
-          <CardContent className="p-4 sm:p-6">
-            {activeTab === "Publications" && (
-              <PublicationsTab/>
-            )}
-            {activeTab === "Articles" && (
-              <div className="text-center py-8">
-                <h3 className="text-xl font-semibold mb-2">Your Articles</h3>
-                <p className="text-neutral-500 dark:text-neutral-400">List of your articles will appear here.</p>
+        </section>
+
+        {/* Recent Work Section */}
+        <section className="relative">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-gradient-hero">Recent Work</h2>
+              <p className="text-muted-foreground">Manage your publications and track performance</p>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="hidden md:flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gradient mb-1">12</div>
+                <div className="text-xs text-muted-foreground">Publications</div>
               </div>
-            )}
-            {activeTab === "Social posts" && (
-              <div className="text-center py-8">
-                <h3 className="text-xl font-semibold mb-2">Your Social Posts</h3>
-                <p className="text-neutral-500 dark:text-neutral-400">List of your social posts will appear here.</p>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gradient mb-1">1.2K</div>
+                <div className="text-xs text-muted-foreground">Views</div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </section>
+            </div>
+          </div>
+          
+          {/* Tab Navigation */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
+            {tabs.map((tab) => (
+              <Button
+                key={tab}
+                variant="outline"
+                size="sm"
+                className={`
+                  text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105
+                  ${
+                    activeTab === tab
+                      ? "bg-gradient-hero text-white border-primary/30 shadow-glow"
+                      : "border-border/50 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }
+                `}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "Publications" && <FileText className="w-4 h-4 mr-2" />}
+                {tab === "Articles" && <BookOpen className="w-4 h-4 mr-2" />}
+                {tab === "Social posts" && <Users className="w-4 h-4 mr-2" />}
+                {tab}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Content Card */}
+          <Card className="bg-gradient-card border border-border/50 shadow-soft rounded-3xl overflow-hidden hover:shadow-glow transition-all duration-500">
+            <CardContent className="p-6 sm:p-8">
+              {activeTab === "Publications" && (
+                <PublicationsTab/>
+              )}
+              {activeTab === "Articles" && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gradient-hero">Your Articles</h3>
+                  <p className="text-muted-foreground">List of your articles will appear here.</p>
+                </div>
+              )}
+              {activeTab === "Social posts" && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gradient-hero">Your Social Posts</h3>
+                  <p className="text-muted-foreground">List of your social posts will appear here.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+      </div>
     </main>
   )
 }

@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, CheckCircle, AlertCircle, X } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, X, Sparkles, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePdfUpload } from "../PdfUploadContext";
 
@@ -110,28 +110,35 @@ export const FileUpload = () => {
   if (uploadedFile) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center bg-gradient-card shadow-soft">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/20">
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            Upload Complete!
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Button
-              variant="outline"
-              onClick={resetUpload}
-            >
-              Upload Another
-            </Button>
-            <Button
-              onClick={() => onConvertClick(uploadedFile!)}
-              className="bg-gradient-hero bg-neutral-700 dark:bg-neutral-50 shadow-soft cursor-pointer">
-              Convert to Flipbook
-            </Button>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-card border border-border/50 shadow-soft p-8 text-center">
+          {/* Success Background Animation */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 animate-pulse-slow"></div>
+          <div className="relative">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 shadow-glow animate-scale-in">
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground mb-3 animate-fade-in">
+              Upload Complete!
+            </h3>
+            <p className="text-muted-foreground mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
+            </p>
+            <div className="flex gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <Button
+                variant="outline"
+                onClick={resetUpload}
+                className=" hover:scale-105"
+              >
+                Upload Another
+              </Button>
+              <Button
+                onClick={() => onConvertClick(uploadedFile!)}
+                className="bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Convert to Flipbook
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -141,19 +148,23 @@ export const FileUpload = () => {
   if (uploading) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center bg-gradient-card shadow-soft">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10">
-            <Upload className="w-8 h-8 text-primary animate-bounce" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-card border border-border/50 shadow-soft p-8 text-center">
+          {/* Upload Background Animation */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 animate-pulse-slow"></div>
+          <div className="relative">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-hero shadow-glow animate-bounce-slow">
+              <Upload className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground mb-4 animate-fade-in">
+              Uploading your PDF...
+            </h3>
+            <div className="w-full max-w-md mx-auto mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <Progress value={uploadProgress} className="h-3 bg-muted" />
+            </div>
+            <p className="text-muted-foreground animate-pulse-slow">
+              {uploadProgress}% complete
+            </p>
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            Uploading your PDF...
-          </h3>
-          <div className="w-full max-w-xs mx-auto mb-4">
-            <Progress value={uploadProgress} className="h-2" />
-          </div>
-          <p className="text-muted-foreground">
-            {uploadProgress}% complete
-          </p>
         </div>
       </div>
     );
@@ -163,77 +174,91 @@ export const FileUpload = () => {
     <div className="w-full max-w-2xl mx-auto">
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+        <div className="mb-6 p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-4 animate-fade-in">
+          <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-red-800 dark:text-red-200 text-sm font-medium">
+            <p className="text-red-800 dark:text-red-200 text-sm font-medium mb-1">
               Upload Error
             </p>
-            <p className="text-red-700 dark:text-red-300 text-sm mt-1">
+            <p className="text-red-700 dark:text-red-300 text-sm">
               {error}
             </p>
           </div>
           <button
             onClick={clearError}
-            className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
+            className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30"
             aria-label="Dismiss error"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
       )}
       
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300 bg-gradient-card shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 bg-gradient-card border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
           isDragActive && !isDragReject
-            ? "border-primary bg-primary/5 shadow-glow"
+            ? "border-primary bg-primary/5 shadow-glow scale-105"
             : isDragReject
             ? "border-red-400 bg-red-50 dark:bg-red-900/20"
-            : "border-primary/20 hover:border-primary/40"
+            : "border-primary/30 hover:border-primary/60 hover:scale-[1.02]"
         }`}
         role="button"
         tabIndex={0}
         aria-label="Upload PDF file by dragging and dropping or clicking to browse"
       >
+        {/* Background Animation */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-pulse-slow"></div>
+        
         <input {...getInputProps()} id="file-input" aria-describedby="upload-description" />
-        <div className={`flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full transition-colors ${
-          isDragReject ? "bg-red-100 dark:bg-red-900/30" : "bg-primary/10"
-        }`}>
-          <FileText className={`w-8 h-8 transition-colors ${
-            isDragReject ? "text-red-600 dark:text-red-400" : "text-primary"
-          }`} />
+        <div className="relative">
+          <div className={`flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-2xl transition-all duration-300 ${
+            isDragReject 
+              ? "bg-red-100 dark:bg-red-900/30 animate-wiggle" 
+              : "bg-gradient-hero shadow-glow"
+          }`}>
+            <FileText className={`w-12 h-12 transition-colors ${
+              isDragReject ? "text-red-600 dark:text-red-400" : "text-white"
+            }`} />
+          </div>
+          
+          <h3 className="text-2xl font-bold text-foreground mb-4">
+            {isDragActive && !isDragReject
+              ? "Drop your PDF here"
+              : isDragReject
+              ? "Invalid file type"
+              : "Drag & Drop your PDF"}
+          </h3>
+          
+          <p id="upload-description" className="text-muted-foreground mb-6 text-lg">
+            {isDragActive && !isDragReject
+              ? "Release to upload your PDF"
+              : isDragReject
+              ? "Please select a PDF file"
+              : "Drag your PDF file here, or click to browse"}
+          </p>
+          
+          <div className="text-sm text-muted-foreground mb-8 space-y-1">
+            <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
+            <p>Supported format: PDF</p>
+          </div>
+          
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-sm text-muted-foreground px-4">OR</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+          
+          <Button
+            onClick={handleUploadClick}
+            className="bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
+            size="lg"
+            disabled={uploading}
+          >
+            <Upload className="w-5 h-5 mr-3" />
+            Browse Files
+          </Button>
         </div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">
-          {isDragActive && !isDragReject
-            ? "Drop your PDF here"
-            : isDragReject
-            ? "Invalid file type"
-            : "Drag & Drop"}
-        </h3>
-        <p id="upload-description" className="text-muted-foreground mb-4">
-          {isDragActive && !isDragReject
-            ? "Release to upload your PDF"
-            : isDragReject
-            ? "Please select a PDF file"
-            : "Drag your PDF file here, or click to browse"}
-        </p>
-        <div className="text-xs text-muted-foreground mb-4">
-          <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
-          <p>Supported format: PDF</p>
-        </div>
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="text-xs text-muted-foreground">OR</span>
-        </div>
-        <Button
-          onClick={handleUploadClick}
-          className="bg-gradient-hero bg-neutral-700 dark:bg-neutral-50 shadow-soft"
-          size="lg"
-          disabled={uploading}
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Browse Files
-        </Button>
       </div>
     </div>
   );

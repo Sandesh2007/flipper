@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star } from "lucide-react";
+import { Star, Quote, Sparkles } from "lucide-react";
 
 const testimonials = [
   {
@@ -39,14 +39,18 @@ const testimonials = [
 
 export const Testimonials = () => {
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 bg-gradient-to-b from-transparent to-muted/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Trusted by professionals worldwide</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-hero">
             Loved by creators worldwide
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of professionals who trust our platform to bring their content to life.
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Join thousands of professionals who trust our platform to bring their content to life with stunning interactive experiences.
           </p>
         </div>
 
@@ -54,32 +58,44 @@ export const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
-              className="bg-neutral-200 dark:bg-neutral-900 border-0 hover:shadow-soft transition-all duration-300 relative"
+              className="group bg-gradient-card border border-border/50  hover:scale-105 card-hover overflow-hidden animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <CardContent className="p-8">
+              <CardContent className="p-8 relative">
+                {/* Quote Icon */}
+                <div className="absolute top-6 right-6 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+                  <Quote className="w-12 h-12 text-primary" />
+                </div>
+                
+                {/* Rating Stars */}
                 <div className="flex items-center gap-1 mb-6">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                      className={`h-5 w-5 transition-all duration-300 ${
+                        i < testimonial.rating 
+                          ? 'text-yellow-400 fill-yellow-400 group-hover:scale-110' 
+                          : 'text-muted-foreground/30'
+                      }`}
+                      style={{ animationDelay: `${i * 0.1}s` }}
                     />
                   ))}
                 </div>
 
-                <blockquote className="text-foreground mb-6 leading-relaxed">
+                <blockquote className="text-foreground mb-8 leading-relaxed text-lg relative">
                   &ldquo;{testimonial.content}&rdquo;
                 </blockquote>
 
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-14 w-14 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    <AvatarFallback className="bg-gradient-hero text-white font-semibold text-lg">
                       {testimonial.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h4 className="font-bold text-foreground text-lg">{testimonial.name}</h4>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {testimonial.role} at {testimonial.company}
@@ -89,6 +105,28 @@ export const Testimonials = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* Stats Section */}
+        <div className="mt-16 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gradient mb-2">10K+</div>
+              <div className="text-sm text-muted-foreground">Happy Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gradient mb-2">50K+</div>
+              <div className="text-sm text-muted-foreground">PDFs Converted</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gradient mb-2">99.9%</div>
+              <div className="text-sm text-muted-foreground">Uptime</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gradient mb-2">24/7</div>
+              <div className="text-sm text-muted-foreground">Support</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

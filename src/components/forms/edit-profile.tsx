@@ -51,12 +51,8 @@ export default function EditProfile() {
             setUsernameError('Username must be lowercase.');
             return false;
         }
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            setUsernameError('Username can only contain lowercase letters, numbers, and underscores.');
-            return false;
-        }
-        if (username.includes(' ')) {
-            setUsernameError('Username cannot contain spaces.');
+        if (!/^[a-z0-9_\s]+$/.test(username)) {
+            setUsernameError('Username can only contain lowercase letters, numbers, underscores, and spaces.');
             return false;
         }
         // Check uniqueness (exclude current user)

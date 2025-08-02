@@ -31,12 +31,8 @@ export default function SetUsernamePage() {
       setError('Username must be lowercase.');
       return false;
     }
-    if (!/^[a-z0-9_]+$/.test(username)) {
-      setError('Username can only contain lowercase letters, numbers, and underscores.');
-      return false;
-    }
-    if (username.includes(' ')) {
-      setError('Username cannot contain spaces.');
+    if (!/^[a-z0-9_\s]+$/.test(username)) {
+      setError('Username can only contain lowercase letters, numbers, underscores, and spaces.');
       return false;
     }
     // Check uniqueness

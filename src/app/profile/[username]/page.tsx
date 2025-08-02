@@ -30,7 +30,7 @@ interface Publication {
 
 export default function PublicProfileByUsernamePage() {
   const params = useParams();
-  const username = (params?.username as string)?.toLowerCase();
+  const username = decodeURIComponent(params?.username as string)?.toLowerCase();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);

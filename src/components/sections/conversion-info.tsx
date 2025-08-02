@@ -1,45 +1,57 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Share2, FileText, Image } from "lucide-react";
+import { BookOpen, Share2, FileText, Image, Sparkles, Zap, TrendingUp, Heart } from "lucide-react";
 
 const conTypes = [
   {
     title: "Flipbook",
-    description: "Interactive page-turning experience",
+    description: "Interactive page-turning experience with stunning animations and multimedia support",
     icon: BookOpen,
-    color: "bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-200",
-    badge: "Most Popular"
+    color: "from-blue-500/20 to-blue-600/20",
+    borderColor: "border-blue-200/50",
+    badge: "Most Popular",
+    features: ["Page turning effects", "Multimedia support", "Mobile responsive"]
   },
   {
     title: "Social Post", 
-    description: "Optimized for social media sharing",
+    description: "Optimized for social media sharing with engaging previews and viral potential",
     icon: Share2,
-    color: "bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-200"
+    color: "from-green-500/20 to-green-600/20",
+    borderColor: "border-green-200/50",
+    features: ["Social media optimized", "Viral sharing", "Engagement tracking"]
   },
   {
     title: "Article",
-    description: "Clean, readable web article format", 
+    description: "Clean, readable web article format perfect for blogs and content marketing",
     icon: FileText,
-    color: "bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-200"
+    color: "from-purple-500/20 to-purple-600/20",
+    borderColor: "border-purple-200/50",
+    features: ["SEO optimized", "Clean typography", "Fast loading"]
   },
   {
     title: "GIF",
-    description: "Animated preview for engagement",
+    description: "Animated preview for maximum engagement and social media impact",
     icon: Image, 
-    color: "bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-200"
+    color: "from-orange-500/20 to-orange-600/20",
+    borderColor: "border-orange-200/50",
+    features: ["Animated previews", "Social media ready", "High engagement"]
   }
 ];
 
 export const ConversionInfo = () => {
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 bg-gradient-to-b from-transparent to-muted/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
+            <Zap className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Multiple output formats</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-hero">
             Turn your files into a...
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose from multiple output formats to suit your content strategy and audience.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Choose from multiple output formats to suit your content strategy and audience. Each format is optimized for maximum engagement and impact.
           </p>
         </div>
         
@@ -47,26 +59,77 @@ export const ConversionInfo = () => {
           {conTypes.map((type, index) => (
             <Card 
               key={index} 
-              className={`${type.color} hover:shadow-upload transition-all duration-300 hover:scale-105 cursor-pointer group relative overflow-hidden`}
+              className={`group bg-gradient-card border ${type.borderColor}  hover:scale-105 card-hover relative overflow-hidden animate-fade-in`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
+              {/* Background Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${type.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+              
               {type.badge && (
-                <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
+                <Badge className="absolute top-4 right-4 bg-gradient-hero text-white border-0 z-10 animate-pulse-slow">
+                  <Sparkles className="w-3 h-3 mr-1" />
                   {type.badge}
                 </Badge>
               )}
-              <CardContent className="p-8 text-center">
+              
+              <CardContent className="p-8 text-center relative z-10">
                 <div className="mb-6 flex justify-center">
-                  <div className="h-16 w-16 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <type.icon className="h-8 w-8 text-primary" />
+                  <div className="h-20 w-20 rounded-2xl bg-gradient-hero flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-glow">
+                    <type.icon className="h-10 w-10 text-white" />
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{type.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                
+                <h3 className="text-xl font-bold mb-4 text-foreground">{type.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                   {type.description}
                 </p>
+                
+                {/* Features */}
+                <div className="space-y-2">
+                  {type.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary/60"></div>
+                      {feature}
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* Stats Section */}
+        <div className="mt-16 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="text-center group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-gradient mb-2">300%</div>
+              <div className="text-sm text-muted-foreground">Engagement Increase</div>
+            </div>
+            <div className="text-center group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-gradient mb-2">50K+</div>
+              <div className="text-sm text-muted-foreground">Happy Users</div>
+            </div>
+            <div className="text-center group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-gradient mb-2">10s</div>
+              <div className="text-sm text-muted-foreground">Average Conversion</div>
+            </div>
+            <div className="text-center group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Sparkles className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-gradient mb-2">99.9%</div>
+              <div className="text-sm text-muted-foreground">Uptime</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
