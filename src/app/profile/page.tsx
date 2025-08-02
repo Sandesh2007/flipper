@@ -162,7 +162,7 @@ export default function UserProfile() {
 
   return (
     <>
-      {user && (
+      {user ? (
         <div className="min-h-screen bg-background">
           {/* Profile Header */}
           <div className="border-b border-border/50">
@@ -390,7 +390,18 @@ export default function UserProfile() {
             )}
           </div>
         </div>
-      )}
+      ): (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">You are not logged in</h1>
+              <p className="text-muted-foreground">Please log in to view your profile.</p>
+              <p><Link href="/auth/register?mode=login" className="text-primary hover:underline">Login</Link> or <Link href="/auth/register?mode=register" className="text-primary hover:underline">Register</Link></p>
+            </div>
+          </div>
+        </div>
+      )
+    }
     </>
   );
 }

@@ -59,9 +59,13 @@ export default function EditProfile() {
             setUsernameError('Username cannot contain spaces.');
             return false;
         }
-        // Check uniqueness
+        // Check uniqueness (exclude current user)
         const supabase = createBrowserClient();
-        const { data } = await supabase.from('profiles').select('id').eq('username', username);
+        const { data } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', username)
+            .neq('id', user?.id); // Exclude current user
         if (data && data.length > 0) {
             setUsernameError('Username is already taken.');
             return false;
