@@ -7,9 +7,9 @@ export default function PublisherLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
+    <div className="flex flex-col lg:flex-row h-screen bg-background text-foreground">
       <Sidebar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto bg-gradient-to-br from-background via-background to-primary/5">
         {children}
       </main>
     </div>

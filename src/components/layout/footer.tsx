@@ -15,7 +15,6 @@ const footerLinks = {
   resources: [
     { name: "Blog", href: "#blog" },
     { name: "Community", href: "/discover" },
-    { name: "Help Center", href: "#help" },
     { name: "Tutorials", href: "#tutorials" },
   ],
   company: [

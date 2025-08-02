@@ -29,8 +29,6 @@ export default function PublicationsTab() {
         try {
             const supabase = createClient();
 
-            console.log('Starting deletion for publication ID:', deletingPublicationId);
-
             // Get publication details first
             const { data: publication, error: fetchError } = await supabase
                 .from('publications')
@@ -38,44 +36,22 @@ export default function PublicationsTab() {
                 .eq('id', deletingPublicationId)
                 .single();
 
-            if (fetchError) {
-                console.error('Error fetching publication:', fetchError);
-                throw fetchError;
-            }
-
-            if (!publication) {
-                console.error('Publication not found');
-                throw new Error('Publication not found');
-            }
-
-            console.log('Found publication:', publication);
+            if (fetchError) throw fetchError;
+            if (!publication) throw new Error('Publication not found');
 
             // Delete likes first (foreign key constraint)
             const { error: likesError } = await supabase
                 .from('publication_likes')
                 .delete()
                 .eq('publication_id', deletingPublicationId);
-
-            if (likesError) {
-                console.error('Error deleting likes:', likesError);
-                // Don't throw here if it's just because no likes exist
-                if (likesError.code !== 'PGRST116') { // PGRST116 is "no rows found"
-                    throw likesError;
-                }
-            }
-
-            console.log('Deleted associated likes');
+            if (likesError && likesError.code !== 'PGRST116') throw likesError;
 
             // Delete the publication record
             const { error: deleteError } = await supabase
                 .from('publications')
                 .delete()
                 .eq('id', deletingPublicationId);
-
-            if (deleteError) {
-                console.error('Error deleting publication:', deleteError);
-                throw deleteError;
-            }
+            if (deleteError) throw deleteError;
 
             // Wait a moment for the deletion to propagate
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -87,20 +63,9 @@ export default function PublicationsTab() {
                     .from('publications')
                     .select('id')
                     .eq('id', deletingPublicationId)
-                    .maybeSingle();  // Use maybeSingle instead of single to avoid error when not found
-
-                if (verifyError) {
-                    console.warn('Verification attempt error:', verifyError);
-                } else if (!verifyData) {
-                    // Successfully verified deletion
-                    console.log('Confirmed publication deletion from database');
-                    break;
-                }
-
-                if (retries === 1) {
-                    throw new Error('Publication deletion could not be verified');
-                }
-
+                    .maybeSingle();
+                if (!verifyData) break;
+                if (retries === 1) throw new Error('Publication deletion could not be verified');
                 retries--;
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
@@ -110,54 +75,29 @@ export default function PublicationsTab() {
                 if (publication.pdf_url) {
                     const pdfPath = new URL(publication.pdf_url).pathname.split('/').pop();
                     if (pdfPath) {
-                        const { error: pdfDeleteError } = await supabase.storage
-                            .from('publications')
-                            .remove([`pdfs/${pdfPath}`]);
-
-                        if (pdfDeleteError) {
-                            console.warn('Error deleting PDF file:', pdfDeleteError);
-                        }
+                        await supabase.storage.from('publications').remove([`pdfs/${pdfPath}`]);
                     }
                 }
-
                 if (publication.thumb_url) {
                     const thumbPath = new URL(publication.thumb_url).pathname.split('/').pop();
                     if (thumbPath) {
-                        const { error: thumbDeleteError } = await supabase.storage
-                            .from('publications')
-                            .remove([`thumbs/${thumbPath}`]);
-
-                        if (thumbDeleteError) {
-                            console.warn('Error deleting thumbnail file:', thumbDeleteError);
-                        }
+                        await supabase.storage.from('publications').remove([`thumbs/${thumbPath}`]);
                     }
                 }
             } catch (storageError) {
-                console.warn('Error with storage operations:', storageError);
+                // Non-blocking
             }
 
             // Update local state only if everything succeeded
             deletePublication(deletingPublicationId);
             toastify.success("Successfully deleted publication");
-
         } catch (err) {
-            console.error('Error deleting publication:', err);
-            // Extract error message from Supabase error if available
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             toastify.error(`Failed to delete publication: ${errorMessage}`);
-            
-            // Log detailed error for debugging
-            if (err && typeof err === 'object' && 'code' in err) {
-                console.error('Database error code:', (err as any).code);
-                console.error('Database error details:', err);
-            }
         } finally {
             setIsDeleting(false);
             setDeleteDialogOpen(false);
             setDeletingPublicationId(null);
-            
-            // Update UI state immediately
-            deletePublication(deletingPublicationId);
         }
     };
 
@@ -181,54 +121,62 @@ export default function PublicationsTab() {
     return (
         <div>
             {loading ? (
-                <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 dark:border-neutral-400 mx-auto mb-4"></div>
-                    <p className="text-neutral-500 dark:text-neutral-400">Loading publications...</p>
+                <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading publications...</p>
                 </div>
             ) : publications.length === 0 ? (
-                <div className="text-center py-8">
-                    <FileText className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">No Publications Yet</h3>
-                    <p className="text-neutral-500 dark:text-neutral-400 mb-4">Start by creating your first publication.</p>
-                    <Button onClick={() => router.push('/home/create')}>
+                <div className="text-center py-12">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-hero/10 flex items-center justify-center mx-auto mb-6">
+                        <FileText className="w-10 h-10 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">No Publications Yet</h3>
+                    <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">Start by creating your first publication to showcase your work.</p>
+                    <Button 
+                        onClick={() => router.push('/home/create')}
+                        className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300"
+                    >
                         Create Publication
                     </Button>
                 </div>
             ) : (
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">Your Publications ({publications.length})</h3>
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h3 className="text-xl font-bold text-foreground">Your Publications</h3>
+                            <p className="text-sm text-muted-foreground">{publications.length} publication{publications.length !== 1 ? 's' : ''}</p>
+                        </div>
                         <Button
-                            className='cursor-pointer'
                             variant="outline"
                             size="sm"
-                            onClick={() => router.push('/profile')}
+                            onClick={() => router.push('/home/create')}
+                            className="bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
                         >
-                            View All
+                            Create Publication
                         </Button>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {publications.map((pub) => (
-                            <div key={pub.id} className="flex items-center gap-4 p-4 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-700">
+                            <div key={pub.id} className="flex items-center gap-4 p-6 bg-gradient-card border border-border/30 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
                                 {pub.thumb_url ? (
                                     <Image
                                         src={pub.thumb_url}
                                         alt="Thumbnail"
                                         width={60}
                                         height={60}
-                                        className="w-15 h-15 object-cover rounded"
+                                        className="w-15 h-15 object-cover rounded-lg"
                                     />
                                 ) : (
-                                    <div className="w-15 h-15 bg-neutral-200 dark:bg-neutral-700 rounded flex items-center justify-center">
-                                        <FileText className="w-6 h-6 text-neutral-400" />
+                                    <div className="w-15 h-15 bg-gradient-hero/10 rounded-lg flex items-center justify-center">
+                                        <FileText className="w-6 h-6 text-primary" />
                                     </div>
                                 )}
                                 <div className="flex-1">
-                                    <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{pub.title}</h4>
-                                    <p className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2">{pub.description}</p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Calendar className="w-3 h-3 text-neutral-400" />
-                                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                    <h4 className="font-semibold text-foreground mb-1">{pub.title}</h4>
+                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{pub.description}</p>
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="w-3 h-3 text-muted-foreground" />
+                                        <span className="text-xs text-muted-foreground">
                                             {formatDate(pub.created_at)}
                                         </span>
                                     </div>
@@ -237,16 +185,16 @@ export default function PublicationsTab() {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className='cursor-pointer'
                                         onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
+                                        className="hover:bg-primary/10 transition-all duration-300"
                                     >
                                         <Eye className="w-4 h-4" />
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className='cursor-pointer'
                                         onClick={() => router.push(`/profile?edit=${pub.id}`)}
+                                        className="hover:bg-primary/10 transition-all duration-300"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </Button>
@@ -254,7 +202,7 @@ export default function PublicationsTab() {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleDeleteClick(pub.id)}
-                                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 transition-all duration-300"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </Button>

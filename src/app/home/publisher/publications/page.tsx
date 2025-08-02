@@ -2,24 +2,44 @@
 import { PublicationsTab } from "@/components"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { FileText, Plus } from "lucide-react"
 
 export default function PublicationsPage() {
   return (
-    <div className="p-3 sm:p-6 lg:p-8">
-      <section className="bg-neutral-200 dark:bg-neutral-800 rounded-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4">Publications</h1>
-        <p className="text-neutral-600 dark:text-neutral-300 mb-4">
-          Manage and publish your content here.
-        </p>
-        <Button className="bg-neutral-300 dark:bg-neutral-700 hover:bg-neutral-400 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-100 border border-neutral-400 dark:border-neutral-600 cursor-pointer">
+    <div className="p-6 lg:p-8">
+      {/* Hero Section */}
+      <section className="bg-gradient-glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
+            <FileText className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl lg:text-4xl font-bold text-foreground">Publications</h1>
+            <p className="text-muted-foreground text-lg">
+              Manage and publish your content with style.
+            </p>
+          </div>
+        </div>
+        <Button className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300 group">
+          <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Publication
         </Button>
       </section>
 
+      {/* Publications Content */}
       <section>
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Your Publications</h2>
-        <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
-          <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl lg:text-3xl font-bold text-foreground">Your Publications</h2>
+          <div className="text-sm text-muted-foreground">
+            {new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </div>
+        </div>
+        <Card className="bg-gradient-card border border-border/30 shadow-soft backdrop-blur-xl">
+          <CardContent className="p-6 lg:p-8">
             <PublicationsTab/>
           </CardContent>
         </Card>

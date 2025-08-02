@@ -8,7 +8,25 @@ import { useRouter } from "next/navigation";
 import { usePdfUpload } from "../PdfUploadContext";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-const ACCEPTED_FILE_TYPES = ['application/pdf'];
+const ACCEPTED_FILE_TYPES = [
+  'application/pdf',
+  'application/epub+zip',
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/bmp',
+  'image/webp',
+  'image/svg+xml',
+  'image/tiff',
+  'image/x-icon',
+  'image/heic',
+  'application/vnd.comicbook+zip', // CBZ
+  'application/zip',
+];
+
+const ACCEPTED_EXTENSIONS = [
+  '.pdf', '.epub', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.ico', '.heic', '.cbz', '.zip'
+];
 
 export const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -34,7 +52,7 @@ export const FileUpload = () => {
         if (rejection.errors.some((e: any) => e.code === 'file-too-large')) {
           setError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
         } else if (rejection.errors.some((e: any) => e.code === 'file-invalid-type')) {
-          setError('Invalid file type. Please upload a PDF file.');
+          setError('Invalid file type. Please upload a supported file: PDF, EPUB, image, CBZ, or ZIP.');
         } else {
           setError('File upload failed. Please try again.');
         }
@@ -51,8 +69,10 @@ export const FileUpload = () => {
         return;
       }
       
-      if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-        setError('Invalid file type. Please upload a PDF file.');
+      // Validate by extension as well (for browsers that don't set type)
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (!ACCEPTED_EXTENSIONS.some(e => file.name.toLowerCase().endsWith(e))) {
+        setError('Invalid file type. Please upload a supported file: PDF, EPUB, image, CBZ, or ZIP.');
         return;
       }
 
@@ -69,7 +89,7 @@ export const FileUpload = () => {
             
             // Store the PDF file for persistence
             storePdfFile(file).catch(error => {
-              console.warn('Failed to store PDF file:', error);
+              console.warn('Failed to store file:', error);
             });
             
             return 100;
@@ -85,6 +105,18 @@ export const FileUpload = () => {
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
+      "application/epub+zip": [".epub"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/gif": [".gif"],
+      "image/bmp": [".bmp"],
+      "image/webp": [".webp"],
+      "image/svg+xml": [".svg"],
+      "image/tiff": [".tiff"],
+      "image/x-icon": [".ico"],
+      "image/heic": [".heic"],
+      "application/vnd.comicbook+zip": [".cbz"],
+      "application/zip": [".zip"],
     },
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
@@ -240,7 +272,7 @@ export const FileUpload = () => {
           
           <div className="text-sm text-muted-foreground mb-8 space-y-1">
             <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
-            <p>Supported format: PDF</p>
+            <p>Supported formats: PDF, EPUB, JPG, PNG, GIF, BMP, WEBP, SVG, TIFF, ICO, HEIC, CBZ, ZIP</p>
           </div>
           
           <div className="flex items-center justify-center gap-4 mb-8">

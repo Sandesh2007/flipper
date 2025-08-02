@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronRight,
   ExternalLink,
+  Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-context"
@@ -24,74 +25,103 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex w-64  bg-neutral-200 dark:bg-neutral-800 flex-col">
-      <div className="p-4">
+    <aside className="hidden lg:flex w-72 bg-gradient-glass border-r border-border/20 flex-col backdrop-blur-xl">
+      {/* Header Section */}
+      <div className="p-6 border-b border-border/10">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-foreground">NekoPress</h2>
+            <p className="text-xs text-muted-foreground">Publisher Dashboard</p>
+          </div>
+        </div>
         <Link href="/home/create">
-        <Button variant="outline" className="w-full cursor-pointer text-neutral-900 dark:text-neutral-100">
-          <Upload className="w-4 h-4 mr-2" />
-          Upload
-        </Button>
+          <Button 
+            variant="outline" 
+            className="w-full cursor-pointer bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+          >
+            <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+            Upload Publication
+          </Button>
         </Link>
       </div>
-      <nav className="flex-1 px-4 space-y-1">
+
+      {/* Navigation */}
+      <nav className="flex-1 px-6 py-4 space-y-2">
         <Link href="/home/publisher">
           <SidebarItem
-            icon={<Home className="w-5 h-5 mr-3" />} 
-            label="Home" 
+            icon={<Home className="w-5 h-5" />} 
+            label="Dashboard" 
             isActive={pathname === "/home/publisher"}
           />
         </Link>
+        
         <div>
           <div
-            className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-md cursor-pointer"
+            className="flex items-center px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/30 rounded-xl cursor-pointer transition-all duration-300 group"
             onClick={() => setIsLibraryOpen(!isLibraryOpen)}
           >
-            {isLibraryOpen ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+            {isLibraryOpen ? 
+              <ChevronDown className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" /> : 
+              <ChevronRight className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
+            }
             <Library className="w-5 h-5 mr-3" />
-            My Library
+            <span className="font-medium">My Library</span>
           </div>
           {isLibraryOpen && (
-            <div className="ml-6 space-y-1">
+            <div className="ml-8 space-y-1 mt-2">
               <Link href="/home/publisher/publications">
                 <SidebarItem 
-                  icon={<FileText className="w-4 h-4 mr-3" />} 
+                  icon={<FileText className="w-4 h-4" />} 
                   label="Publications" 
                   isActive={pathname === "/home/publisher/publications"}
+                  isSubItem
                 />
               </Link>
               <Link href="/home/publisher/articles">
                 <SidebarItem 
-                  icon={<FileText className="w-4 h-4 mr-3" />} 
+                  icon={<FileText className="w-4 h-4" />} 
                   label="Articles" 
                   isActive={pathname === "/home/publisher/articles"}
+                  isSubItem
                 />
               </Link>
             </div>
           )}
         </div>
+        
         <Link href="/home/publisher/social-posts">
           <SidebarItem 
-            icon={<Users className="w-5 h-5 mr-3" />} 
+            icon={<Users className="w-5 h-5" />} 
             label="Social Posts" 
             isActive={pathname === "/home/publisher/social-posts"}
           />
         </Link>
+        
         <Link href="/home/publisher/statistics">
           <SidebarItem 
-            icon={<BarChart3 className="w-5 h-5 mr-3" />} 
-            label="Statistics" 
+            icon={<BarChart3 className="w-5 h-5" />} 
+            label="Analytics" 
             isActive={pathname === "/home/publisher/statistics"}
           />
         </Link>
-        <div className="flex items-center px-3 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-md cursor-pointer">
-          <HelpCircle className="w-5 h-5 mr-3" />
-          <span>Help Center</span>
-          <ExternalLink className="w-4 h-4 ml-auto" />
-        </div>
       </nav>
-      <div className={`p-4 ${isLoggedIn ? "block" : "hidden"}`}>
-        <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-          Current plan: <span className="text-neutral-800 dark:text-neutral-100">Basic</span>
+
+      {/* Footer Section */}
+      <div className={`p-6 border-t border-border/10 ${isLoggedIn ? "block" : "hidden"}`}>
+        <div className="bg-gradient-card border border-border/20 rounded-xl p-4">
+          <div className="text-sm text-muted-foreground mb-2">
+            Current Plan
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-foreground">Basic Plan</span>
+            <div className="w-2 h-2 rounded-full bg-primary/60"></div>
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Upgrade for more features
+          </div>
         </div>
       </div>
     </aside>
@@ -101,22 +131,29 @@ export default function Sidebar() {
 function SidebarItem({ 
   icon, 
   label, 
-  isActive = false 
+  isActive = false,
+  isSubItem = false
 }: { 
   icon: React.ReactNode; 
   label: string; 
   isActive?: boolean;
+  isSubItem?: boolean;
 }) {
   return (
     <div className={`
-      flex items-center px-3 py-2 rounded-md cursor-pointer
+      flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 group
       ${isActive 
-        ? "bg-neutral-300 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-100" 
-        : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+        ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-soft" 
+        : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/30"
       }
+      ${isSubItem ? "text-sm" : ""}
     `}>
-      {icon}
-      {label}
+      <div className={`mr-3 ${isSubItem ? "ml-4" : ""}`}>
+        {icon}
+      </div>
+      <span className={`font-medium ${isSubItem ? "text-sm" : ""}`}>
+        {label}
+      </span>
     </div>
   )
 } 

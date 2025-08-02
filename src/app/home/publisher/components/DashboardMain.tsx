@@ -118,8 +118,8 @@ export default function DashboardMain() {
                 Upload a .pdf or other&nbsp;
                 <Tooltip>
                   <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
-                  <TooltipContent className="bg-gradient-card border border-border/50 rounded-xl p-3">
-                    <p className="text-sm">.pdf, .doc, .docx, .pptx</p>
+                  <TooltipContent className="bg-gradient-glass border border-border/50 rounded-xl p-3">
+                    <p className="text-sm text-primary">.pdf, .doc, .docx, .pptx</p>
                   </TooltipContent>
                 </Tooltip>
               </p>
@@ -137,18 +137,6 @@ export default function DashboardMain() {
             <div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-gradient-hero">Recent Work</h2>
               <p className="text-muted-foreground">Manage your publications and track performance</p>
-            </div>
-            
-            {/* Quick Stats */}
-            <div className="hidden md:flex items-center gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gradient mb-1">12</div>
-                <div className="text-xs text-muted-foreground">Publications</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gradient mb-1">1.2K</div>
-                <div className="text-xs text-muted-foreground">Views</div>
-              </div>
             </div>
           </div>
           
