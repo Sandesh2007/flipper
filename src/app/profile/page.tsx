@@ -16,15 +16,20 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Sparkles, User, BookOpen } from 'lucide-react';
+import { shouldSkipLoading } from '@/components/layout/navigation-state-manager';
 
 interface LikeRow {
   publication_id: string;
   user_id: string;
 }
 
+// Cache for likes data
+const likesCache = new Map<string, { data: Record<string, number>; timestamp: number }>();
+const LIKES_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+
 export default function UserProfile() {
   const { user , loading: authLoading} = useAuth();
-  const { publications, loading, updatePublication } = usePublications();
+  const { publications, loading: publicationsLoading, updatePublication } = usePublications();
   const supabase = createClient();
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -39,35 +44,85 @@ export default function UserProfile() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [originalOrder, setOriginalOrder] = useState<string[]>([]);
+  const [likesLoading, setLikesLoading] = useState(false);
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const isMountedRef = useRef(true);
+  const fetchControllerRef = useRef<AbortController | null>(null);
 
   // Save original publication order once
   useEffect(() => {
     if (publications.length > 0 && originalOrder.length === 0) {
       setOriginalOrder(publications.map((p) => p.id));
     }
-  }, [publications]);
+  }, [publications, originalOrder.length]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (fetchControllerRef.current) {
+        fetchControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const fetchLikes = async () => {
       if (!user || publications.length === 0) return;
+      
+      // Check cache first
+      const cacheKey = `likes_${user.id}`;
+      const cached = likesCache.get(cacheKey);
+      const now = Date.now();
+      
+      if (cached && (now - cached.timestamp) < LIKES_CACHE_DURATION) {
+        setLikes(cached.data);
+        return;
+      }
+      
+      // Cancel any ongoing fetch
+      if (fetchControllerRef.current) {
+        fetchControllerRef.current.abort();
+      }
+      
+      fetchControllerRef.current = new AbortController();
+      const signal = fetchControllerRef.current.signal;
+      
+      setLikesLoading(true);
       const supabase = createClient();
       const pubIds = publications.map((p) => p.id);
 
-      const { data: allLikes } = await supabase
-        .from('publication_likes')
-        .select('publication_id, user_id')
-        .in('publication_id', pubIds);
+      try {
+        const { data: allLikes } = await supabase
+          .from('publication_likes')
+          .select('publication_id, user_id')
+          .in('publication_id', pubIds);
 
-      const likeMap: Record<string, number> = {};
-      allLikes?.forEach((row: LikeRow) => {
-        likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-      });
+        if (signal.aborted || !isMountedRef.current) return;
 
-      setLikes(likeMap);
+        const likeMap: Record<string, number> = {};
+        allLikes?.forEach((row: LikeRow) => {
+          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
+        });
+
+        // Update cache
+        likesCache.set(cacheKey, { data: likeMap, timestamp: now });
+        
+        if (isMountedRef.current) {
+          setLikes(likeMap);
+        }
+      } catch (error) {
+        console.error('Error fetching likes:', error);
+      } finally {
+        if (isMountedRef.current && !signal.aborted) {
+          setLikesLoading(false);
+        }
+      }
     };
+    
     fetchLikes();
   }, [user, publications]);
 
@@ -173,7 +228,11 @@ export default function UserProfile() {
     return pubs;
   }, [publications, editingId]);
 
-  if (authLoading || loading) {
+  // Show loading only if auth is loading or if we don't have any data yet
+  // Skip loading during navigation if we have cached data
+  const isLoading = authLoading || (publicationsLoading && publications.length === 0 && !shouldSkipLoading());
+
+  if (isLoading) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
       <LoadingSpinner size="lg" text="Loading profile..." />
@@ -222,7 +281,7 @@ export default function UserProfile() {
                   <div className='flex gap-3 justify-between items-center w-full sm:w-auto'>
                     <EditProfile />
                     <Button
-                      className="cursor-pointer transition-all duration-200 hover:scale-105 bg-gradient-hero hover:shadow-glow"
+                      className="cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-glow"
                       onClick={() => {
                         setLogoutDialogOpen(true);
                       }}
@@ -291,7 +350,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              {loading ? (
+              {publicationsLoading && publications.length === 0 && !shouldSkipLoading() ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <Card key={i} className="animate-pulse bg-gradient-card border border-border/50 rounded-2xl">
@@ -563,9 +622,7 @@ export default function UserProfile() {
       ) : (
 
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
-          {loading ?? (
-            <LoadingSpinner />
-          )}
+          <LoadingSpinner />
           <div className="flex items-center justify-center h-full">
             <div className="text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
               <div className="w-24 h-24 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-6">

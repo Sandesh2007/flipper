@@ -208,7 +208,7 @@ export default function EditProfile() {
                         </Label>
                         <Input
                             id="name"
-                            className="bg-background border border-input rounded-xl px-4 py-2 text-sm"
+                            className="w-full bg-background border border-input rounded-xl px-4 py-2 text-sm"
                             value={username}
                             onChange={e => setUsername(e.target.value.toLowerCase())}
                         />
@@ -221,7 +221,7 @@ export default function EditProfile() {
                         </Label>
                         <Input
                             id="bio"
-                            className="bg-background border border-input rounded-xl px-4 py-2 text-sm"
+                            className="w-full bg-background border border-input rounded-xl px-4 py-2 text-sm"
                             placeholder="Short description about you"
                             value={bio}
                             onChange={e => setBio(e.target.value)}

@@ -149,10 +149,10 @@ export default function PublicationsTab() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => router.push('/home/create')}
+                            onClick={() => router.push('/home/profile')}
                             className="bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
                         >
-                            Create Publication
+                            View All
                         </Button>
                     </div>
                     <div className="space-y-4">

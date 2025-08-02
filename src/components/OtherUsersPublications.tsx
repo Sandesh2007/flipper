@@ -9,6 +9,7 @@ import { RefreshCw, Users, BookOpen, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components/auth/auth-context';
 import LikeButton from '@/components/likes-button';
+import { shouldSkipLoading } from '@/components/layout/navigation-state-manager';
 
 interface UserProfile {
   id: string;
@@ -40,6 +41,10 @@ interface OtherUsersPublicationsProps {
   className?: string;
 }
 
+// Cache for discover data
+const discoverCache = new Map<string, { data: UserProfile[]; timestamp: number }>();
+const DISCOVER_CACHE_DURATION = 3 * 60 * 1000; // 3 minutes
+
 export default function OtherUsersPublications({
   title = "Community Publications",
   description = "Discover publications from other users",
@@ -55,6 +60,7 @@ export default function OtherUsersPublications({
   
   const isMountedRef = useRef(true);
   const fetchControllerRef = useRef<AbortController | null>(null);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -67,8 +73,34 @@ export default function OtherUsersPublications({
     };
   }, []);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
     if (!isMountedRef.current) return;
+    
+    // Skip loading if we're navigating and have cached data
+    if (!forceRefresh && shouldSkipLoading()) {
+      const cacheKey = `discover_${maxUsers}_${maxPublicationsPerUser}`;
+      const cached = discoverCache.get(cacheKey);
+      if (cached && isMountedRef.current) {
+        setUsers(cached.data);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+    }
+    
+    // Check cache first
+    const cacheKey = `discover_${maxUsers}_${maxPublicationsPerUser}`;
+    const cached = discoverCache.get(cacheKey);
+    const now = Date.now();
+    
+    if (!forceRefresh && cached && (now - cached.timestamp) < DISCOVER_CACHE_DURATION) {
+      if (isMountedRef.current) {
+        setUsers(cached.data);
+        setLoading(false);
+        setError(null);
+      }
+      return;
+    }
     
     if (fetchControllerRef.current) {
       fetchControllerRef.current.abort();
@@ -127,9 +159,12 @@ export default function OtherUsersPublications({
         .filter(userProfile => userProfile.publications.length > 0);
       
       if (!isMountedRef.current || signal.aborted) return;
-      setUsers(usersWithPubs);
+      
+      // Update cache
+      discoverCache.set(cacheKey, { data: usersWithPubs, timestamp: now });
       
       if (isMountedRef.current) {
+        setUsers(usersWithPubs);
         setLoading(false);
       }
     } catch (err: any) {
@@ -146,13 +181,14 @@ export default function OtherUsersPublications({
   }, [maxUsers, maxPublicationsPerUser]);
 
   useEffect(() => {
-    setUsers([]);
-    setError(null);
-    fetchData();
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true;
+      fetchData();
+    }
   }, [fetchData]);
 
   const handleRetry = useCallback(() => {
-    fetchData();
+    fetchData(true); // Force refresh
   }, [fetchData]);
 
   return (

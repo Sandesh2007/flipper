@@ -10,24 +10,18 @@ const footerLinks = {
     { name: "Features", href: "/" },
     { name: "Pricing", href: "/pricing" },
     { name: "Templates", href: "#templates" },
-    { name: "API", href: "#api" },
   ],
   resources: [
     { name: "Blog", href: "#blog" },
     { name: "Community", href: "/discover" },
-    { name: "Tutorials", href: "#tutorials" },
   ],
   company: [
     { name: "About", href: "#about" },
     { name: "Contact", href: "#contact" },
-    { name: "Careers", href: "#careers" },
-    { name: "Press", href: "#press" },
   ],
   legal: [
     { name: "Privacy", href: "#privacy" },
     { name: "Terms", href: "#terms" },
-    { name: "Security", href: "#security" },
-    { name: "GDPR", href: "#gdpr" },
   ]
 };
 

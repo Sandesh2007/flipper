@@ -28,7 +28,7 @@ const ACCEPTED_EXTENSIONS = [
   '.pdf', '.epub', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.ico', '.heic', '.cbz', '.zip'
 ];
 
-export const FileUpload = () => {
+export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = ({ onFileSelected }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -94,7 +94,7 @@ export const FileUpload = () => {
             
             return 100;
           }
-          return prev + Math.random() * 15 + 5; // More realistic progress
+          return prev + Math.random();
         });
       }, 300);
     },
@@ -194,7 +194,7 @@ export const FileUpload = () => {
               <Progress value={uploadProgress} className="h-3 bg-muted" />
             </div>
             <p className="text-muted-foreground animate-pulse-slow">
-              {uploadProgress}% complete
+              {Math.round(uploadProgress)}% complete
             </p>
           </div>
         </div>

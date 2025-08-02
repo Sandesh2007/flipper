@@ -1,12 +1,8 @@
-import { Metadata } from 'next';
+'use client'
 import FuzzyText from '@/components/features/fuzzy-text';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: '404 - Page Not Found',
-};
 
 export default function NotFound() {
   return (
@@ -16,7 +12,7 @@ export default function NotFound() {
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
       
-      <div className="relative max-w-4xl mx-auto px-4 py-12 text-center animate-fade-in">
+      <div className="relative flex flex-col justify-center items-center max-w-4xl mx-auto px-4 py-12 text-center animate-fade-in">
         <div className="mb-8">
           <FuzzyText
             fontSize="clamp(3rem, 20vw, 6rem)"

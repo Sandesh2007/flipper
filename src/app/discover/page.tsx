@@ -34,25 +34,6 @@ export default function PublicLandingPage() {
                 placeholder="Search for users and publications..."
                 className="w-full"
               />
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="group text-center p-4 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-2xl font-bold text-gradient mb-1 group-hover:animate-bounce">1.2K+</div>
-              <div className="text-xs text-muted-foreground font-medium">Publications</div>
-            </div>
-            <div className="group text-center p-4 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-2xl font-bold text-gradient mb-1 group-hover:animate-bounce">500+</div>
-              <div className="text-xs text-muted-foreground font-medium">Creators</div>
-            </div>
-            <div className="group text-center p-4 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-2xl font-bold text-gradient mb-1 group-hover:animate-bounce">50K+</div>
-              <div className="text-xs text-muted-foreground font-medium">Views</div>
             </div>
           </div>
         </div>

@@ -1,7 +1,8 @@
 'use client'
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components';
+import { shouldSkipLoading } from '@/components/layout/navigation-state-manager';
 
 export interface Publication {
   id: string;
@@ -28,14 +29,52 @@ export interface PublicationsContextType {
 
 const PublicationsContext = createContext<PublicationsContextType | undefined>(undefined);
 
+// Cache for publications data
+const publicationsCache = new Map<string, { data: Publication[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const isInitializedRef = useRef(false);
+  const fetchControllerRef = useRef<AbortController | null>(null);
 
-  const fetchPublications = useCallback(async () => {
+  const fetchPublications = useCallback(async (forceRefresh = false) => {
     if (!user) return;
+    
+    // Skip loading if we're navigating and have cached data
+    if (!forceRefresh && shouldSkipLoading()) {
+      const cacheKey = `publications_${user.id}`;
+      const cached = publicationsCache.get(cacheKey);
+      if (cached) {
+        setPublications(cached.data);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+    }
+    
+    // Check cache first
+    const cacheKey = `publications_${user.id}`;
+    const cached = publicationsCache.get(cacheKey);
+    const now = Date.now();
+    
+    if (!forceRefresh && cached && (now - cached.timestamp) < CACHE_DURATION) {
+      setPublications(cached.data);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+    
+    // Cancel any ongoing fetch
+    if (fetchControllerRef.current) {
+      fetchControllerRef.current.abort();
+    }
+    
+    fetchControllerRef.current = new AbortController();
+    const signal = fetchControllerRef.current.signal;
     
     setLoading(true);
     setError(null);
@@ -48,36 +87,78 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+      if (signal.aborted) return;
+
       if (fetchError) {
         setError(fetchError.message);
         return;
       }
 
-      setPublications(data || []);
+      const publicationsData = data || [];
+      setPublications(publicationsData);
+      
+      // Update cache
+      publicationsCache.set(cacheKey, { data: publicationsData, timestamp: now });
     } catch (err) {
+      if (signal.aborted) return;
       setError(err instanceof Error ? err.message : 'Failed to fetch publications');
     } finally {
-      setLoading(false);
+      if (!signal.aborted) {
+        setLoading(false);
+      }
     }
   }, [user]);
 
   const refreshPublications = useCallback(async () => {
-    await fetchPublications();
+    await fetchPublications(true); // Force refresh
   }, [fetchPublications]);
 
   const addPublication = useCallback((publication: Publication) => {
     setPublications(prev => [publication, ...prev]);
-  }, []);
+    // Update cache
+    if (user) {
+      const cacheKey = `publications_${user.id}`;
+      const cached = publicationsCache.get(cacheKey);
+      if (cached) {
+        publicationsCache.set(cacheKey, {
+          data: [publication, ...cached.data],
+          timestamp: Date.now()
+        });
+      }
+    }
+  }, [user]);
 
   const updatePublication = useCallback((id: string, updates: Partial<Publication>) => {
     setPublications(prev => 
       prev.map(pub => pub.id === id ? { ...pub, ...updates } : pub)
     );
-  }, []);
+    // Update cache
+    if (user) {
+      const cacheKey = `publications_${user.id}`;
+      const cached = publicationsCache.get(cacheKey);
+      if (cached) {
+        publicationsCache.set(cacheKey, {
+          data: cached.data.map(pub => pub.id === id ? { ...pub, ...updates } : pub),
+          timestamp: Date.now()
+        });
+      }
+    }
+  }, [user]);
 
   const deletePublication = useCallback((id: string) => {
     setPublications(prev => prev.filter(pub => pub.id !== id));
-  }, []);
+    // Update cache
+    if (user) {
+      const cacheKey = `publications_${user.id}`;
+      const cached = publicationsCache.get(cacheKey);
+      if (cached) {
+        publicationsCache.set(cacheKey, {
+          data: cached.data.filter(pub => pub.id !== id),
+          timestamp: Date.now()
+        });
+      }
+    }
+  }, [user]);
 
   const getPublicationById = useCallback((id: string) => {
     return publications.find(pub => pub.id === id);
@@ -105,10 +186,27 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Fetch publications when user changes
+  // Fetch publications when user changes, but only once per user
   useEffect(() => {
-    fetchPublications();
-  }, [fetchPublications]);
+    if (user && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      fetchPublications();
+    } else if (!user) {
+      isInitializedRef.current = false;
+      setPublications([]);
+      setLoading(false);
+      setError(null);
+    }
+  }, [user, fetchPublications]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchControllerRef.current) {
+        fetchControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const value: PublicationsContextType = {
     publications,

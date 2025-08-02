@@ -3,8 +3,10 @@ import { PublicationsTab } from "@/components"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { FileText, Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function PublicationsPage() {
+  const router = useRouter();
   return (
     <div className="p-6 lg:p-8">
       {/* Hero Section */}
@@ -20,7 +22,9 @@ export default function PublicationsPage() {
             </p>
           </div>
         </div>
-        <Button className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300 group">
+        <Button
+        onClick={() => router.push('/home/create')}
+        className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300 group">
           <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Publication
         </Button>

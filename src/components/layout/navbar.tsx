@@ -11,11 +11,9 @@ import {
     FileText,
     Users,
     BarChart3,
-    HelpCircle,
     Upload,
     ChevronDown,
     ChevronRight,
-    ExternalLink,
     RefreshCw,
     Sparkles,
 } from "lucide-react";
@@ -26,33 +24,91 @@ import { ThemeToggle } from "../themeToggle";
 import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { clearAllCaches } from "@/lib/cache-utils";
+import { usePathname } from "next/navigation";
+import { RefreshButton } from "../refresh-button";
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
     const { user } = useAuth();
     const homePage = user ? "/home/publisher" : "/";
+    const menuRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
 
     // Close mobile menu when screen becomes large
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 1024) {
                 setMobileOpen(false);
+                setIsLibraryOpen(false);
+                setIsAnimating(false);
             }
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Close mobile menu when navigation occurs
+    useEffect(() => {
+        setMobileOpen(false);
+        setIsLibraryOpen(false);
+        setIsAnimating(false);
+    }, [pathname]);
+
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (mobileOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [mobileOpen]);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                handleCloseMenu();
+            }
+        };
+
+        if (mobileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [mobileOpen]);
+
+    const handleCloseMenu = () => {
+        setIsAnimating(true);
+        setTimeout(() => {
+            setMobileOpen(false);
+            setIsLibraryOpen(false);
+            setIsAnimating(false);
+        }, 300);
+    };
+
+    const handleOpenMenu = () => {
+        setMobileOpen(true);
+        setIsAnimating(false);
+    };
+
     return (
         <>
             <nav className="bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/50 shadow-soft">
                 {/* Desktop & Mobile Container */}
-                <div className="flex justify-between items-center px-4 sm:px-6 py-4 max-w-screen-xl mx-auto w-full">
+                <div className="flex justify-between items-center px-3 sm:px-6 py-3 sm:py-4 w-full h-full max-w-screen-xl mx-auto">
                     {/* Left Side: Logo */}
-                    <div className="flex items-center gap-4">
-                        <Link href={homePage} className="flex gap-3 items-center flex-shrink-0 group">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <Link href={homePage} className="flex gap-2 sm:gap-3 items-center flex-shrink-0 group">
                             <div className="relative">
                                 <Image src={logo} alt="logo" height={36} width={36} className="sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" priority />
                                 <div className="absolute inset-0 bg-gradient-hero rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
@@ -62,38 +118,30 @@ export function Navbar() {
                                 <span className="text-xs text-muted-foreground hidden sm:block">Digital Publishing</span>
                             </div>
                         </Link>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-2 cursor-pointer hover:bg-accent transition-all duration-300 hover:scale-105 rounded-xl"
-                            onClick={() => window.location.reload()}
-                            aria-label="Refresh page"
-                        >
-                            <RefreshCw className="h-4 w-4" />
-                        </Button>
+                        {/* <RefreshButton /> */}
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden lg:flex items-center gap-6">
+                    <div className="hidden lg:flex items-center gap-4 xl:gap-6">
                         <div className="flex items-center gap-1">
-                            <Link href="/discover" className="px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
+                            <Link href="/discover" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                 <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
                             </Link>
-                            <Link href="/pricing" className="px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
+                            <Link href="/pricing" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                 <span className="group-hover:text-primary transition-colors duration-300">Pricing</span>
                             </Link>
                             {user ? (
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 xl:gap-3">
                                     <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 rounded-xl p-2 hover:bg-accent">
                                         <CurrentUserAvatar />
                                     </Link>
                                 </div>
                             ) : (
                                 <>
-                                    <Link href="/auth/register?mode=login" className="px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
+                                    <Link href="/auth/register?mode=login" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                         <span className="group-hover:text-primary transition-colors duration-300">Login</span>
                                     </Link>
-                                    <Button asChild className="bg-gradient-hero hover:shadow-glow text-white text-sm font-medium px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
+                                    <Button asChild className="bg-gradient-hero hover:shadow-glow text-white text-sm font-medium px-4 xl:px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
                                         <Link href="/auth/register?mode=signup">
                                             <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                                             Sign up
@@ -106,133 +154,148 @@ export function Navbar() {
                     </div>
 
                     {/* Mobile Controls */}
-                    <div className="flex items-center gap-3 lg:hidden">
+                    <div className="flex items-center gap-2 sm:gap-3 lg:hidden">
                         <ThemeToggle />
                         {user && (
-                            <Link href="/profile" className="flex items-center gap-2 p-2 rounded-xl hover:bg-accent transition-all duration-300" aria-label="Go to profile">
+                            <Link href="/profile" className="flex items-center gap-2 p-1.5 sm:p-2 rounded-xl hover:bg-accent transition-all duration-300" aria-label="Go to profile">
                                 <CurrentUserAvatar />
                             </Link>
                         )}
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setMobileOpen(!mobileOpen)}
-                            className="lg:hidden hover:bg-accent transition-all duration-300 rounded-xl"
+                            onClick={mobileOpen ? handleCloseMenu : handleOpenMenu}
+                            className="hover:bg-accent transition-all duration-300 rounded-xl p-1.5 sm:p-2"
                             aria-label={mobileOpen ? "Close menu" : "Open menu"}
                             aria-expanded={mobileOpen}
                         >
-                            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                            {mobileOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
                         </Button>
                     </div>
                 </div>
 
-                {/* Mobile Slide-out Menu */}
-                {mobileOpen && (
-                    <>
-                        {/* Backdrop */}
-                        <div
-                            className="fixed inset-0 bg-background/70 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
-                            onClick={() => setMobileOpen(false)}
-                        />
-
-                        {/* Slide-out Panel */}
-                        <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-gradient-card border-r border-border/50 z-50 lg:hidden transform transition-transform duration-300 ease-in-out overflow-y-auto shadow-soft animate-slide-in">
+                {/* Mobile Menu Overlay */}
+                {(mobileOpen || isAnimating) && (
+                    <div className="fixed inset-0 z-[9999] h-screen">
+                        {/* Full Screen Panel */}
+                        <div 
+                            ref={menuRef}
+                            className={`fixed inset-0 w-screen h-screen bg-background backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-out ${
+                                isAnimating ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+                            }`}
+                        >
                             {/* Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-border/50">
-                                <Link href="/" className="flex gap-3 items-center" onClick={() => setMobileOpen(false)}>
+                            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50 bg-background backdrop-blur-sm flex-shrink-0">
+                                <Link href="/" className="flex gap-2 sm:gap-3 items-center" onClick={handleCloseMenu}>
                                     <Image src={logo} alt="logo" height={32} width={32} priority />
-                                    <div className="flex flex-col">
-                                        <span className="font-bold text-lg text-gradient-hero">NekoPress</span>
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="font-bold text-base sm:text-lg text-gradient-hero truncate">NekoPress</span>
                                         <span className="text-xs text-muted-foreground">Digital Publishing</span>
                                     </div>
                                 </Link>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={handleCloseMenu}
+                                    className="hover:bg-accent transition-all duration-300 rounded-xl"
+                                    aria-label="Close menu"
+                                >
+                                    <X className="h-5 w-5" />
+                                </Button>
                             </div>
 
                             {/* Upload Button */}
-                            <div className="p-6 border-b border-border/50">
-                                <Button variant="outline" className="w-full bg-gradient-hero hover:shadow-glow text-white border-primary/30 rounded-xl transition-all duration-300 hover:scale-105" onClick={() => setMobileOpen(false)}>
+                            <div className="p-4 sm:p-6 border-b border-border/50 bg-background flex-shrink-0">
+                                <Button 
+                                    variant="outline" 
+                                    className="w-full bg-gradient-hero hover:shadow-glow text-white border-primary/30 rounded-xl transition-all duration-300 hover:scale-105" 
+                                    onClick={handleCloseMenu}
+                                >
                                     <Upload className="w-4 h-4 mr-2" />
                                     Upload PDF
                                 </Button>
                             </div>
 
                             {/* Navigation Menu */}
-                            <div className="flex flex-col">
-                                {/* Dashboard Navigation */}
-                                {user && (
-                                    <div className="px-6 py-4">
-                                        <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">Dashboard</h3>
-                                        <div className="space-y-2">
-                                            <MobileSidebarItem
-                                                icon={<Home className="w-5 h-5" />}
-                                                label="Home"
-                                                href="/"
-                                                onClick={() => setMobileOpen(false)}
-                                            />
+                            <div className="flex flex-col flex-1 min-h-0">
+                                {/* Main content area */}
+                                <div className="flex-1 overflow-y-auto bg-background">
+                                    {/* Dashboard Navigation */}
+                                    {user && (
+                                        <div className="px-4 sm:px-6 py-4">
+                                            <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">Dashboard</h3>
+                                            <div className="space-y-2">
+                                                <MobileSidebarItem
+                                                    icon={<Home className="w-5 h-5" />}
+                                                    label="Home"
+                                                    href="/"
+                                                    onClick={handleCloseMenu}
+                                                />
 
-                                            <div>
-                                                <div
-                                                    className="flex items-center px-4 py-3 text-foreground hover:bg-accent rounded-xl cursor-pointer transition-all duration-300"
-                                                    onClick={() => setIsLibraryOpen(!isLibraryOpen)}
-                                                >
-                                                    {isLibraryOpen ? <ChevronDown className="w-4 h-4 mr-3" /> : <ChevronRight className="w-4 h-4 mr-3" />}
-                                                    <Library className="w-5 h-5 mr-3" />
-                                                    My Library
-                                                </div>
-                                                {isLibraryOpen && (
-                                                    <div className="ml-6 space-y-2 mt-2">
-                                                        <MobileSidebarItem
-                                                            icon={<FileText className="w-4 h-4" />}
-                                                            label="Publications"
-                                                            href="/home/publisher/publications"
-                                                            onClick={() => setMobileOpen(false)}
-                                                        />
-                                                        <MobileSidebarItem
-                                                            icon={<FileText className="w-4 h-4" />}
-                                                            label="Articles"
-                                                            href="/home/publisher/articles"
-                                                            onClick={() => setMobileOpen(false)}
-                                                        />
+                                                <div>
+                                                    <div
+                                                        className="flex items-center px-4 py-3 text-foreground hover:bg-accent/50 rounded-xl cursor-pointer transition-all duration-300"
+                                                        onClick={() => setIsLibraryOpen(!isLibraryOpen)}
+                                                    >
+                                                        {isLibraryOpen ? <ChevronDown className="w-4 h-4 mr-3" /> : <ChevronRight className="w-4 h-4 mr-3" />}
+                                                        <Library className="w-5 h-5 mr-3" />
+                                                        My Library
                                                     </div>
-                                                )}
-                                            </div>
+                                                    {isLibraryOpen && (
+                                                        <div className="ml-6 space-y-2 mt-2 transition-all duration-300">
+                                                            <MobileSidebarItem
+                                                                icon={<FileText className="w-4 h-4" />}
+                                                                label="Publications"
+                                                                href="/home/publisher/publications"
+                                                                onClick={handleCloseMenu}
+                                                            />
+                                                            <MobileSidebarItem
+                                                                icon={<FileText className="w-4 h-4" />}
+                                                                label="Articles"
+                                                                href="/home/publisher/articles"
+                                                                onClick={handleCloseMenu}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
 
-                                            <MobileSidebarItem
-                                                icon={<Users className="w-5 h-5" />}
-                                                label="Social Posts"
-                                                href="/home/publisher/social"
-                                                onClick={() => setMobileOpen(false)}
-                                            />
-                                            <MobileSidebarItem
-                                                icon={<BarChart3 className="w-5 h-5" />}
-                                                label="Statistics"
-                                                href="/home/publisher/statistics"
-                                                onClick={() => setMobileOpen(false)}
-                                            />
+                                                <MobileSidebarItem
+                                                    icon={<Users className="w-5 h-5" />}
+                                                    label="Social Posts"
+                                                    href="/home/publisher/social-posts"
+                                                    onClick={handleCloseMenu}
+                                                />
+                                                <MobileSidebarItem
+                                                    icon={<BarChart3 className="w-5 h-5" />}
+                                                    label="Statistics"
+                                                    href="/home/publisher/statistics"
+                                                    onClick={handleCloseMenu}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
 
                                 {/* User Section */}
-                                <div className="px-6 py-6 border-t border-border/50 mt-auto">
-                                    <Link href="/discover" className="block px-4 py-3 rounded-xl hover:bg-accent transition-all duration-300 text-sm mb-3" onClick={() => setMobileOpen(false)}>
+                                <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-border/50 bg-background flex-shrink-0">
+                                    <Link href="/discover" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-3" onClick={handleCloseMenu}>
                                         Discover
                                     </Link>
-                                    <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-accent transition-all duration-300 text-sm mb-4" onClick={() => setMobileOpen(false)}>
+                                    <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-4" onClick={handleCloseMenu}>
                                         Pricing
                                     </Link>
                                     {user ? (
-                                        <Link href="/profile" className="flex items-center gap-4 px-4 py-3 hover:bg-accent rounded-xl transition-all duration-300" onClick={() => setMobileOpen(false)}>
+                                        <Link href="/profile" className="flex items-center gap-4 px-4 py-3 hover:bg-accent/50 rounded-xl transition-all duration-300" onClick={handleCloseMenu}>
                                             <CurrentUserAvatar />
                                             <span className="font-medium text-sm truncate">{user.username || user.email}</span>
                                         </Link>
                                     ) : (
                                         <div className="space-y-3">
-                                            <Link href="/auth/register?mode=login" className="block px-4 py-3 rounded-xl hover:bg-accent transition-all duration-300 text-sm" onClick={() => setMobileOpen(false)}>
+                                            <Link href="/auth/register?mode=login" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm" onClick={handleCloseMenu}>
                                                 Login
                                             </Link>
                                             <Button asChild className="w-full bg-gradient-hero hover:shadow-glow text-white text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105">
-                                                <Link href="/auth/register?mode=signup" onClick={() => setMobileOpen(false)}>
+                                                <Link href="/auth/register?mode=signup" onClick={handleCloseMenu}>
                                                     <Sparkles className="w-4 h-4 mr-2" />
                                                     Sign up
                                                 </Link>
@@ -251,7 +314,7 @@ export function Navbar() {
                                 </div>
                             </div>
                         </div>
-                    </>
+                    </div>
                 )}
             </nav>
         </>
@@ -272,7 +335,7 @@ function MobileSidebarItem({
     return (
         <Link
             href={href}
-            className="flex items-center px-4 py-3 text-foreground hover:bg-accent rounded-xl cursor-pointer transition-all duration-300"
+            className="flex items-center px-4 py-3 text-foreground hover:bg-accent/50 rounded-xl cursor-pointer transition-all duration-300"
             onClick={onClick}
         >
             <span className="mr-3">{icon}</span>

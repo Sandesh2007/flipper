@@ -7,6 +7,8 @@ import ClientLayout from "@/components/layout/client-layout";
 import { AuthProvider } from "@/components/auth/auth-context";
 import { PdfUploadProvider, PublicationsProvider } from '@/components';
 import { NetworkStatus } from "@/components/features/network-status";
+import { NavigationStateManager } from "@/components/layout/navigation-state-manager";
+import { PageTransition } from "@/components/ui/page-transition";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -35,11 +37,14 @@ export default function RootLayout({
                 enableSystem
               >
                 <ClientLayout>
+                  <NavigationStateManager />
                   <Toaster
                     position="top-center"
                   />
                   <NetworkStatus/>
-                  {children}
+                  <PageTransition>
+                    {children}
+                  </PageTransition>
                 </ClientLayout>
               </ThemeProvider>
             </PublicationsProvider>
