@@ -5,9 +5,10 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Heart, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components/auth/auth-context';
+import LikeButton from '@/components/likes-button';
 
 interface UserProfile {
   id: string;
@@ -30,11 +31,6 @@ interface Publication {
   created_at: string;
 }
 
-interface LikeRow {
-  publication_id: string;
-  user_id: string;
-}
-
 interface OtherUsersPublicationsProps {
   title?: string;
   description?: string;
@@ -54,13 +50,10 @@ export default function OtherUsersPublications({
 }: OtherUsersPublicationsProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [likes, setLikes] = useState<Record<string, number>>({});
-  const [userLikes, setUserLikes] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   
   const isMountedRef = useRef(true);
-  
   const fetchControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -90,7 +83,6 @@ export default function OtherUsersPublications({
     try {
       const supabase = createClient();
       
-      // Check if component is still mounted before proceeding
       if (!isMountedRef.current || signal.aborted) return;
       
       const { data: profiles, error: profilesError } = await supabase
@@ -136,48 +128,11 @@ export default function OtherUsersPublications({
       
       if (!isMountedRef.current || signal.aborted) return;
       setUsers(usersWithPubs);
-
-      // Gather all publication ids
-      const pubIds = allPubs?.map((p: Publication) => p.id) || [];
-      if (pubIds.length > 0) {
-        // Fetch all likes for these publications
-        const { data: allLikes, error: likesError } = await supabase
-          .from('publication_likes')
-          .select('publication_id, user_id')
-          .in('publication_id', pubIds);
-
-        if (likesError) throw likesError;
-        if (!isMountedRef.current || signal.aborted) return;
-
-        // Count likes per publication
-        const likeMap: Record<string, number> = {};
-        allLikes?.forEach((row: LikeRow) => {
-          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-        });
-        
-        if (isMountedRef.current) {
-          setLikes(likeMap);
-        }
-        
-        // Only fetch user likes if user is logged in
-        if (user && isMountedRef.current) {
-          const userLikeMap: Record<string, boolean> = {};
-          allLikes?.forEach((row: LikeRow) => {
-            if (row.user_id === user.id) {
-              userLikeMap[row.publication_id] = true;
-            }
-          });
-          setUserLikes(userLikeMap);
-        } else if (isMountedRef.current) {
-          setUserLikes({});
-        }
-      }
       
       if (isMountedRef.current) {
         setLoading(false);
       }
     } catch (err: any) {
-      // Don't show error if request was aborted (component unmounted)
       if (err.name === 'AbortError' || !isMountedRef.current) {
         return;
       }
@@ -188,54 +143,13 @@ export default function OtherUsersPublications({
         setLoading(false);
       }
     }
-  }, [user?.id, maxUsers, maxPublicationsPerUser]); // Fixed dependency array
+  }, [maxUsers, maxPublicationsPerUser]);
 
-  // Reset state and fetch data when component mounts or key props change
   useEffect(() => {
-    // Reset state when component mounts or key dependencies change
     setUsers([]);
-    setLikes({});
-    setUserLikes({});
     setError(null);
-    
     fetchData();
   }, [fetchData]);
-
-  const handleLike = async (pubId: string) => {
-    if (!user) return;
-    const supabase = createClient();
-
-    // Optimistic update
-    setUserLikes((prev) => ({ ...prev, [pubId]: true }));
-    setLikes((prev) => ({ ...prev, [pubId]: (prev[pubId] || 0) + 1 }));
-    
-    try {
-      await supabase.from('publication_likes').insert({ publication_id: pubId, user_id: user.id });
-    } catch (err) {
-      console.error('Error liking publication:', err);
-      // Revert on error
-      setUserLikes((prev) => ({ ...prev, [pubId]: false }));
-      setLikes((prev) => ({ ...prev, [pubId]: Math.max((prev[pubId] || 1) - 1, 0) }));
-    }
-  };
-  
-  const handleUnlike = async (pubId: string) => {
-    if (!user) return;
-    const supabase = createClient();
-    
-    // Optimistic update
-    setUserLikes((prev) => ({ ...prev, [pubId]: false }));
-    setLikes((prev) => ({ ...prev, [pubId]: Math.max((prev[pubId] || 1) - 1, 0) }));
-    
-    try {
-      await supabase.from('publication_likes').delete().eq('publication_id', pubId).eq('user_id', user.id);
-    } catch (err) {
-      console.error('Error unliking publication:', err);
-      // Revert on error
-      setUserLikes((prev) => ({ ...prev, [pubId]: true }));
-      setLikes((prev) => ({ ...prev, [pubId]: (prev[pubId] || 0) + 1 }));
-    }
-  };
 
   const handleRetry = useCallback(() => {
     fetchData();
@@ -311,58 +225,39 @@ export default function OtherUsersPublications({
                 </Link>
               )}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {userProfile.publications.map((pub: Publication) => {
-                  const isUploader = user && user.id === pub.user_id;
-                  const liked = userLikes[pub.id] || false;
-                  const likeCount = likes[pub.id] || 0;
-                  return (
-                    <div key={pub.id} className="relative group">
-                      <Link href={`/profile/${userProfile.username}`}>
-                        <Card className="hover:shadow-lg transition cursor-pointer h-full flex flex-col">
-                          <CardContent className="p-2 flex flex-col items-center justify-center h-full">
-                            {pub.thumb_url ? (
-                              <Image 
-                                src={pub.thumb_url} 
-                                alt={pub.title} 
-                                width={300}
-                                height={128}
-                                className="w-full h-32 object-cover rounded mb-2 border border-border" 
-                              />
-                            ) : (
-                              <div className="w-full h-32 flex items-center justify-center bg-muted text-muted-foreground rounded mb-2 border border-border text-xs">No Preview</div>
-                            )}
-                            <div className="text-xs text-center text-foreground line-clamp-2">{pub.title}</div>
-                          </CardContent>
-                        </Card>
-                      </Link>
-                      <div className="absolute top-2 right-2 flex items-center gap-1 z-10 rounded px-1 py-0.5">
-                        <span className="text-xs text-foreground font-medium">{likeCount}</span>
-                        {user ? (
-                          !isUploader && (
-                            liked ? (
-                              <Button size="icon" variant="ghost" className="h-6 w-6 cursor-pointer" onClick={() => handleUnlike(pub.id)} aria-label="Unlike">
-                                <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-                              </Button>
-                            ) : (
-                              <Button size="icon" variant="ghost" className="h-6 w-6 cursor-pointer" onClick={() => handleLike(pub.id)} aria-label="Like">
-                                <Heart className="w-4 h-4" />
-                              </Button>
-                            )
-                          )
-                        ) : (
-                          <Button size="icon" variant="ghost" className="h-6 w-6" disabled aria-label="Login to like publications">
-                            <Heart className="w-4 h-4" />
-                          </Button>
-                        )}
-                        {user && isUploader && (
-                          <div className="h-6 w-6 flex items-center justify-center">
-                            <Heart className="w-4 h-4 text-gray-400" />
+                {userProfile.publications.map((pub: Publication) => (
+                  <div key={pub.id} className="relative group">
+                    <Card className="hover:shadow-lg transition h-full flex flex-col">
+                      <CardContent className="p-2 flex flex-col h-full relative">
+                        <Link href={`/profile/${userProfile.username}`} className="flex-1">
+                          {pub.thumb_url ? (
+                            <Image 
+                              src={pub.thumb_url} 
+                              alt={pub.title} 
+                              width={300}
+                              height={128}
+                              className="w-full h-32 object-cover rounded mb-2 border border-border" 
+                            />
+                          ) : (
+                            <div className="w-full h-32 flex items-center justify-center bg-muted text-muted-foreground rounded mb-2 border border-border text-xs">
+                              No Preview
+                            </div>
+                          )}
+                          <div className="text-xs text-center text-foreground line-clamp-2 px-1">
+                            {pub.title}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                        </Link>
+                        
+                        <div className="absolute bottom-6 right-2 bg-neutral-900/50 rounded-full p-1 shadow-sm backdrop-blur-sm">
+                          <LikeButton
+                          publicationId={pub.id}
+                          showText={false}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
               </div>
             </div>
           ))}

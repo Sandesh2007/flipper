@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import LikeButton from '@/components/likes-button';
 
 interface UserProfile {
   id: string;
@@ -105,7 +106,7 @@ export default function PublicProfileByUsernamePage() {
         ) : (
           <div className="space-y-6">
             {publications.map((pub) => (
-              <Card key={pub.id} className="shadow-soft hover:shadow-medium transition-shadow">
+              <Card key={pub.id} className=" shadow-soft hover:shadow-medium transition-shadow">
                 <CardContent className="p-4 flex gap-4 items-center">
                   {pub.thumb_url ? (
                     <Image 
@@ -128,6 +129,9 @@ export default function PublicProfileByUsernamePage() {
                     className='cursor-pointer'
                     >View Publication</Button>
                     <div className="text-xs text-muted-foreground mt-1">{new Date(pub.created_at).toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <LikeButton publicationId={pub.id} />
                   </div>
                 </CardContent>
               </Card>
