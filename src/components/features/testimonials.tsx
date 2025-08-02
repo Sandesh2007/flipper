@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 
 const testimonials = [
@@ -11,7 +10,6 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b5bb?w=100&h=100&fit=crop&crop=face",
     content: "This platform transformed how we share our quarterly reports. The flipbook format is so much more engaging than static PDFs.",
     rating: 5,
-    verified: true
   },
   {
     name: "Michael Rodriguez",
@@ -20,7 +18,6 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     content: "The conversion quality is incredible. Our design portfolios look exactly as intended, and the analytics help us understand our audience.",
     rating: 5,
-    verified: true
   },
   {
     name: "Emily Johnson",
@@ -29,7 +26,6 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
     content: "We've increased our content engagement by 300% since switching to interactive flipbooks. The social sharing features are fantastic.",
     rating: 5,
-    verified: false
   },
   {
     name: "David Park",
@@ -38,7 +34,6 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     content: "Property brochures have never looked better. Clients love the interactive experience, and it's helped us close more deals.",
     rating: 4,
-    verified: true
   }
 ];
 
@@ -85,11 +80,6 @@ export const Testimonials = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
-                      {testimonial.verified && (
-                        <Badge variant="secondary" className="text-xs">
-                          Verified
-                        </Badge>
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {testimonial.role} at {testimonial.company}

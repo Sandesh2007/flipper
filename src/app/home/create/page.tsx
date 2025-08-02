@@ -202,7 +202,7 @@ export default function CreatePublicationPage() {
 
   function handleRetry(): void {
     // Retry to process the pdf
-    // TODO
+    
   }
 
   return (

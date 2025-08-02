@@ -17,17 +17,6 @@ export default function DashboardMain() {
   const { deletePublication } = usePublications();
   const tabs = ["Publications", "Articles", "Social posts"]
 
-  const handleDelete = async (pubId: string) => {
-    if (!window.confirm('Are you sure you want to delete this publication?')) return;
-    
-    const supabase = createClient();
-    const { error } = await supabase.from('publications').delete().eq('id', pubId);
-    
-    if (!error) {
-      deletePublication(pubId);
-    }
-  };
-
   // Add a handler for file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

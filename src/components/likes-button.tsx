@@ -70,16 +70,16 @@ export default function LikeButton({
   return (
     <div className="flex flex-col items-center gap-1">
       <Button
-        variant="ghost"
+        variant="default"
         size={variant === 'icon' ? 'icon' : 'sm'}
         onClick={handleToggle}
         disabled={isDisabled}
         aria-label={liked ? 'Unlike' : 'Like'}
-        className="cursor-pointer"
+        className={`cursor-pointer rounded-full transition-colors ${liked ? "bg-red-300 hover:bg-red-200" :"bg-transparent hover:bg-red-300" }`}
       >
         <Heart 
         size='lg'
-        className={`${liked ? 'text-red-500 fill-red-500' : ''}`} />
+        className={`${liked ? 'text-red-500 fill-red-500' : 'text-white'}`} />
         {variant === 'button' && <span className="ml-1">{likesCount}</span>}
       </Button>
       {showText && (

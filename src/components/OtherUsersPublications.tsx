@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Users, BookOpen, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components/auth/auth-context';
 import LikeButton from '@/components/likes-button';
@@ -157,108 +157,130 @@ export default function OtherUsersPublications({
 
   return (
     <div className={`${className}`}>
+      {/* Header */}
       {(title || description) && (
-        <div className="mb-6">
-          {title && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
-          {description && <p className="text-muted-foreground">{description}</p>}
+        <div className="mb-8 text-center">
+          {title && (
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="p-2 bg-muted rounded-lg">
+                <Users className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h2 className="text-3xl font-bold">{title}</h2>
+            </div>
+          )}
+          {description && <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{description}</p>}
         </div>
       )}
       
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="relative group">
-              <Skeleton className="w-full h-40 rounded mb-2" />
-              <Skeleton className="w-2/3 h-4 mx-auto mb-1" />
-              <Skeleton className="w-1/3 h-4 mx-auto" />
+        <div className="space-y-12">
+          {Array.from({ length: 3 }).map((_, userIndex) => (
+            <div key={userIndex} className="space-y-6">
+              {/* User Header Skeleton */}
+              <div className="flex items-center gap-4 p-6 bg-card rounded-xl border">
+                <Skeleton className="w-12 h-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="w-32 h-5" />
+                  <Skeleton className="w-24 h-4" />
+                </div>
+              </div>
+              {/* Publications Grid Skeleton */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pl-6">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardContent className="p-4">
+                      <Skeleton className="w-full h-40 rounded mb-3" />
+                      <Skeleton className="h-4 rounded mb-2" />
+                      <Skeleton className="h-3 rounded w-2/3" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="text-center text-red-500">
-          {error}
-          <Button className="ml-2" onClick={handleRetry}>
+        <div className="text-center py-12">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <RefreshCw className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-red-500">{error}</h3>
+          <Button onClick={handleRetry} className="transition-all duration-200 hover:scale-105">
             <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
+            Try Again
           </Button>
         </div>
       ) : users.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-muted-foreground text-lg mb-4">No publications found.</div>
-          <p className="text-sm text-muted-foreground mb-6">
+        <div className="text-center py-20">
+          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <h3 className="text-2xl font-semibold mb-3">No publications found</h3>
+          <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
             Be the first to share your work with the community!
           </p>
           {user && (
-            <Button asChild>
-              <Link href="/home/create">Upload Publication</Link>
+            <Button asChild className="transition-all duration-200 hover:scale-105">
+              <Link href="/home/create">Upload Your First Publication</Link>
             </Button>
           )}
         </div>
       ) : (
-        <div className="flex flex-col space-y-8">
-          {users.map((userProfile) => (
-            <div key={userProfile.id} className="p-4 rounded-lg border border-border bg-card shadow-sm">
+        <div className="space-y-12">
+          {users.map((userProfile, userIndex) => (
+            <div 
+              key={userProfile.id} 
+              className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+              style={{ animationDelay: `${userIndex * 200}ms` }}
+            >
+              {/* User Header */}
               {showUserInfo && (
-                <Link href={`/profile/${userProfile.username}`} className="flex items-center gap-3 mb-4 hover:underline group">
-                  {userProfile.avatar_url ? (
-                    <Image 
-                      src={userProfile.avatar_url} 
-                      alt={`${userProfile.username}'s avatar`}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover border border-border group-hover:ring-2 group-hover:ring-primary/20 transition-all" 
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                  ) : null}
-                  <div className={`w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center transition-all ${userProfile.avatar_url ? 'hidden' : ''}`}>
-                    <span className="text-muted-foreground text-sm">
-                      {userProfile.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="font-semibold text-lg text-foreground">{userProfile.username}</span>
-                  <span className="text-sm text-muted-foreground">
-                    ({userProfile.publications.length} publication{userProfile.publications.length !== 1 ? 's' : ''})
-                  </span>
-                </Link>
+                <div className="group mb-6">
+                  <Link 
+                    href={`/profile/${userProfile.username}`} 
+                    className="flex items-center gap-4 p-6 bg-gradient-to-r from-card to-muted/20 rounded-xl border border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg"
+                  >
+                    <div className="relative">
+                      {userProfile.avatar_url ? (
+                        <Image 
+                          src={userProfile.avatar_url} 
+                          alt={`${userProfile.username}'s avatar`}
+                          width={48}
+                          height={48}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-border group-hover:border-primary/50 transition-all duration-300" 
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <div className={`w-12 h-12 rounded-full bg-muted border-2 border-border group-hover:border-primary/50 flex items-center justify-center transition-all duration-300 ${userProfile.avatar_url ? 'hidden' : ''}`}>
+                        <span className="text-muted-foreground font-semibold">
+                          {userProfile.username.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors duration-300">
+                        {userProfile.username}
+                      </h3>
+                      <p className="text-muted-foreground flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        {userProfile.publications.length} publication{userProfile.publications.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="w-6 h-6 rounded-full bg-transparent flex items-center justify-center">
+                        <ChevronRight className=' dark:text-white text-black' />
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               )}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {userProfile.publications.map((pub: Publication) => (
-                  <div key={pub.id} className="relative group">
-                    <Card className="hover:shadow-lg transition h-full flex flex-col">
-                      <CardContent className="p-2 flex flex-col h-full relative">
-                        <Link href={`/profile/${userProfile.username}`} className="flex-1">
-                          {pub.thumb_url ? (
-                            <Image 
-                              src={pub.thumb_url} 
-                              alt={pub.title} 
-                              width={300}
-                              height={128}
-                              className="w-full h-32 object-cover rounded mb-2 border border-border" 
-                            />
-                          ) : (
-                            <div className="w-full h-32 flex items-center justify-center bg-muted text-muted-foreground rounded mb-2 border border-border text-xs">
-                              No Preview
-                            </div>
-                          )}
-                          <div className="text-xs text-center text-foreground line-clamp-2 px-1">
-                            {pub.title}
-                          </div>
-                        </Link>
-                        
-                        <div className="absolute bottom-6 right-2 bg-neutral-900/50 rounded-full p-1 shadow-sm backdrop-blur-sm">
-                          <LikeButton
-                          publicationId={pub.id}
-                          showText={false}
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
-              </div>
+              
+              {/* Publications Grid */}
+              {userPublications(userProfile, userIndex)}
             </div>
           ))}
         </div>
@@ -266,3 +288,62 @@ export default function OtherUsersPublications({
     </div>
   );
 }
+
+const userPublications = (userProfile: UserProfile, userIndex: number) => {
+    return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pl-0 sm:pl-6">
+      {userProfile.publications.map((pub: Publication, pubIndex) => (
+        <div
+          key={pub.id}
+          className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+          style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
+        >
+          <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-105 border-border/50 hover:border-border">
+            <CardContent className="p-0 relative">
+              <Link href={`/profile/${userProfile.username}`} className="block">
+                {/* {/* Image */}
+                <div className="relative overflow-hidden">
+                  {pub.thumb_url ? (
+                    <Image
+                      src={pub.thumb_url}
+                      alt={pub.title}
+                      width={300}
+                      height={200}
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" />
+                  ) : (
+                    <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-muted to-muted/70 text-muted-foreground">
+                      <div className="text-center">
+                        <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <span className="text-sm">No Preview</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors duration-300">
+                    {pub.title}
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(pub.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </Link>
+
+              {/* Like Button */}
+              <div className="absolute bottom-4 right-0 duration-300 cursor-pointer">
+                <div className="bg-background/30 backdrop-blur-sm rounded-full shadow-lg border border-border/50">
+                  <LikeButton
+                    publicationId={pub.id}
+                    showText={false} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ))}
+    </div>;
+  }
