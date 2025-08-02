@@ -11,8 +11,9 @@ import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { usePublications } from "@/components";
+import { AlertDialog, usePublications } from "@/components";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface LikeRow {
   publication_id: string;
@@ -22,6 +23,7 @@ interface LikeRow {
 export default function UserProfile() {
   const { user } = useAuth();
   const { publications, loading, updatePublication, deletePublication } = usePublications();
+  const supabase = createClient();
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -35,6 +37,9 @@ export default function UserProfile() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [originalOrder, setOriginalOrder] = useState<string[]>([]);
+
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Save original publication order once
   useEffect(() => {
@@ -155,7 +160,6 @@ export default function UserProfile() {
     return pubs;
   }, [publications, editingId]);
 
-  // 🔽 UI Rendering
   return (
     <>
       {user && (
@@ -181,10 +185,46 @@ export default function UserProfile() {
                     </div>
                   </div>
                 </div>
-                <EditProfile />
+                <div className='flex gap-2 justify-between items-center'>
+                  <EditProfile />
+                  <Button
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setLogoutDialogOpen(true);
+                    }}
+                    variant="destructive">
+                    <span>Logout</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Confirmation dialog for logout */}
+          <AlertDialog
+            open={logoutDialogOpen}
+            onOpenChange={setLogoutDialogOpen}
+            title="Confirm Logout"
+            description="Are you sure you want to log out? You will need to log in again to access your account."
+            confirmText="Logout"
+            cancelText="Cancel"
+            onConfirm={async () => {
+              setIsLoggingOut(true);
+              try {
+                await toast.promise(supabase.auth.signOut(), {
+                  loading: 'Logging out...',
+                  success: 'Logged out successfully',
+                  error: 'Failed to log out',
+                });
+                window.location.href = '/';
+              } finally {
+                setIsLoggingOut(false);
+              }
+            }}
+            onCancel={() => setLogoutDialogOpen(false)}
+            variant="destructive"
+            isLoading={isLoggingOut}
+          />
 
           {/* Publications Section */}
           <div className="max-w-6xl mx-auto px-4 py-8">

@@ -70,14 +70,29 @@ export default function EditProfile() {
         return true;
     };
 
+    const handleOpenChange = (isOpen: boolean) => {
+        setOpen(isOpen);
+        if (!isOpen) {
+            // Reset form to original values
+            setUsername(user?.username || '');
+            setBio(user?.bio || '');
+            setLocation(user?.location || '');
+            setAvatarUrl(currentProfileImage);
+            setImage(null);
+            setUsernameError('');
+        }
+    };
+
     const updateProfile = async () => {
         if (!user?.id) return;
         // Remove spaces from username before saving
         const sanitizedUsername = username.replace(/\s+/g, '');
-        if (!(await validateUsername(sanitizedUsername))) return;
-        
+        if (sanitizedUsername !== user?.username) {
+            if (!(await validateUsername(sanitizedUsername))) return;
+        }
+
         let uploadedAvatarUrl = avatarUrl;
-        
+
         if (image) {
             try {
                 console.log('Starting image upload...', {
@@ -86,12 +101,12 @@ export default function EditProfile() {
                     fileType: image.type,
                     userId: user.id
                 });
-    
+
                 const fileExt = image.name.split('.').pop();
                 const fileName = `${user.id}/${uuidv4()}.${fileExt}`;
-                
+
                 console.log('Generated file path:', fileName);
-    
+
                 const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
                 console.log('Available buckets:', buckets);
                 if (bucketsError) {
@@ -99,36 +114,36 @@ export default function EditProfile() {
                     toast.error('Storage configuration error');
                     return;
                 }
-    
+
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('avatars')
-                    .upload(fileName, image, { 
+                    .upload(fileName, image, {
                         upsert: true,
                         contentType: image.type
                     });
-    
+
                 console.log('Upload response:', { uploadData, uploadError });
-    
+
                 if (uploadError) {
                     console.error('Upload error details:', uploadError);
                     toast.error(`Failed to upload avatar: ${uploadError.message}`);
                     return;
                 } else {
                     console.log('Upload successful:', uploadData);
-                    
+
                     // Get the public URL
                     const { data: publicUrlData } = supabase.storage
                         .from('avatars')
                         .getPublicUrl(fileName);
-                    
+
                     console.log('Public URL:', publicUrlData.publicUrl);
                     uploadedAvatarUrl = publicUrlData.publicUrl;
-                    
+
                     // Verify the file was actually uploaded
                     const { data: fileExists, error: listError } = await supabase.storage
                         .from('avatars')
                         .list(user.id);
-                    
+
                     console.log('Files in user folder:', fileExists);
                     if (listError) {
                         console.error('Error listing files:', listError);
@@ -140,7 +155,7 @@ export default function EditProfile() {
                 return;
             }
         }
-    
+
         // Continue with profile update
         try {
             const { error } = await supabase
@@ -152,7 +167,7 @@ export default function EditProfile() {
                     avatar_url: uploadedAvatarUrl,
                 })
                 .eq('id', user.id);
-    
+
             if (error) {
                 console.error('Profile update error:', error);
                 toast.error('Failed to update profile');
@@ -169,7 +184,7 @@ export default function EditProfile() {
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="outline">
                     <Settings className="h-4 w-4 mr-2" />
@@ -186,24 +201,7 @@ export default function EditProfile() {
                     <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
 
-                <div className='flex justify-between items-center'>
-                    <span>Session</span>
-                    <Button
-                        onClick={async (e) => {
-                            e.preventDefault()
-                            toast.promise(supabase.auth.signOut(), {
-                                loading: 'Logging out...',
-                                success: 'Logged out successfully',
-                                error: 'Failed to log out'
-                            })
-                            window.location.href = '/'
-                        }}
-                        variant="destructive">
-                        <span>Logout</span>
-                    </Button>
-                </div>
-
-                <div className="grid gap-6 py-4">
+                <div className="grid gap-6 py-1">
                     <div className="space-y-2">
                         <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
                             Name
@@ -286,37 +284,48 @@ export default function EditProfile() {
                 </div>
 
                 <DialogFooter>
-                    <Button
-                        onClick={async () => {
-                            if (!(await validateUsername(username))) return;
-                            toast.promise(
-                                updateProfile()
-                                    .catch((error) => {
-                                        console.error('Error updating profile:', error)
-                                        toast.error(error.message)
-                                        throw error
-                                    }),
-                                {
-                                    loading: 'Updating profile...',
-                                    success: 'Profile updated',
-                                    error: 'Failed to update profile',
-                                }
-                            );
-                            toast.promise(
-                                refreshUser(),
-                                {
-                                    loading: 'Refreshing user...',
-                                    success: 'User refreshed',
-                                    error: 'Failed to refresh user',
-                                }
-                            ).finally(() => {
-                                setOpen(false);
-                            });
-                        }}
+                    <div
+                    className='w-full flex justify-between'
                     >
-                        Save
-                    </Button>
+                        <Button
+                            className='cursor-pointer'
+                            onClick={() => handleOpenChange(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className='cursor-pointer'
+                            onClick={async () => {
+                                if (!(await validateUsername(username))) return;
+                                toast.promise(
+                                    updateProfile()
+                                        .catch((error) => {
+                                            console.error('Error updating profile:', error)
+                                            toast.error(error.message)
+                                            throw error
+                                        }),
+                                    {
+                                        loading: 'Updating profile...',
+                                        success: 'Profile updated',
+                                        error: 'Failed to update profile',
+                                    }
+                                );
+                                toast.promise(
+                                    refreshUser(),
+                                    {
+                                        loading: 'Refreshing user...',
+                                        success: 'User refreshed',
+                                        error: 'Failed to refresh user',
+                                    }
+                                ).finally(() => {
+                                    setOpen(false);
+                                });
+                            }}
+                        >
+                            Save
+                        </Button>
 
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
