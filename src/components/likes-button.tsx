@@ -75,7 +75,7 @@ export default function LikeButton({
         onClick={handleToggle}
         disabled={isDisabled}
         aria-label={liked ? 'Unlike' : 'Like'}
-        className={`cursor-pointer rounded-full transition-colors ${liked ? "bg-red-300 hover:bg-red-200" :"bg-neutral-100 dark:bg-neutral-900 hover:bg-red-300" }`}
+        className={`cursor-pointer rounded-full transition-colors ${liked ? "bg-red-300 hover:bg-red-200" :"bg-neutral-100 dark:bg-white hover:bg-red-300" }`}
       >
         <Heart 
         size='lg'

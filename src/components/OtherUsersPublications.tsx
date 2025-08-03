@@ -88,18 +88,27 @@ export default function OtherUsersPublications({
       }
     }
     
-    // Check cache first
+    // Check cache first 
     const cacheKey = `discover_${maxUsers}_${maxPublicationsPerUser}`;
     const cached = discoverCache.get(cacheKey);
     const now = Date.now();
+    const cacheAge = now - (cached?.timestamp || 0);
     
-    if (!forceRefresh && cached && (now - cached.timestamp) < DISCOVER_CACHE_DURATION) {
+    // Use shorter cache duration for better data freshness
+    if (!forceRefresh && cached && cacheAge < DISCOVER_CACHE_DURATION) {
       if (isMountedRef.current) {
         setUsers(cached.data);
         setLoading(false);
         setError(null);
       }
       return;
+    }
+    
+    // If cache is stale, show loading but use cached data temporarily
+    if (cached && cacheAge < DISCOVER_CACHE_DURATION * 2) {
+      if (isMountedRef.current) {
+        setUsers(cached.data);
+      }
     }
     
     if (fetchControllerRef.current) {
@@ -198,10 +207,10 @@ export default function OtherUsersPublications({
         <div className="mb-8 text-center">
           {title && (
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-2 bg-muted rounded-lg">
+              <div className="p-3 bg-muted/50 rounded-xl shadow-soft">
                 <Users className="w-6 h-6 text-muted-foreground" />
               </div>
-              <h2 className="text-3xl font-bold">{title}</h2>
+              <h2 className="text-3xl font-bold text-foreground">{title}</h2>
             </div>
           )}
           {description && <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{description}</p>}
@@ -213,7 +222,7 @@ export default function OtherUsersPublications({
           {Array.from({ length: 3 }).map((_, userIndex) => (
             <div key={userIndex} className="space-y-6">
               {/* User Header Skeleton */}
-              <div className="flex items-center gap-4 p-6 bg-card rounded-xl border">
+              <div className="flex items-center gap-4 p-6 bg-card rounded-xl border border-border/30 shadow-soft">
                 <Skeleton className="w-12 h-12 rounded-full" />
                 <div className="space-y-2">
                   <Skeleton className="w-32 h-5" />
@@ -223,7 +232,7 @@ export default function OtherUsersPublications({
               {/* Publications Grid Skeleton */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pl-6">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse">
+                  <Card key={i} className="animate-pulse bg-card border-border/30">
                     <CardContent className="p-4">
                       <Skeleton className="w-full h-40 rounded mb-3" />
                       <Skeleton className="h-4 rounded mb-2" />
@@ -237,26 +246,26 @@ export default function OtherUsersPublications({
         </div>
       ) : error ? (
         <div className="text-center py-12">
-          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-            <RefreshCw className="w-8 h-8 text-muted-foreground" />
+          <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4 shadow-soft">
+            <RefreshCw className="w-8 h-8 text-destructive" />
           </div>
-          <h3 className="text-xl font-semibold mb-2 text-red-500">{error}</h3>
-          <Button onClick={handleRetry} className="transition-all duration-200 hover:scale-105">
+          <h3 className="text-xl font-semibold mb-2 text-destructive">{error}</h3>
+          <Button onClick={handleRetry} className="transition-all duration-200 hover:scale-105 bg-foreground text-background hover:bg-foreground/90">
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
           </Button>
         </div>
       ) : users.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-soft">
             <BookOpen className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h3 className="text-2xl font-semibold mb-3">No publications found</h3>
+          <h3 className="text-2xl font-semibold mb-3 text-foreground">No publications found</h3>
           <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
             Be the first to share your work with the community!
           </p>
           {user && (
-            <Button asChild className="transition-all duration-200 hover:scale-105">
+            <Button asChild className="transition-all duration-200 hover:scale-105 bg-foreground text-background hover:bg-foreground/90">
               <Link href="/home/create">Upload Your First Publication</Link>
             </Button>
           )}
@@ -274,7 +283,9 @@ export default function OtherUsersPublications({
                 <div className="group mb-6">
                   <Link 
                     href={`/profile/${userProfile.username}`} 
-                    className="flex items-center gap-4 p-6 bg-gradient-to-r from-card to-muted/20 rounded-xl border border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg"
+                    className="flex items-center gap-4 p-6 bg-card
+                    border border-border/40
+                    rounded-xl hover:border-border/60 transition-all duration-300 hover:shadow-soft hover:scale-[1.01]"
                   >
                     <div className="relative">
                       {userProfile.avatar_url ? (
@@ -283,21 +294,21 @@ export default function OtherUsersPublications({
                           alt={`${userProfile.username}'s avatar`}
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-border group-hover:border-primary/50 transition-all duration-300" 
+                          className="w-12 h-12 rounded-full object-cover border-2 border-border group-hover:border-foreground/30 transition-all duration-300 shadow-soft" 
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
                           }}
                         />
                       ) : null}
-                      <div className={`w-12 h-12 rounded-full bg-muted border-2 border-border group-hover:border-primary/50 flex items-center justify-center transition-all duration-300 ${userProfile.avatar_url ? 'hidden' : ''}`}>
+                      <div className={`w-12 h-12 rounded-full bg-muted border-2 border-border group-hover:border-foreground/30 flex items-center justify-center transition-all duration-300 shadow-soft ${userProfile.avatar_url ? 'hidden' : ''}`}>
                         <span className="text-muted-foreground font-semibold">
                           {userProfile.username.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors duration-300">
+                      <h3 className="font-bold text-xl text-foreground group-hover:text-foreground transition-colors duration-300">
                         {userProfile.username}
                       </h3>
                       <p className="text-muted-foreground flex items-center gap-2">
@@ -306,8 +317,8 @@ export default function OtherUsersPublications({
                       </p>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-6 h-6 rounded-full bg-transparent flex items-center justify-center">
-                        <ChevronRight className=' dark:text-white text-black' />
+                      <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+                        <ChevronRight className='text-muted-foreground' />
                       </div>
                     </div>
                   </Link>
@@ -332,7 +343,7 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
           className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
           style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
         >
-          <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1 hover:scale-102 bg-gradient-card border border-border/30 hover:border-border/50">
+          <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] bg-card border border-border/40 hover:border-border/60">
             <CardContent className="p-0 relative">
               <Link href={`/profile/${userProfile.username}`} className="block">
                 {/* Image */}
@@ -343,12 +354,12 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
                       alt={pub.title}
                       width={300}
                       height={200}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" />
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" />
                   ) : (
-                    <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm">
+                    <div className="w-full h-48 flex items-center justify-center bg-muted/30 backdrop-blur-sm">
                       <div className="text-center">
-                        <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted-foreground/10 flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 opacity-50" />
+                        <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted flex items-center justify-center">
+                          <BookOpen className="w-5 h-5 text-muted-foreground" />
                         </div>
                         <span className="text-sm text-muted-foreground">No Preview</span>
                       </div>
@@ -360,8 +371,10 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
-                  <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors duration-300">
+                <div className="p-4 border-t border-border/30 bg-card">
+                  <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-foreground
+                  truncate
+                  transition-colors duration-300">
                     {pub.title}
                   </h4>
                   <p className="text-xs text-muted-foreground">
@@ -371,8 +384,8 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
               </Link>
 
               {/* Enhanced Like Button */}
-              <div className="absolute bottom-4 right-4 duration-300 cursor-pointer">
-                <div className="bg-background/80 backdrop-blur-sm rounded-full shadow-soft border border-border/50 hover:bg-background/90 transition-all duration-300">
+              <div className="absolute bottom-2 right-3 duration-300 cursor-pointer">
+                <div className="bg-background/90 backdrop-blur-sm rounded-full shadow-soft border border-border/50 hover:bg-background/95 transition-all duration-300 hover:scale-110">
                   <LikeButton
                     publicationId={pub.id}
                     showText={false} />

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 // Global state to track navigation
 let isNavigating = false;
 let lastPath = '';
+let navigationTimeout: NodeJS.Timeout | null = null;
 
 export function NavigationStateManager() {
   const pathname = usePathname();
@@ -16,13 +17,25 @@ export function NavigationStateManager() {
       isNavigating = true;
       lastPath = prevPathRef.current;
       
-      const timer = setTimeout(() => {
+      // Clear any existing timeout
+      if (navigationTimeout) {
+        clearTimeout(navigationTimeout);
+      }
+      
+      // Set a longer timeout to allow for proper data loading
+      navigationTimeout = setTimeout(() => {
         isNavigating = false;
-      }, 100);
+        navigationTimeout = null;
+      }, 500); // Increased from 100ms to 500ms
       
       prevPathRef.current = pathname;
       
-      return () => clearTimeout(timer);
+      return () => {
+        if (navigationTimeout) {
+          clearTimeout(navigationTimeout);
+          navigationTimeout = null;
+        }
+      };
     }
   }, [pathname]);
 
@@ -42,4 +55,13 @@ export function useLastPath() {
 // Utility to check if we should skip loading states during navigation
 export function shouldSkipLoading() {
   return isNavigating;
+}
+
+// Utility to force clear navigation state (useful for manual navigation)
+export function clearNavigationState() {
+  isNavigating = false;
+  if (navigationTimeout) {
+    clearTimeout(navigationTimeout);
+    navigationTimeout = null;
+  }
 } 

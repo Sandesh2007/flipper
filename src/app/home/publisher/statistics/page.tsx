@@ -25,30 +25,42 @@ export default function StatisticsPage() {
       const pubIds = publications.map((p) => p.id);
       
       if (pubIds.length > 0) {
-        const { data: allLikes } = await supabase
-          .from('publication_likes')
-          .select('publication_id, user_id')
-          .in('publication_id', pubIds);
+        try {
+          const { data: allLikes, error } = await supabase
+            .from('publication_likes')
+            .select('publication_id, user_id')
+            .in('publication_id', pubIds);
 
-        // Count likes per publication
-        const likeMap: Record<string, number> = {};
-        allLikes?.forEach((row: LikeRow) => {
-          likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
-        });
-        
-        setLikes(likeMap);
-        
-        // Calculate total and average likes
-        const total = Object.values(likeMap).reduce((sum, count) => sum + count, 0);
-        const average = publications.length > 0 ? Math.round(total / publications.length) : 0;
-        
-        setTotalLikes(total);
-        setAverageLikes(average);
+          if (error) {
+            console.error('Error fetching likes:', error);
+            return;
+          }
+
+          // Count likes per publication
+          const likeMap: Record<string, number> = {};
+          allLikes?.forEach((row: LikeRow) => {
+            likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
+          });
+          
+          setLikes(likeMap);
+          
+          // Calculate total and average likes
+          const total = Object.values(likeMap).reduce((sum, count) => sum + count, 0);
+          const average = publications.length > 0 ? Math.round(total / publications.length) : 0;
+          
+          setTotalLikes(total);
+          setAverageLikes(average);
+        } catch (err) {
+          console.error('Error fetching likes:', err);
+        }
       }
     };
     
-    fetchLikes();
-  }, [publications]);
+    // Only fetch likes if we have publications and they're not loading
+    if (!loading && publications.length > 0) {
+      fetchLikes();
+    }
+  }, [publications, loading]);
 
   // Calculate statistics
   const totalPublications = publications.length;

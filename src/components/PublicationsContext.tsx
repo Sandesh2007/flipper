@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components';
-import { shouldSkipLoading } from '@/components/layout/navigation-state-manager';
+import { shouldSkipLoading, clearNavigationState } from '@/components/layout/navigation-state-manager';
 
 export interface Publication {
   id: string;
@@ -31,7 +31,7 @@ const PublicationsContext = createContext<PublicationsContextType | undefined>(u
 
 // Cache for publications data
 const publicationsCache = new Map<string, { data: Publication[]; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 2 * 60 * 1000; // Reduced from 5 minutes to 2 minutes for more frequent updates
 
 export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -40,12 +40,16 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const isInitializedRef = useRef(false);
   const fetchControllerRef = useRef<AbortController | null>(null);
+  const lastFetchTimeRef = useRef<number>(0);
 
   const fetchPublications = useCallback(async (forceRefresh = false) => {
     if (!user) return;
     
-    // Skip loading if we're navigating and have cached data
-    if (!forceRefresh && shouldSkipLoading()) {
+    // Check if we should skip loading during navigation
+    const skipLoading = shouldSkipLoading();
+    
+    // Skip loading if we're navigating and have cached data, but only for a short time
+    if (!forceRefresh && skipLoading) {
       const cacheKey = `publications_${user.id}`;
       const cached = publicationsCache.get(cacheKey);
       if (cached) {
@@ -56,7 +60,7 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     
-    // Check cache first
+    // Check cache first (but with shorter duration)
     const cacheKey = `publications_${user.id}`;
     const cached = publicationsCache.get(cacheKey);
     const now = Date.now();
@@ -78,6 +82,7 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
     
     setLoading(true);
     setError(null);
+    lastFetchTimeRef.current = now;
     
     try {
       const supabase = createClient();
@@ -99,6 +104,9 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
       
       // Update cache
       publicationsCache.set(cacheKey, { data: publicationsData, timestamp: now });
+      
+      // Clear navigation state after successful fetch
+      clearNavigationState();
     } catch (err) {
       if (signal.aborted) return;
       setError(err instanceof Error ? err.message : 'Failed to fetch publications');
@@ -197,6 +205,21 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       setError(null);
     }
+  }, [user, fetchPublications]);
+
+  // Add a periodic refresh mechanism for better data consistency
+  useEffect(() => {
+    if (!user) return;
+    
+    const interval = setInterval(() => {
+      const now = Date.now();
+      // Refresh data if it's been more than 5 minutes since last fetch
+      if (now - lastFetchTimeRef.current > 5 * 60 * 1000) {
+        fetchPublications();
+      }
+    }, 60 * 1000); // Check every minute
+    
+    return () => clearInterval(interval);
   }, [user, fetchPublications]);
 
   // Cleanup on unmount

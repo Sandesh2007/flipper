@@ -254,10 +254,10 @@ export default function AuthForm() {
                     <div className="w-full h-full bg-muted flex flex-col justify-between p-6 xl:p-8 relative overflow-hidden">
                         {/* Mountain silhouette background */}
                         <div className="absolute inset-0 opacity-60">
-                            <svg viewBox="0 0 400 600" className="w-full h-full">
+                            <svg viewBox="0 0 400 600" className="w-full h-full dark:fill-white">
                                 <path
                                     d="M0,400 Q100,200 200,300 Q300,150 400,250 L400,600 L0,600 Z"
-                                    fill="rgba(0,0,0,0.3)"
+                                    fill="rgba(0,0,0,0.3) "
                                 />
                                 <path
                                     d="M0,450 Q150,250 250,350 Q350,200 400,300 L400,600 L0,600 Z"
@@ -288,7 +288,7 @@ export default function AuthForm() {
                 </div>
 
                 {/* Right Panel - Form */}
-                <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
+                <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dakr:bg-neutral-900">
                     <div className="max-w-md mx-auto w-full">
                         {/* Mobile logo */}
                         <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Neko Press</div>
@@ -325,7 +325,7 @@ export default function AuthForm() {
                                         : 'translate-x-[-100%] opacity-0 scale-95'
                                     }`}
                             >
-                                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create an account</h1>
+                                <h1 className="text-2xl sm:text-2xl font-bold text-foreground mb-2">Create an account</h1>
                                 <p className="text-muted-foreground">
                                     Already have an account?{" "}
                                     <button
@@ -465,10 +465,10 @@ export default function AuthForm() {
                         {/* Divider */}
                         <div className={`relative mt-6 transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-border"></div>
+                                <div className="w-full border-t border-border bg-neutral-500"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-neutral-50 dark:bg-neutral-900 text-muted-foreground">
+                                <span className="px-2 bg-neutral-50 dark:bg-neutral-950 text-muted-foreground">
                                     Or {isLogin ? 'log in' : 'register'} with
                                 </span>
                             </div>

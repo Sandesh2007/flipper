@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
+import { GradientBackground } from "@/components/ui/gradient-background";
 
 export default function ClientLayout({
   children,
@@ -17,7 +18,7 @@ export default function ClientLayout({
   const isNoFooterRoute = noFooterRoutes.includes(pathname);
 
   return (
-    <>
+    <GradientBackground showMovingGradient={true} showFloatingElements={true}>
       {!isNoLayoutRoute && (
         <header className="sticky top-0 z-50 border-b-[1px] border-neutral-700 ">
           <Navbar />
@@ -25,6 +26,6 @@ export default function ClientLayout({
       )}
       {children}
       {!isNoFooterRoute && <Footer />}
-    </>
+    </GradientBackground>
   );
 }

@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Sparkles, User, BookOpen } from 'lucide-react';
 import { shouldSkipLoading } from '@/components/layout/navigation-state-manager';
+import { GradientBackground } from "@/components/ui/gradient-background";
 
 interface LikeRow {
   publication_id: string;
@@ -29,7 +30,7 @@ const LIKES_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 export default function UserProfile() {
   const { user , loading: authLoading} = useAuth();
-  const { publications, loading: publicationsLoading, updatePublication } = usePublications();
+  const { publications, loading: publicationsLoading, updatePublication, refreshPublications } = usePublications();
   const supabase = createClient();
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -232,6 +233,25 @@ export default function UserProfile() {
   // Skip loading during navigation if we have cached data
   const isLoading = authLoading || (publicationsLoading && publications.length === 0 && !shouldSkipLoading());
 
+  // Add a fallback loading state for when data is stale
+  const [isDataStale, setIsDataStale] = useState(false);
+  
+  useEffect(() => {
+    // Check if data is stale (more than 5 minutes old)
+    if (publications.length > 0) {
+      const now = Date.now();
+      const lastUpdate = Date.now() - 5 * 60 * 1000; // 5 minutes ago
+      setIsDataStale(false);
+    }
+  }, [publications]);
+
+  // Force refresh if data seems stale
+  useEffect(() => {
+    if (isDataStale && !publicationsLoading) {
+      refreshPublications();
+    }
+  }, [isDataStale, publicationsLoading, refreshPublications]);
+
   if (isLoading) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
@@ -241,23 +261,17 @@ export default function UserProfile() {
 }
 
   return (
-    <>
+    <GradientBackground showMovingGradient={true} showFloatingElements={true}>
       {user ? (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
-          <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-          
+        <div className="min-h-screen relative overflow-hidden">
           <div className="relative">
             {/* Profile Header */}
             <div className="border-b border-border/50 bg-gradient-to-r from-background to-muted/20 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
               <div className="relative max-w-4xl mx-auto px-4 py-12">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                   <div className="flex items-center gap-6 flex-1">
                     <div className="transform transition-transform duration-300 hover:scale-105 relative">
-                      <CurrentUserAvatar />
-                      <div className="absolute inset-0 bg-gradient-hero rounded-full opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
+                      <CurrentUserAvatar className="h-32 w-32 rounded-full" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-4">
@@ -643,6 +657,6 @@ export default function UserProfile() {
         </div>
       )
       }
-    </>
+    </GradientBackground>
   );
 }

@@ -111,7 +111,6 @@ export default function PublicProfileByUsernamePage() {
                       </div>
                     )}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-background shadow-lg"></div>
                 </div>
 
                 {/* Profile Info */}
