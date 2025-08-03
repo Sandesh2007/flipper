@@ -1,11 +1,7 @@
 'use client';
 
 import React from 'react';
-<<<<<<< HEAD
 import { CheckCircle, Sparkles, Zap, Shield, Users, Star } from 'lucide-react';
-=======
-import { CheckCircle } from 'lucide-react';
->>>>>>> a033050512637a461a870faa4b7a46b078568844
 import { Button } from '@/components';
 
 const features = [
@@ -18,7 +14,6 @@ const features = [
 
 const Pricing = () => {
   return (
-<<<<<<< HEAD
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"></div>
@@ -138,36 +133,6 @@ const Pricing = () => {
                 Share your flipbooks with anyone using simple, secure links.
               </p>
             </div>
-=======
-    <div className="min-h-screen bg-background text-foreground py-20 px-4">
-      <div className="max-w-4xl mx-auto text-center space-y-6">
-        <h1 className="text-4xl font-bold">Our Pricing</h1>
-        <p className="text-muted-foreground text-lg">
-          Simple, transparent pricing. Get started for free — no credit card required.
-        </p>
-
-        <div className="mt-10 flex justify-center">
-          <div className="w-full max-w-sm rounded-2xl border border-border shadow-md bg-card p-8 text-left">
-            <div
-            className='w-full flex justify-between'
-            >
-              <h2 className="text-2xl font-semibold mb-4">Basic Plan</h2>
-              <CheckCircle className='text-green-500 w-5 h-5 ' />
-            </div>
-            <p className="text-4xl font-bold mb-2">Free</p>
-            <p className="text-muted-foreground mb-6">Perfect for individuals getting started.</p>
-            <ul className="space-y-3 mb-6">
-              {features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <CheckCircle className="text-green-500 w-5 h-5 mt-0.5" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <Button className="w-full bg-green-400 hover:bg-green-500" variant="default">
-              Currently active
-            </Button>
->>>>>>> a033050512637a461a870faa4b7a46b078568844
           </div>
         </div>
       </div>

@@ -9,10 +9,7 @@ const footerLinks = {
   product: [
     { name: "Features", href: "/" },
     { name: "Pricing", href: "/pricing" },
-<<<<<<< HEAD
     { name: "Templates", href: "#templates" },
-=======
->>>>>>> a033050512637a461a870faa4b7a46b078568844
   ],
   resources: [
     { name: "Blog", href: "#blog" },
@@ -20,11 +17,7 @@ const footerLinks = {
   ],
   company: [
     { name: "About", href: "#about" },
-<<<<<<< HEAD
     { name: "Contact", href: "#contact" },
-=======
-    { name: "Contact", href: "#contact" }
->>>>>>> a033050512637a461a870faa4b7a46b078568844
   ],
   legal: [
     { name: "Privacy", href: "#privacy" },
@@ -66,12 +59,8 @@ export const Footer = () => {
                 className="flex-1 bg-transparent border-0 focus:ring-0 text-foreground placeholder:text-muted-foreground"
                 type="email"
               />
-<<<<<<< HEAD
               <Button className="bg-gradient-hero hover:shadow-glow text-white px-6">
                 <Sparkles className="w-4 h-4 mr-2" />
-=======
-              <Button className="bg-blue-700 text-neutral-100 hover:bg-blue-600 ">
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                 Subscribe
               </Button>
             </div>

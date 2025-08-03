@@ -332,17 +332,10 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
           className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
           style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
         >
-<<<<<<< HEAD
           <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-1 hover:scale-102 bg-gradient-card border border-border/30 hover:border-border/50">
             <CardContent className="p-0 relative">
               <Link href={`/profile/${userProfile.username}`} className="block">
                 {/* Image */}
-=======
-          <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-105 border-border/50 hover:border-border">
-            <CardContent className="p-0 relative">
-              <Link href={`/profile/${userProfile.username}`} className="block">
-                {/* {/* Image */}
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                 <div className="relative overflow-hidden">
                   {pub.thumb_url ? (
                     <Image
@@ -352,30 +345,18 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
                       height={200}
                       className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" />
                   ) : (
-<<<<<<< HEAD
                     <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm">
                       <div className="text-center">
                         <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted-foreground/10 flex items-center justify-center">
                           <BookOpen className="w-5 h-5 opacity-50" />
                         </div>
                         <span className="text-sm text-muted-foreground">No Preview</span>
-=======
-                    <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-muted to-muted/70 text-muted-foreground">
-                      <div className="text-center">
-                        <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <span className="text-sm">No Preview</span>
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                       </div>
                     </div>
                   )}
 
-<<<<<<< HEAD
                   {/* Enhanced Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-=======
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                 </div>
 
                 {/* Content */}
@@ -389,15 +370,9 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
                 </div>
               </Link>
 
-<<<<<<< HEAD
               {/* Enhanced Like Button */}
               <div className="absolute bottom-4 right-4 duration-300 cursor-pointer">
                 <div className="bg-background/80 backdrop-blur-sm rounded-full shadow-soft border border-border/50 hover:bg-background/90 transition-all duration-300">
-=======
-              {/* Like Button */}
-              <div className="absolute bottom-4 right-0 duration-300 cursor-pointer">
-                <div className="bg-background/30 backdrop-blur-sm rounded-full shadow-lg border border-border/50">
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                   <LikeButton
                     publicationId={pub.id}
                     showText={false} />

@@ -51,13 +51,8 @@ export default function AuthForm() {
 
         // Username validation (only for signup)
         if (!isLogin) {
-<<<<<<< HEAD
             if (!/^[a-z0-9_\s]+$/.test(formData.username)) {
                 setError('Username can only contain lowercase letters, numbers, underscores, and spaces.');
-=======
-            if (!/^[a-z0-9_]+$/.test(formData.username)) {
-                setError('Username can only contain lowercase letters, numbers, and underscores.');
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                 return false;
             }
             

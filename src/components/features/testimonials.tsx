@@ -1,10 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-<<<<<<< HEAD
 import { Star, Quote, Sparkles } from "lucide-react";
-=======
-import { Star } from "lucide-react";
->>>>>>> a033050512637a461a870faa4b7a46b078568844
 
 const testimonials = [
   {
@@ -98,13 +94,8 @@ export const Testimonials = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-<<<<<<< HEAD
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="font-bold text-foreground text-lg">{testimonial.name}</h4>
-=======
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
->>>>>>> a033050512637a461a870faa4b7a46b078568844
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {testimonial.role} at {testimonial.company}
