@@ -103,7 +103,7 @@ export function Navbar() {
 
     return (
         <>
-            <nav className="bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/50 shadow-soft">
+            <nav className="glass sticky top-0 z-50 w-full shadow-soft">
                 {/* Desktop & Mobile Container */}
                 <div className="flex justify-between items-center px-3 sm:px-6 py-3 sm:py-4 w-full h-full max-w-screen-xl mx-auto">
                     {/* Left Side: Logo */}
@@ -123,9 +123,13 @@ export function Navbar() {
                     {/* Desktop Menu */}
                     <div className="hidden lg:flex items-center gap-4 xl:gap-6">
                         <div className="flex items-center gap-1">
-                            <Link href="/discover" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
+                            <Button
+                                onClick={() => {
+                                    window.location.href = '/discover'
+                                }}
+                                className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                 <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
-                            </Link>
+                            </Button>
                             <Link href="/pricing" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                 <span className="group-hover:text-primary transition-colors duration-300">Pricing</span>
                             </Link>
@@ -177,11 +181,10 @@ export function Navbar() {
                 {(mobileOpen || isAnimating) && (
                     <div className="fixed inset-0 z-[9999] h-screen">
                         {/* Full Screen Panel */}
-                        <div 
+                        <div
                             ref={menuRef}
-                            className={`fixed inset-0 w-screen h-screen bg-background backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-out ${
-                                isAnimating ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
-                            }`}
+                            className={`fixed inset-0 w-screen h-screen bg-background backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-out ${isAnimating ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+                                }`}
                         >
                             {/* Header */}
                             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50 bg-background backdrop-blur-sm flex-shrink-0">
@@ -205,9 +208,9 @@ export function Navbar() {
 
                             {/* Upload Button */}
                             <div className="p-4 sm:p-6 border-b border-border/50 bg-background flex-shrink-0">
-                                <Button 
-                                    variant="outline" 
-                                    className="w-full bg-blue-500 hover:shadow-glow text-white border-blue-500/30 rounded-xl transition-all duration-300 hover:scale-105" 
+                                <Button
+                                    variant="outline"
+                                    className="w-full bg-blue-500 hover:shadow-glow text-white border-blue-500/30 rounded-xl transition-all duration-300 hover:scale-105"
                                     onClick={handleCloseMenu}
                                 >
                                     <Upload className="w-4 h-4 mr-2" />
@@ -277,9 +280,14 @@ export function Navbar() {
 
                                 {/* User Section */}
                                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-border/50 bg-background flex-shrink-0">
-                                    <Link href="/discover" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-3" onClick={handleCloseMenu}>
+                                    <Button
+                                        onClick={() => {
+                                            handleCloseMenu();
+                                            window.location.href = '/discover'
+                                        }}
+                                        className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-3">
                                         Discover
-                                    </Link>
+                                    </Button>
                                     <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-4" onClick={handleCloseMenu}>
                                         Pricing
                                     </Link>

@@ -334,13 +334,13 @@
 
 /* Enhanced Glass Morphism */
 .glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.196);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(59, 130, 246, 0.1); /* blue-500 with opacity */
 }
 
 .dark .glass {
-  background: rgba(30, 41, 59, 0.06); /* slate-800 with opacity */
+  background: rgba(30, 41, 59, 0.203); /* slate-800 with opacity */
   border: 1px solid rgba(147, 197, 253, 0.1); /* blue-300 with opacity */
 }
 

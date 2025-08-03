@@ -102,7 +102,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
-                <BookOpen className="w-10 h-10 text-white" />
+                <BookOpen className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-gradient-hero">Interactive Flipbooks</h3>
               <p className="text-muted-foreground leading-relaxed text-lg">
@@ -116,7 +116,7 @@ export default function Home() {
             
             <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
-                <Zap className="w-10 h-10 text-white" />
+                <Zap className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-gradient-hero">Lightning Fast</h3>
               <p className="text-muted-foreground leading-relaxed text-lg">
@@ -130,7 +130,7 @@ export default function Home() {
             
             <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
-                <Users className="w-10 h-10 text-white" />
+                <Users className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-gradient-hero">Collaborative</h3>
               <p className="text-muted-foreground leading-relaxed text-lg">
@@ -148,7 +148,7 @@ export default function Home() {
             <div className="group p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-white" />
+                  <Shield className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold mb-2">Secure & Private</h4>
@@ -160,7 +160,7 @@ export default function Home() {
             <div className="group p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
-                  <Globe className="w-6 h-6 text-white" />
+                  <Globe className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold mb-2">Global Access</h4>

@@ -5,17 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import InfoDialog from "./dialog"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/components/auth/auth-context"
-import { createClient } from "@/lib/database/supabase/client"
-import Link from "next/link"
-import { PublicationsTab, usePdfUpload, usePublications } from '@/components';
-import { Upload, FileText, Users, BarChart3, Sparkles, Zap, BookOpen, TrendingUp } from 'lucide-react';
+import { PublicationsTab, usePdfUpload } from '@/components';
+import { Upload, FileText, Users, Sparkles, Zap, BookOpen, TrendingUp } from 'lucide-react';
 
 export default function DashboardMain() {
   const router = useRouter();
   const { setPdf } = usePdfUpload();
   const [activeTab, setActiveTab] = useState("Publications")
-  const { deletePublication } = usePublications();
   const tabs = ["Publications", "Articles", "Social posts"]
 
   // Add a handler for file selection
@@ -28,17 +24,17 @@ export default function DashboardMain() {
   };
 
   return (
-    <main className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-background via-background to-primary/5 min-h-screen">
+    <main className="flex-1 overflow-auto p-3 sm:p-6 lg:p-8 min-h-screen">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
       <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-      
+
       <div className="relative">
         {/* Upload Section */}
         <section className="rounded-3xl bg-gradient-card border border-border/50 shadow-soft p-6 sm:p-8 mb-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500">
           {/* Card Background Glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
+
           {/* Mobile Layout */}
           <div className="block lg:hidden relative">
             <div className="text-center">
@@ -46,18 +42,18 @@ export default function DashboardMain() {
                 <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Create New Publication</span>
               </div>
-              
+
               <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-gradient-hero">Add a New File</h1>
               <p className="text-muted-foreground mb-6">Transform your PDF into an interactive flipbook</p>
-              
-              <Button 
-                className="w-full sm:w-auto bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn" 
+
+              <Button
+                className="w-full sm:w-auto bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn"
                 onClick={() => router.push('/home/create')}
               >
                 <Upload className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />
                 Upload a File
               </Button>
-              
+
               <input
                 type="file"
                 accept="application/pdf"
@@ -68,7 +64,7 @@ export default function DashboardMain() {
                 }}
                 onChange={handleFileSelect}
               />
-              
+
               <div className="mt-6">
                 <p className="text-sm text-muted-foreground">
                   Supported:&nbsp;
@@ -80,13 +76,13 @@ export default function DashboardMain() {
                   </Tooltip>
                 </p>
               </div>
-              
+
               <div className="flex justify-center mt-6">
                 <InfoDialog />
               </div>
             </div>
           </div>
-          
+
           {/* Desktop Layout */}
           <div className="hidden lg:flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative">
             <div className="flex-1">
@@ -94,25 +90,26 @@ export default function DashboardMain() {
                 <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Create New Publication</span>
               </div>
-              
+
               <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-gradient-hero">Add a New File</h1>
               <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
-              
-              <Button 
-                className="bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn" 
+
+              <Button
+                className="w-fit cursor-pointer bg-gradient-card border border-primary text-black dark:text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+
                 onClick={() => router.push('/home/create')}
               >
-                <Upload className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />
+                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-black dark:text-white"/>
                 Upload a File
               </Button>
             </div>
-            
+
             <div className="text-center lg:text-right">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-4">
                 <Zap className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Drag & Drop</span>
               </div>
-              
+
               <h2 className="text-xl font-semibold mb-2">Quick Upload</h2>
               <p className="text-muted-foreground">
                 Upload a .pdf or other&nbsp;
@@ -124,7 +121,7 @@ export default function DashboardMain() {
                 </Tooltip>
               </p>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <InfoDialog />
             </div>
@@ -139,7 +136,7 @@ export default function DashboardMain() {
               <p className="text-muted-foreground">Manage your publications and track performance</p>
             </div>
           </div>
-          
+
           {/* Tab Navigation */}
           <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
             {tabs.map((tab) => (
@@ -149,10 +146,9 @@ export default function DashboardMain() {
                 size="sm"
                 className={`
                   text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105
-                  ${
-                    activeTab === tab
-                      ? "bg-gradient-hero text-white border-primary/30 shadow-glow"
-                      : "border-border/50 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  ${activeTab === tab
+                    ? "bg-gradient-hero text-primary border-primary/30 shadow-glow"
+                    : "border-border/50 text-muted-foreground hover:bg-accent hover:text-foreground"
                   }
                 `}
                 onClick={() => setActiveTab(tab)}
@@ -164,12 +160,12 @@ export default function DashboardMain() {
               </Button>
             ))}
           </div>
-          
+
           {/* Content Card */}
           <Card className="bg-gradient-card border border-border/50 shadow-soft rounded-3xl overflow-hidden hover:shadow-glow transition-all duration-500">
             <CardContent className="p-6 sm:p-8">
               {activeTab === "Publications" && (
-                <PublicationsTab/>
+                <PublicationsTab />
               )}
               {activeTab === "Articles" && (
                 <div className="text-center py-12">

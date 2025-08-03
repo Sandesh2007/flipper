@@ -208,7 +208,7 @@ export default function PublicationsTab() {
                     </div>
                     <div className="space-y-4">
                         {publications.map((pub) => (
-                            <div key={pub.id} className="flex items-center gap-4 p-6 bg-card border border-border/30 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
+                            <div key={pub.id} className="flex items-center gap-4 p-6 glass border border-border rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
                                 {pub.thumb_url ? (
                                     <Image
                                         src={pub.thumb_url}

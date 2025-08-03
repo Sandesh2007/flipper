@@ -266,7 +266,7 @@ export default function UserProfile() {
         <div className="min-h-screen relative overflow-hidden">
           <div className="relative">
             {/* Profile Header */}
-            <div className="border-b border-border/50 bg-gradient-to-r from-background to-muted/20 relative overflow-hidden">
+            <div className="relative overflow-hidden">
               <div className="relative max-w-4xl mx-auto px-4 py-12">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                   <div className="flex items-center gap-6 flex-1">

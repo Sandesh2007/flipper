@@ -1,5 +1,13 @@
+import { GradientBackground } from "@/components/ui/gradient-background"
 import DashboardMain from "./components/DashboardMain"
 
 export default function PublisherPage() {
-  return <DashboardMain />
+  return (
+    <GradientBackground
+    showFloatingElements
+    showMovingGradient
+    >
+      <DashboardMain />
+    </GradientBackground>
+  )
 }

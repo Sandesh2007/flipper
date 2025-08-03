@@ -25,7 +25,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex w-72 bg-gradient-glass border-r border-border/20 flex-col backdrop-blur-xl">
+    <aside className="hidden lg:flex w-72 border-r border-border/20 flex-col">
       {/* Header Section */}
       <div className="p-6 border-b border-border/10">
         <div className="flex items-center gap-3 mb-4">
