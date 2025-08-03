@@ -251,7 +251,11 @@ export default function CreatePublicationPage() {
 
   function handleRetry(): void {
     // Retry to process the pdf
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> a033050512637a461a870faa4b7a46b078568844
   }
 
   const onDrop = React.useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
