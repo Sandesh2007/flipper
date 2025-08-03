@@ -40,14 +40,14 @@ const conTypes = [
 
 export const ConversionInfo = () => {
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-transparent to-muted/20">
+    <section className="py-20 px-4 bg-muted/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Multiple output formats</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+            <Zap className="w-4 h-4 text-blue-500" />
+            <span className="text-sm font-medium text-blue-500">Multiple output formats</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-hero">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-blue-500">
             Turn your files into a...
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -59,14 +59,14 @@ export const ConversionInfo = () => {
           {conTypes.map((type, index) => (
             <Card 
               key={index} 
-              className={`group bg-gradient-card border ${type.borderColor}  hover:scale-105 card-hover relative overflow-hidden animate-fade-in`}
+              className={`group bg-card border ${type.borderColor}  hover:scale-105 card-hover relative overflow-hidden animate-fade-in`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* Background Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${type.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+              {/* Background Color */}
+              <div className={`absolute inset-0 ${type.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
               
               {type.badge && (
-                <Badge className="absolute top-4 right-4 bg-gradient-hero text-white border-0 z-10 animate-pulse-slow">
+                <Badge className="absolute top-4 right-4 bg-blue-500 text-white border-0 z-10 animate-pulse-slow">
                   <Sparkles className="w-3 h-3 mr-1" />
                   {type.badge}
                 </Badge>
@@ -74,7 +74,7 @@ export const ConversionInfo = () => {
               
               <CardContent className="p-8 text-center relative z-10">
                 <div className="mb-6 flex justify-center">
-                  <div className="h-20 w-20 rounded-2xl bg-gradient-hero flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-glow">
+                  <div className="h-20 w-20 rounded-2xl bg-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-glow">
                     <type.icon className="h-10 w-10 text-white" />
                   </div>
                 </div>
@@ -102,31 +102,31 @@ export const ConversionInfo = () => {
         <div className="mt-16 text-center">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <div className="text-2xl font-bold text-gradient mb-2">300%</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">300%</div>
               <div className="text-sm text-muted-foreground">Engagement Increase</div>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <div className="text-2xl font-bold text-gradient mb-2">50K+</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">50K+</div>
               <div className="text-sm text-muted-foreground">Happy Users</div>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <div className="text-2xl font-bold text-gradient mb-2">10s</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">10s</div>
               <div className="text-sm text-muted-foreground">Average Conversion</div>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-hero flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <div className="text-2xl font-bold text-gradient mb-2">99.9%</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">99.9%</div>
               <div className="text-sm text-muted-foreground">Uptime</div>
             </div>
           </div>

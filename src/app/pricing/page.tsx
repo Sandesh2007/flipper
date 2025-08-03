@@ -83,11 +83,6 @@ const Pricing = () => {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <Button className="w-full bg-gradient-hero hover:shadow-glow text-white font-medium py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn">
-              <span className="group-hover/btn:animate-pulse">Currently Active</span>
-            </Button>
-
             {/* Additional Info */}
             <div className="mt-6 text-center">
               <p className="text-xs text-muted-foreground">

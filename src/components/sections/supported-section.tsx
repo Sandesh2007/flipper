@@ -15,11 +15,11 @@ export const SupportedFormats = () => {
     <section className="py-20 px-4">
       <div className="w-full max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
-            <CheckCircle className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Wide format support</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+            <CheckCircle className="w-4 h-4 text-blue-500" />
+            <span className="text-sm font-medium text-blue-500">Wide format support</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gradient-hero">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-blue-500">
             Supported Formats
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -31,7 +31,7 @@ export const SupportedFormats = () => {
           {formats.map((format, index) => (
             <div
               key={index}
-              className="group p-6 rounded-2xl bg-gradient-card border border-border/50  hover:scale-105 card-hover text-center animate-fade-in"
+              className="group p-6 rounded-2xl bg-card border border-border/50  hover:scale-105 card-hover text-center animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-${format.color.replace('text-', '')}/10 to-${format.color.replace('text-', '')}/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -44,9 +44,9 @@ export const SupportedFormats = () => {
         </div>
         
         <div className="text-center">
-                      <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-glass border border-primary/20  hover:scale-105 transition-all duration-300 cursor-pointer group">
-            <Sparkles className="w-4 h-4 text-primary group-hover:animate-pulse" />
-            <span className="text-sm font-medium text-primary">And many more formats supported</span>
+                      <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-100 border border-blue-500/20  hover:scale-105 transition-all duration-300 cursor-pointer group">
+            <Sparkles className="w-4 h-4 text-blue-500 group-hover:animate-pulse" />
+            <span className="text-sm font-medium text-blue-500">And many more formats supported</span>
           </div>
         </div>
       </div>

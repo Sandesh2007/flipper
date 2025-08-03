@@ -21,26 +21,25 @@ interface PublicationsGridProps {
   onDelete: (id: string) => void;
 }
 
-export function PublicationsGrid({ 
-  publications, 
-  viewMode, 
-  likes, 
-  onEdit, 
-  onDelete 
+export function PublicationsGrid({
+  publications,
+  viewMode,
+  likes,
+  onEdit,
+  onDelete
 }: PublicationsGridProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   return (
-    <div className={`grid gap-6 ${
-      viewMode === 'grid' 
-        ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+    <div className={`grid gap-6 ${viewMode === 'grid'
+        ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
         : 'grid-cols-1'
-    }`}>
+      }`}>
       {publications.map((pub, index) => (
-        <Card 
+        <Card
           key={pub.id}
-          className="overflow-hidden animate-scale-in bg-gradient-card border border-border/30 hover:border-border/50 transition-all duration-300 hover:scale-102 shadow-soft hover:shadow-glow"
-          style={{ 
+          className="overflow-hidden animate-scale-in bg-card border border-border/30 hover:border-border/50 transition-all duration-300 hover:scale-102 shadow-soft hover:shadow-glow"
+          style={{
             animationDelay: `${index * 100}ms`,
             animationFillMode: 'backwards'
           }}
@@ -59,7 +58,7 @@ export function PublicationsGrid({
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center backdrop-blur-sm">
+              <div className="w-full h-full bg-muted/50 flex items-center justify-center backdrop-blur-sm">
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-muted-foreground/10 flex items-center justify-center">
                     <span className="text-muted-foreground text-lg">📄</span>
@@ -68,9 +67,8 @@ export function PublicationsGrid({
                 </div>
               </div>
             )}
-            <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-center justify-center gap-3 transition-all duration-300 ${
-              hoveredId === pub.id ? 'opacity-100' : 'opacity-0'
-            }`}>
+            <div className={`absolute inset-0 bg-black/70 flex items-center justify-center gap-3 transition-all duration-300 ${hoveredId === pub.id ? 'opacity-100' : 'opacity-0'
+              }`}>
               <Button
                 variant="secondary"
                 size="icon"

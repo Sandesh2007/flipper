@@ -111,10 +111,9 @@ export function Navbar() {
                         <Link href={homePage} className="flex gap-2 sm:gap-3 items-center flex-shrink-0 group">
                             <div className="relative">
                                 <Image src={logo} alt="logo" height={36} width={36} className="sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" priority />
-                                <div className="absolute inset-0 bg-gradient-hero rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                             </div>
                             <div className="flex flex-col">
-                                <span className="font-bold text-lg sm:text-xl text-gradient-hero">NekoPress</span>
+                                <span className="font-bold text-lg sm:text-xl text-blue-500">NekoPress</span>
                                 <span className="text-xs text-muted-foreground hidden sm:block">Digital Publishing</span>
                             </div>
                         </Link>
@@ -141,7 +140,7 @@ export function Navbar() {
                                     <Link href="/auth/register?mode=login" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
                                         <span className="group-hover:text-primary transition-colors duration-300">Login</span>
                                     </Link>
-                                    <Button asChild className="bg-gradient-hero hover:shadow-glow text-white text-sm font-medium px-4 xl:px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
+                                    <Button asChild className="bg-blue-500 hover:shadow-glow text-white text-sm font-medium px-4 xl:px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
                                         <Link href="/auth/register?mode=signup">
                                             <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                                             Sign up
@@ -189,7 +188,7 @@ export function Navbar() {
                                 <Link href="/" className="flex gap-2 sm:gap-3 items-center" onClick={handleCloseMenu}>
                                     <Image src={logo} alt="logo" height={32} width={32} priority />
                                     <div className="flex flex-col min-w-0">
-                                        <span className="font-bold text-base sm:text-lg text-gradient-hero truncate">NekoPress</span>
+                                        <span className="font-bold text-base sm:text-lg text-blue-500 truncate">NekoPress</span>
                                         <span className="text-xs text-muted-foreground">Digital Publishing</span>
                                     </div>
                                 </Link>
@@ -208,7 +207,7 @@ export function Navbar() {
                             <div className="p-4 sm:p-6 border-b border-border/50 bg-background flex-shrink-0">
                                 <Button 
                                     variant="outline" 
-                                    className="w-full bg-gradient-hero hover:shadow-glow text-white border-primary/30 rounded-xl transition-all duration-300 hover:scale-105" 
+                                    className="w-full bg-blue-500 hover:shadow-glow text-white border-blue-500/30 rounded-xl transition-all duration-300 hover:scale-105" 
                                     onClick={handleCloseMenu}
                                 >
                                     <Upload className="w-4 h-4 mr-2" />
@@ -294,7 +293,7 @@ export function Navbar() {
                                             <Link href="/auth/register?mode=login" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm" onClick={handleCloseMenu}>
                                                 Login
                                             </Link>
-                                            <Button asChild className="w-full bg-gradient-hero hover:shadow-glow text-white text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105">
+                                            <Button asChild className="w-full bg-blue-500 hover:shadow-glow text-white text-sm font-medium rounded-xl transition-all duration-300 hover:scale-105">
                                                 <Link href="/auth/register?mode=signup" onClick={handleCloseMenu}>
                                                     <Sparkles className="w-4 h-4 mr-2" />
                                                     Sign up
@@ -305,7 +304,7 @@ export function Navbar() {
 
                                     {/* Plan Info */}
                                     {user && (
-                                        <div className="mt-4 px-4 py-3 bg-gradient-card rounded-xl border border-border/50">
+                                        <div className="mt-4 px-4 py-3 bg-card rounded-xl border border-border/50">
                                             <div className="text-xs text-muted-foreground">
                                                 Current plan: <span className="text-foreground font-medium">Basic</span>
                                             </div>

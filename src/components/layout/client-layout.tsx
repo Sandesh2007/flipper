@@ -18,7 +18,7 @@ export default function ClientLayout({
   const isNoFooterRoute = noFooterRoutes.includes(pathname);
 
   return (
-    <GradientBackground showMovingGradient={true} showFloatingElements={true}>
+    <GradientBackground showMovingGradient={false} showFloatingElements={true}>
       {!isNoLayoutRoute && (
         <header className="sticky top-0 z-50 border-b-[1px] border-neutral-700 ">
           <Navbar />

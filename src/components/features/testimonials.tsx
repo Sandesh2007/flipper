@@ -39,14 +39,14 @@ const testimonials = [
 
 export const Testimonials = () => {
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-transparent to-muted/20">
+    <section className="py-20 px-4 bg-muted/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Trusted by professionals worldwide</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+            <Sparkles className="w-4 h-4 text-blue-500" />
+            <span className="text-sm font-medium text-blue-500">Trusted by professionals worldwide</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-hero">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-blue-500">
             Loved by creators worldwide
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -58,7 +58,7 @@ export const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
-              className="group bg-gradient-card border border-border/50  hover:scale-105 card-hover overflow-hidden animate-fade-in"
+              className="group bg-card border border-border/50  hover:scale-105 card-hover overflow-hidden animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <CardContent className="p-8 relative">
@@ -89,7 +89,7 @@ export const Testimonials = () => {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-14 w-14 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                    <AvatarFallback className="bg-gradient-hero text-white font-semibold text-lg">
+                    <AvatarFallback className="bg-blue-500 text-white font-semibold text-lg">
                       {testimonial.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
@@ -111,19 +111,19 @@ export const Testimonials = () => {
         <div className="mt-16 text-center">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">10K+</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">10K+</div>
               <div className="text-sm text-muted-foreground">Happy Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">50K+</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">50K+</div>
               <div className="text-sm text-muted-foreground">PDFs Converted</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">99.9%</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">99.9%</div>
               <div className="text-sm text-muted-foreground">Uptime</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">24/7</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">24/7</div>
               <div className="text-sm text-muted-foreground">Support</div>
             </div>
           </div>

@@ -137,7 +137,7 @@ export default function SearchBox({
       {/* Search Input */}
       <div className={`relative group transition-all duration-200 ${isFocused ? 'transform scale-[1.02]' : ''
         }`}>
-        <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 blur-xl transition-opacity duration-300 ${isFocused ? 'opacity-100' : ''
+        <div className={`absolute inset-0 rounded-xl bg-blue-500/20 opacity-0 blur-xl transition-opacity duration-300 ${isFocused ? 'opacity-100' : ''
           }`}></div>
 
         <div className="relative bg-white dark:bg-white rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-200 hover:shadow-xl">
@@ -205,7 +205,7 @@ export default function SearchBox({
                             border-gray-200 dark:border-gray-700 group-hover:border-blue-500 transition-colors overflow-hidden uppercase`}
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-gray-200 dark:border-neutral-700 group-hover:border-blue-500 flex items-center justify-start transition-colors">
+                        <div className="w-10 h-10 rounded-full bg-blue-500 border-2 border-gray-200 dark:border-neutral-700 group-hover:border-blue-500 flex items-center justify-start transition-colors">
                           <span className="text-sm font-semibold text-white">
                             {profile.username.charAt(0).toUpperCase()}start
                           </span>
@@ -245,7 +245,7 @@ export default function SearchBox({
                           className="w-10 h-10 rounded-lg object-cover border border-gray-200 dark:border-gray-700 group-hover:border-blue-500 transition-colors"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 border border-gray-200 dark:border-gray-700 group-hover:border-blue-500 flex items-center justify-center transition-colors">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500 border border-gray-200 dark:border-gray-700 group-hover:border-blue-500 flex items-center justify-center transition-colors">
                           <FileText className="w-5 h-5 text-white" />
                         </div>
                       )}

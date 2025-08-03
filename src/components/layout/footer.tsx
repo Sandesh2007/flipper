@@ -37,29 +37,29 @@ export const Footer = () => {
   const { user } = useAuth()
 
   return (
-    <footer className="bg-gradient-to-b from-background to-muted/20 border-t border-border/50">
+    <footer className="bg-background border-t border-border/50">
       {/* Newsletter Section */}
       {!user && (
       <div className="border-b border-border/50">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6 animate-fade-in">
-              <Mail className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Stay updated</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+              <Mail className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium text-blue-500">Stay updated</span>
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-hero">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-blue-500">
               Stay in the loop
             </h3>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
               Get the latest updates, tips, and resources delivered to your inbox. Join our community of creators.
             </p>
-            <div className="flex gap-4 max-w-md mx-auto bg-gradient-card rounded-2xl p-2 shadow-soft">
+            <div className="flex gap-4 max-w-md border border-border/50 mx-auto bg-card rounded-2xl p-2 shadow-soft">
               <Input
-                placeholder="Enter your email" 
-                className="flex-1 bg-transparent border-0 focus:ring-0 text-foreground placeholder:text-muted-foreground"
+                placeholder="Enter your email"
+                className="flex-1 p-2 bg-transparent rounded-2xl text-foreground placeholder:text-muted-foreground"
                 type="email"
               />
-              <Button className="bg-gradient-hero hover:shadow-glow text-white px-6">
+              <Button className="bg-blue-500 hover:shadow-glow text-white px-6">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Subscribe
               </Button>
@@ -82,7 +82,7 @@ export const Footer = () => {
                 <div className="absolute inset-0 rounded-2xl opacity-20 animate-pulse-slow"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-gradient-hero">NekoPress</span>
+                <span className="text-2xl font-bold text-blue-500">NekoPress</span>
                 <span className="text-sm text-muted-foreground">Digital Publishing</span>
               </div>
             </div>
@@ -95,7 +95,7 @@ export const Footer = () => {
                 <a 
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 rounded-xl bg-gradient-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-primary  hover:scale-105 transition-all duration-300 group"
+                  className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-500  hover:scale-105 transition-all duration-300 group"
                   aria-label={social.label}
                 >
                   <social.icon className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
@@ -176,7 +176,7 @@ export const Footer = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground flex items-center gap-2">
-              © 2024 NekoPress. Made with <Heart className="w-4 h-4 text-red-500" /> for creators worldwide.
+              © 2024 NekoPress. Made with <Heart className="w-4 h-4 fill-red-500 text-red-500" /> for creators worldwide.
             </p>
             <div className="flex items-center gap-6">
               <a href="#status" className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-y-[-1px]">

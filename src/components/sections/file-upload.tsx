@@ -142,11 +142,11 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploadedFile) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-card border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-soft p-8 text-center">
           {/* Success Background Animation */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 animate-pulse-slow"></div>
+          <div className="absolute inset-0 bg-green-500/10 animate-pulse-slow"></div>
           <div className="relative">
-            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 shadow-glow animate-scale-in">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-green-500 shadow-glow animate-scale-in">
               <CheckCircle className="w-10 h-10 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-3 animate-fade-in">
@@ -165,7 +165,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
               </Button>
               <Button
                 onClick={() => onConvertClick(uploadedFile!)}
-                className="bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105"
+                className="bg-blue-500 hover:shadow-glow text-white shadow-soft hover:scale-105"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Convert to Flipbook
@@ -180,11 +180,11 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploading) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-card border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-soft p-8 text-center">
           {/* Upload Background Animation */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 animate-pulse-slow"></div>
+          <div className="absolute inset-0 bg-blue-500/10 animate-pulse-slow"></div>
           <div className="relative">
-            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-hero shadow-glow animate-bounce-slow">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500 shadow-glow animate-bounce-slow">
               <Upload className="w-10 h-10 text-white" />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-4 animate-fade-in">
@@ -228,26 +228,26 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       
       <div
         {...getRootProps()}
-        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 bg-gradient-card border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 bg-card border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
           isDragActive && !isDragReject
-            ? "border-primary bg-primary/5 shadow-glow scale-105"
+            ? "border-blue-500 bg-blue-500/5 shadow-glow scale-105"
             : isDragReject
             ? "border-red-400 bg-red-50 dark:bg-red-900/20"
-            : "border-primary/30 hover:border-primary/60 hover:scale-[1.02]"
+            : "border-blue-500/30 hover:border-blue-500/60 hover:scale-[1.02]"
         }`}
         role="button"
         tabIndex={0}
         aria-label="Upload PDF file by dragging and dropping or clicking to browse"
       >
         {/* Background Animation */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-pulse-slow"></div>
+        <div className="absolute inset-0 bg-blue-500/5 animate-pulse-slow"></div>
         
         <input {...getInputProps()} id="file-input" aria-describedby="upload-description" />
         <div className="relative">
           <div className={`flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-2xl transition-all duration-300 ${
             isDragReject 
               ? "bg-red-100 dark:bg-red-900/30 animate-wiggle" 
-              : "bg-gradient-hero shadow-glow"
+              : "bg-blue-500 shadow-glow"
           }`}>
             <FileText className={`w-12 h-12 transition-colors ${
               isDragReject ? "text-red-600 dark:text-red-400" : "text-white"
@@ -283,7 +283,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
           
           <Button
             onClick={handleUploadClick}
-            className="bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
+            className="bg-blue-500 hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
             size="lg"
             disabled={uploading}
           >

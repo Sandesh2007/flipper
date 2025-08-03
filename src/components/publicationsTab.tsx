@@ -157,14 +157,14 @@ export default function PublicationsTab() {
                 </div>
             ) : publications.length === 0 ? (
                 <div className="text-center py-12">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-hero/10 flex items-center justify-center mx-auto mb-6">
+                    <div className="w-20 h-20 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6">
                         <FileText className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="text-2xl font-bold text-foreground mb-3">No Publications Yet</h3>
                     <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">Start by creating your first publication to showcase your work.</p>
                     <Button 
                         onClick={() => router.push('/home/create')}
-                        className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300"
+                        className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300"
                     >
                         Create Publication
                     </Button>
@@ -200,7 +200,7 @@ export default function PublicationsTab() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => router.push('/home/profile')}
-                                className="bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
+                                className="bg-card border border-border/30 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all duration-300"
                             >
                                 View All
                             </Button>
@@ -208,7 +208,7 @@ export default function PublicationsTab() {
                     </div>
                     <div className="space-y-4">
                         {publications.map((pub) => (
-                            <div key={pub.id} className="flex items-center gap-4 p-6 bg-gradient-card border border-border/30 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
+                            <div key={pub.id} className="flex items-center gap-4 p-6 bg-card border border-border/30 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
                                 {pub.thumb_url ? (
                                     <Image
                                         src={pub.thumb_url}
@@ -218,7 +218,7 @@ export default function PublicationsTab() {
                                         className="w-15 h-15 object-cover rounded-lg"
                                     />
                                 ) : (
-                                    <div className="w-15 h-15 bg-gradient-hero/10 rounded-lg flex items-center justify-center">
+                                    <div className="w-15 h-15 bg-blue-500/10 rounded-lg flex items-center justify-center">
                                         <FileText className="w-6 h-6 text-primary" />
                                     </div>
                                 )}

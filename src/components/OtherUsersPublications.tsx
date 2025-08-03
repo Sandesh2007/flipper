@@ -223,10 +223,10 @@ export default function OtherUsersPublications({
             <div key={userIndex} className="space-y-6">
               {/* User Header Skeleton */}
               <div className="flex items-center gap-4 p-6 bg-card rounded-xl border border-border/30 shadow-soft">
-                <Skeleton className="w-12 h-12 rounded-full" />
+                <Skeleton className="w-12 h-12 rounded-full bg-neutral-500" />
                 <div className="space-y-2">
-                  <Skeleton className="w-32 h-5" />
-                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-32 h-5 bg-neutral-500" />
+                  <Skeleton className="w-24 h-4 bg-neutral-500" />
                 </div>
               </div>
               {/* Publications Grid Skeleton */}
@@ -234,9 +234,9 @@ export default function OtherUsersPublications({
                 {Array.from({ length: 4 }).map((_, i) => (
                   <Card key={i} className="animate-pulse bg-card border-border/30">
                     <CardContent className="p-4">
-                      <Skeleton className="w-full h-40 rounded mb-3" />
-                      <Skeleton className="h-4 rounded mb-2" />
-                      <Skeleton className="h-3 rounded w-2/3" />
+                      <Skeleton className="w-full h-40 rounded mb-3 bg-neutral-500" />
+                      <Skeleton className="h-4 rounded mb-2 bg-neutral-500" />
+                      <Skeleton className="h-3 rounded w-2/3 bg-neutral-500" />
                     </CardContent>
                   </Card>
                 ))}

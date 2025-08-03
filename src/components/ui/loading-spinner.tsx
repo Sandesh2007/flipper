@@ -63,10 +63,10 @@ export const LoadingDots = ({ text = "Loading" }: { text?: string }) => {
 export const LoadingCard = () => {
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-card border border-border/50 shadow-soft p-8 text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 animate-pulse-slow"></div>
+      <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-soft p-8 text-center">
+        <div className="absolute inset-0 bg-blue-500/5 animate-pulse-slow"></div>
         <div className="relative">
-          <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-hero shadow-glow animate-bounce-slow">
+          <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-blue-500 shadow-glow animate-bounce-slow">
             <Loader2 className="w-10 h-10 text-white animate-spin" />
           </div>
           <h3 className="text-2xl font-bold text-foreground mb-4 animate-fade-in">
