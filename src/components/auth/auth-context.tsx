@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const USER_CACHE_KEY = "nekopress_user";
+const USER_CACHE_KEY = "flipper_user";
 const USER_CACHE_EXPIRY = 1000 * 60 * 60; // 1 hour
 
 // Helper to get cached user with expiry check

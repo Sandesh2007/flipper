@@ -1,7 +1,7 @@
-# NekoPress UX Improvements Documentation
+# Flipper UX Improvements Documentation
 
 ## Overview
-This document outlines the new components and enhancements added to improve the user experience of the NekoPress application. All improvements focus on better accessibility, user feedback, error handling, and visual polish.
+This document outlines the new components and enhancements added to improve the user experience of the Flipper application. All improvements focus on better accessibility, user feedback, error handling, and visual polish.
 
 ## 🆕 New Components Added
 

@@ -2,7 +2,7 @@
 
 export function clearAllCaches() {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('nekopress_user');
+    localStorage.removeItem('flipper_user');
   }
   
   console.log('Caches cleared. Some caches will be cleared on page refresh.');
@@ -21,7 +21,7 @@ export function getCacheInfo() {
   
   const cacheInfo: Record<string, any> = {};
   
-  const userCache = localStorage.getItem('nekopress_user');
+  const userCache = localStorage.getItem('flipper_user');
   if (userCache) {
     try {
       const parsed = JSON.parse(userCache);

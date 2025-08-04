@@ -1,6 +1,6 @@
-# NekoPress Source Code Organization
+# Flipper Source Code Organization
 
-This document outlines the organized file structure for the NekoPress application.
+This document outlines the organized file structure for the Flipper application.
 
 ## Directory Structure
 

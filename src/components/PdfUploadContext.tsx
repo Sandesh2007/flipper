@@ -19,7 +19,7 @@ interface PdfUploadContextType {
 
 const PdfUploadContext = createContext<PdfUploadContextType | undefined>(undefined);
 
-const PDF_STORAGE_KEY = 'nekopress_pdf_upload';
+const PDF_STORAGE_KEY = 'flipper_pdf_upload';
 
 export const PdfUploadProvider = ({ children }: { children: ReactNode }) => {
   const [pdf, setPdfState] = useState<PdfFile | null>(null);

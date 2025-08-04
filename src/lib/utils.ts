@@ -61,7 +61,7 @@ export async function retry<T>(
 }
 
 // PDF utility functions
-export const PDF_STORAGE_KEY = 'nekopress_pdf_data';
+export const PDF_STORAGE_KEY = 'flipper_pdf_data';
 
 export interface StoredPdfData {
   name: string;

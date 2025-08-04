@@ -36,7 +36,7 @@ export default function InfoDialog() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             src="https://www.youtube.com/embed/3pxD6h16I_I?rel=0"
             className="w-full h-full"
-            title="How to upload files to Nekopress"
+            title="How to upload files to flipper"
           />
         </div>
 
