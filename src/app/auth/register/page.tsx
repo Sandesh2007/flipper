@@ -2,6 +2,7 @@
 
 // Some parts are commented out because they can be readded later if my mind changed ^_^
 import { AuthForm } from '@/components'
+import { GradientBackground } from '@/components/ui/gradient-background'
 // import Image from 'next/image'
 // import logo from "../../../public/logo.svg";
 // import Link from 'next/link'
@@ -17,7 +18,7 @@ export default function Login() {
       {/* <div className="flex items-center gap-4 w-full lg:w-auto"> */}
       {/* <Link href="/" className="flex gap-2 items-center"> */}
       {/* <Image src={logo} alt="logo" height={40} priority /> */}
-      {/* <span className="font-semibold text-lg">Neko Press</span> */}
+      {/* <span className="font-semibold text-lg">Flip Press</span> */}
       {/* </Link> */}
       {/* </div> */}
       {/* Right Side: Theme Button */}
@@ -26,11 +27,13 @@ export default function Login() {
       {/* </div> */}
       {/* </nav> */}
       {/* </header> */}
-      <main className="flex h-screen items-center justify-center bg-background">
-        <Suspense fallback={<div>Loading...</div>}>
-          <AuthForm />
-        </Suspense>
-      </main>
+      <GradientBackground>
+        <main className="flex h-screen items-center justify-center">
+          <Suspense fallback={<div>Loading...</div>}>
+            <AuthForm />
+          </Suspense>
+        </main>
+      </GradientBackground>
     </>
   )
 }

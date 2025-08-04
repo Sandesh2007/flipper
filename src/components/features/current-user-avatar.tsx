@@ -14,8 +14,9 @@ export const CurrentUserAvatar = (className:any) => {
     ?.toUpperCase()
 
   return (
-    <Avatar className={className}>
-      <AvatarImage 
+    <Avatar >
+      <AvatarImage
+      className={className}
         src={profileImage}
         alt={initials} 
       />

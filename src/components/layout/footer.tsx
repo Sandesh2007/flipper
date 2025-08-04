@@ -37,36 +37,38 @@ export const Footer = () => {
   const { user } = useAuth()
 
   return (
-    <footer className="bg-background border-t border-border/50">
+    <footer className="glass border-t border-border">
       {/* Newsletter Section */}
       {!user && (
-      <div className="border-b border-border/50">
-        <div className="container mx-auto px-4 py-20">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
-              <Mail className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium text-blue-500">Stay updated</span>
-            </div>
-            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-blue-500">
-              Stay in the loop
-            </h3>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Get the latest updates, tips, and resources delivered to your inbox. Join our community of creators.
-            </p>
-            <div className="flex gap-4 max-w-md border border-border/50 mx-auto bg-card rounded-2xl p-2 shadow-soft">
-              <Input
-                placeholder="Enter your email"
-                className="flex-1 p-2 bg-transparent rounded-2xl text-foreground placeholder:text-muted-foreground"
-                type="email"
-              />
-              <Button className="bg-blue-500 hover:shadow-glow text-white px-6">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Subscribe
-              </Button>
+        <div className="border-b border-border/50">
+          <div className="container mx-auto px-4 py-20">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+                <Mail className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-medium text-blue-500">Stay updated</span>
+              </div>
+              <h3 className="text-3xl md:text-4xl font-bold mb-4 text-blue-500">
+                Stay in the loop
+              </h3>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                Get the latest updates, tips, and resources delivered to your inbox. Join our community of creators.
+              </p>
+              <div className="flex justify-center w-full">
+                <div className="flex gap-4 max-w-md border w-full border-border/50 mx-auto glass rounded-2xl p-2 shadow-soft">
+                  <Input
+                    placeholder="Enter your email"
+                    className="flex-1 p-2 bg-transparent w-full float-left rounded-2xl text-foreground placeholder:text-muted-foreground"
+                    type="email"
+                  />
+                  <Button className="bg-blue-500 float-right relative hover:shadow-glow text-white px-6">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Subscribe
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* Main Footer */}
@@ -87,12 +89,12 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-muted-foreground mb-8 leading-relaxed text-lg">
-              Transform your static documents into engaging, interactive digital publications 
+              Transform your static documents into engaging, interactive digital publications
               that captivate your audience across all devices with stunning animations and modern design.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
-                <a 
+                <a
                   key={index}
                   href={social.href}
                   className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-500  hover:scale-105 transition-all duration-300 group"
@@ -110,8 +112,8 @@ export const Footer = () => {
             <ul className="space-y-4">
               {footerLinks.product.map((link, index) => (
                 <li key={index}>
-                  <a 
-                    href={link.href} 
+                  <a
+                    href={link.href}
                     className="text-muted-foreground hover:text-primary transition-all duration-300 text-sm hover:translate-x-1 inline-block"
                   >
                     {link.name}
@@ -126,7 +128,7 @@ export const Footer = () => {
             <ul className="space-y-4">
               {footerLinks.resources.map((link, index) => (
                 <li key={index}>
-                  <a 
+                  <a
                     href={link.href}
                     className="text-muted-foreground hover:text-primary transition-all duration-300 text-sm hover:translate-x-1 inline-block"
                   >
@@ -142,7 +144,7 @@ export const Footer = () => {
             <ul className="space-y-4">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
-                  <a 
+                  <a
                     href={link.href}
                     className="text-muted-foreground hover:text-primary transition-all duration-300 text-sm hover:translate-x-1 inline-block"
                   >
@@ -158,7 +160,7 @@ export const Footer = () => {
             <ul className="space-y-4">
               {footerLinks.legal.map((link, index) => (
                 <li key={index}>
-                  <a 
+                  <a
                     href={link.href}
                     className="text-muted-foreground hover:text-primary transition-all duration-300 text-sm hover:translate-x-1 inline-block"
                   >

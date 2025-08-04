@@ -5,7 +5,6 @@ import {
   MapPin, Heart, Pencil, Save, X, Grid3X3, List,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-context";
-import { CurrentUserAvatar } from "@/components/features/current-user-avatar";
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ const likesCache = new Map<string, { data: Record<string, number>; timestamp: nu
 const LIKES_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 export default function UserProfile() {
-  const { user , loading: authLoading} = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { publications, loading: publicationsLoading, updatePublication, refreshPublications } = usePublications();
   const supabase = createClient();
 
@@ -73,25 +72,25 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchLikes = async () => {
       if (!user || publications.length === 0) return;
-      
+
       // Check cache first
       const cacheKey = `likes_${user.id}`;
       const cached = likesCache.get(cacheKey);
       const now = Date.now();
-      
+
       if (cached && (now - cached.timestamp) < LIKES_CACHE_DURATION) {
         setLikes(cached.data);
         return;
       }
-      
+
       // Cancel any ongoing fetch
       if (fetchControllerRef.current) {
         fetchControllerRef.current.abort();
       }
-      
+
       fetchControllerRef.current = new AbortController();
       const signal = fetchControllerRef.current.signal;
-      
+
       setLikesLoading(true);
       const supabase = createClient();
       const pubIds = publications.map((p) => p.id);
@@ -111,7 +110,7 @@ export default function UserProfile() {
 
         // Update cache
         likesCache.set(cacheKey, { data: likeMap, timestamp: now });
-        
+
         if (isMountedRef.current) {
           setLikes(likeMap);
         }
@@ -123,7 +122,7 @@ export default function UserProfile() {
         }
       }
     };
-    
+
     fetchLikes();
   }, [user, publications]);
 
@@ -184,9 +183,9 @@ export default function UserProfile() {
         .eq('id', pub.id)
         .select();
 
-        if(data){
-          console.log(data);
-        }
+      if (data) {
+        console.log(data);
+      }
 
       if (updateError) {
         console.error(updateError);
@@ -235,7 +234,7 @@ export default function UserProfile() {
 
   // Add a fallback loading state for when data is stale
   const [isDataStale, setIsDataStale] = useState(false);
-  
+
   useEffect(() => {
     // Check if data is stale (more than 5 minutes old)
     if (publications.length > 0) {
@@ -253,15 +252,15 @@ export default function UserProfile() {
   }, [isDataStale, publicationsLoading, refreshPublications]);
 
   if (isLoading) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
-      <LoadingSpinner size="lg" text="Loading profile..." />
-    </div>
-  );
-}
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <LoadingSpinner size="lg" text="Loading profile..." />
+      </div>
+    );
+  }
 
   return (
-    <GradientBackground showMovingGradient={true} showFloatingElements={true}>
+    <GradientBackground>
       {user ? (
         <div className="min-h-screen relative overflow-hidden">
           <div className="relative">
@@ -270,8 +269,24 @@ export default function UserProfile() {
               <div className="relative max-w-4xl mx-auto px-4 py-12">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                   <div className="flex items-center gap-6 flex-1">
-                    <div className="transform transition-transform duration-300 hover:scale-105 relative">
-                      <CurrentUserAvatar className="h-32 w-32 rounded-full" />
+                    <div className="relative group">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-border/50 group-hover:border-primary/50 transition-all duration-300 shadow-xl">
+                        {user.avatar_url ? (
+                          <Image
+                            src={user.avatar_url}
+                            alt="Avatar"
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center">
+                            <span className="text-4xl font-bold text-muted-foreground">
+                              {user.username ? user.username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-4">
@@ -403,10 +418,10 @@ export default function UserProfile() {
                         className="group relative animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
-                        <Card className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-2 hover:scale-[1.02] border-border/50 hover:border-primary/30 bg-gradient-card rounded-2xl">
-                          <CardContent className="p-0 flex flex-col h-full">
+                        <Card className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-glow hover:-translate-y-2 hover:scale-[1.02] border-border/50 hover:border-primary/30 glass rounded-2xl">
+                          <CardContent className="p-2 flex flex-col h-full">
                             {/* Image Container */}
-                            <div className="relative overflow-hidden">
+                            <div className="relative overflow-hidden border-2 rounded-md">
                               {pub.thumb_url ? (
                                 <Image
                                   src={pub.thumb_url}
@@ -429,7 +444,7 @@ export default function UserProfile() {
 
                               {/* Like Count Overlay */}
                               <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
-                                <Heart className="w-3 h-3" />
+                                <Heart className="w-3 h-3 text-red-500"/>
                                 {likeCount}
                               </div>
 
@@ -471,10 +486,10 @@ export default function UserProfile() {
                   {sortedPublications.map((pub, index) => (
                     <Card
                       key={pub.id}
-                      className="group transition-all duration-300 hover:shadow-glow border-border/50 hover:border-primary/30 animate-in fade-in-0 slide-in-from-left-4 bg-gradient-card rounded-2xl"
+                      className="group transition-all duration-300 hover:shadow-glow border-border/50 hover:border-primary/30 animate-in fade-in-0 slide-in-from-left-4 glass rounded-2xl"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <CardContent className="p-0">
+                      <CardContent className="p-2">
                         {editingId === pub.id ? (
                           // Edit Mode
                           <div className="p-6">
@@ -537,7 +552,7 @@ export default function UserProfile() {
                                     size="sm"
                                     onClick={() => handleEditSave(pub)}
                                     disabled={actionLoading}
-                                    className="transition-all duration-200 hover:scale-105 bg-gradient-hero hover:shadow-glow rounded-xl"
+                                    className="transition-all duration-200 hover:scale-105 hover:shadow-glow rounded-xl"
                                   >
                                     <Save className="w-4 h-4 mr-2" />
                                     Save Changes
@@ -560,20 +575,20 @@ export default function UserProfile() {
                           // View Mode
                           <div className="flex flex-col lg:flex-row">
                             {/* Image */}
-                            <div className="w-full lg:w-32 h-48 lg:h-40 flex-shrink-0">
+                            <div className="w-full lg:w-32 border-2 rounded-md h-48 lg:h-40 flex-shrink-0">
                               {pub.thumb_url ? (
                                 <Image
                                   src={pub.thumb_url}
                                   alt="Thumbnail"
                                   width={128}
                                   height={160}
-                                  className="w-full h-full object-cover lg:rounded-l-2xl"
+                                  className="w-full h-full object-cover rounded-md"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground lg:rounded-l-2xl">
+                                <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground rounded-md">
                                   <div className="text-center">
                                     <BookOpen className="w-6 h-6 mx-auto mb-1 opacity-50" />
-                                    <span className="text-xs">No Image</span>
+                                    <span className="text-xs">No Preview</span>
                                   </div>
                                 </div>
                               )}
@@ -592,7 +607,7 @@ export default function UserProfile() {
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Heart className="w-4 h-4" />
+                                    <Heart className="w-4 h-4 text-red-500"/>
                                     <span className="font-medium">{likes[pub.id] || 0}</span>
                                   </div>
                                 </div>

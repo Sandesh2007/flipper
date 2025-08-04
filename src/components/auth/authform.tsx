@@ -247,21 +247,21 @@ export default function AuthForm() {
     };
 
     return (
-        <div className="h-fit bg-background flex items-center justify-center p-4">
-            <div className="w-full max-w-6xl bg-card rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+        <div className="h-fit rounded-4xl flex items-center justify-center p-4">
+            <div className="w-full max-w-6xl glass rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
                 {/* Left Panel - Image (Hidden on mobile, shown on lg+) */}
                 <div className="hidden lg:flex lg:w-1/2 relative">
-                    <div className="w-full h-full bg-muted flex flex-col justify-between p-6 xl:p-8 relative overflow-hidden">
+                    <div className="w-full h-full glass flex flex-col justify-between p-6 xl:p-8 relative overflow-hidden">
                         {/* Mountain silhouette background */}
-                        <div className="absolute inset-0 opacity-60">
-                            <svg viewBox="0 0 400 600" className="w-full h-full dark:fill-white">
+                        <div className="absolute inset-0">
+                            <svg viewBox="0 0 400 500" className="w-full h-full fill-primary/30">
                                 <path
                                     d="M0,400 Q100,200 200,300 Q300,150 400,250 L400,600 L0,600 Z"
-                                    fill="rgba(0,0,0,0.3) "
+                                    fill=""
                                 />
                                 <path
                                     d="M0,450 Q150,250 250,350 Q350,200 400,300 L400,600 L0,600 Z"
-                                    fill="rgba(0,0,0,0.2)"
+                                    fill=""
                                 />
                             </svg>
                         </div>
@@ -274,11 +274,11 @@ export default function AuthForm() {
                                     <span>Back to website</span>
                                 </Button>
                             </Link>
-                            <div className="text-foreground text-2xl xl:text-3xl font-bold">Neko Press</div>
+                            <div className="text-foreground text-2xl xl:text-3xl font-bold">Flip Press</div>
                         </div>
 
                         {/* Main content */}
-                        <div className="relative z-10 text-foreground">
+                        <div className="relative z-10 text-neutral-50 dark:text-neutral-50">
                             <h2 className="text-3xl xl:text-4xl font-bold mb-4 leading-tight">
                                 Create beautiful flipbooks,<br />
                                 Creating Memories
@@ -291,7 +291,7 @@ export default function AuthForm() {
                 <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dakr:bg-neutral-900">
                     <div className="max-w-md mx-auto w-full">
                         {/* Mobile logo */}
-                        <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Neko Press</div>
+                        <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Flip Press</div>
 
                         {/* Form Header with Enhanced Animation */}
                         <div className="relative overflow-hidden mb-8 h-20">
@@ -363,7 +363,7 @@ export default function AuthForm() {
                                         placeholder="Username"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
+                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 glass border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                         disabled={isTransitioning || isLoading}
                                         autoComplete="username"
                                     />
@@ -378,7 +378,7 @@ export default function AuthForm() {
                                     placeholder="Email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 glass border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
                                     disabled={isTransitioning || isLoading}
                                     autoComplete="email"
@@ -393,7 +393,7 @@ export default function AuthForm() {
                                     placeholder={isLogin ? "Password" : "Enter your password"}
                                     value={formData.password}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 bg-muted border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 glass border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
                                     required
                                     disabled={isTransitioning || isLoading}
                                     autoComplete={isLogin ? "current-password" : "new-password"}
@@ -411,12 +411,12 @@ export default function AuthForm() {
 
                             {/* Forgot password - Only for login */}
                             <div
-                                className={`transition-all duration-600 ease-in-out overflow-hidden ${isLogin
+                                className={`transition-all duration-600 flex justify-end ease-in-out overflow-hidden ${isLogin
                                     ? 'max-h-12 opacity-100 transform translate-y-0'
                                     : 'max-h-0 opacity-0 transform -translate-y-2'
                                     }`}
                             >
-                                <div className="text-right pb-1">
+                                <div className="glass w-fit rounded-md">
                                     <ForgotPassword />
                                 </div>
                             </div>
@@ -434,7 +434,7 @@ export default function AuthForm() {
                                         id="terms"
                                         checked={agreedToTerms}
                                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                        className="mt-1 w-4 h-4 text-accent bg-muted border-border rounded focus:ring-ring focus:ring-2"
+                                        className="mt-1 w-4 h-4 text-accent glass border-border rounded"
                                         required={!isLogin}
                                         disabled={isTransitioning || isLoading}
                                     />
@@ -454,7 +454,7 @@ export default function AuthForm() {
                             {/* Submit button */}
                             <button
                                 type="submit"
-                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
+                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground cursor-pointer font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
                                     }`}
                                 disabled={isLoading || isTransitioning}
                             >
@@ -468,7 +468,7 @@ export default function AuthForm() {
                                 <div className="w-full border-t border-border bg-neutral-500"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-neutral-50 dark:bg-neutral-950 text-muted-foreground">
+                                <span className="px-2 bg-popover text-muted-foreground">
                                     Or {isLogin ? 'log in' : 'register'} with
                                 </span>
                             </div>
@@ -480,7 +480,7 @@ export default function AuthForm() {
                                 type="button"
                                 onClick={() => handleSocialLogin("google")}
                                 disabled={isTransitioning || isLoading}
-                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 glass cursor-pointer border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
                                     <path
@@ -506,7 +506,7 @@ export default function AuthForm() {
                                 type="button"
                                 onClick={() => handleSocialLogin("apple")}
                                 disabled={isTransitioning || isLoading}
-                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-muted border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 cursor-pointer glass border border-border rounded-lg text-foreground hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-muted transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />

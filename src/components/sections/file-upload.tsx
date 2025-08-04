@@ -142,7 +142,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploadedFile) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl glass border border-border/50 shadow-soft p-8 text-center">
           {/* Success Background Animation */}
           <div className="absolute inset-0 bg-green-500/10 animate-pulse-slow"></div>
           <div className="relative">
@@ -180,7 +180,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploading) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl glass border border-border/50 shadow-soft p-8 text-center">
           {/* Upload Background Animation */}
           <div className="absolute inset-0 bg-blue-500/10 animate-pulse-slow"></div>
           <div className="relative">
@@ -206,7 +206,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
     <div className="w-full max-w-2xl mx-auto">
       {/* Error Message */}
       {error && (
-        <div className="mb-6 p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-4 animate-fade-in">
+        <div className="mb-6 p-6 bg-red-50 glass dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-4 animate-fade-in">
           <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-red-800 dark:text-red-200 text-sm font-medium mb-1">
@@ -228,7 +228,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       
       <div
         {...getRootProps()}
-        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 bg-card border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
           isDragActive && !isDragReject
             ? "border-blue-500 bg-blue-500/5 shadow-glow scale-105"
             : isDragReject

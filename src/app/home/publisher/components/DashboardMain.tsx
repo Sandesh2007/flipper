@@ -31,7 +31,7 @@ export default function DashboardMain() {
 
       <div className="relative">
         {/* Upload Section */}
-        <section className="rounded-3xl bg-gradient-card border border-border/50 shadow-soft p-6 sm:p-8 mb-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500">
+        <section className="rounded-3xl glass border border-border/50 shadow-soft p-6 sm:p-8 mb-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500">
           {/* Card Background Glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -162,7 +162,7 @@ export default function DashboardMain() {
           </div>
 
           {/* Content Card */}
-          <Card className="bg-gradient-card border border-border/50 shadow-soft rounded-3xl overflow-hidden hover:shadow-glow transition-all duration-500">
+          <Card className="glass border border-border/50 shadow-soft rounded-3xl overflow-hidden hover:shadow-glow transition-all duration-500">
             <CardContent className="p-6 sm:p-8">
               {activeTab === "Publications" && (
                 <PublicationsTab />

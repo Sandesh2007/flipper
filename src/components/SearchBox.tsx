@@ -140,7 +140,7 @@ export default function SearchBox({
         <div className={`absolute inset-0 rounded-xl bg-blue-500/20 opacity-0 blur-xl transition-opacity duration-300 ${isFocused ? 'opacity-100' : ''
           }`}></div>
 
-        <div className="relative bg-white dark:bg-white rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-200 hover:shadow-xl">
+        <div className="relative glass rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-200 hover:shadow-xl">
           <Search className={`absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-200 ${isFocused ? 'text-blue-500' : 'text-gray-400'
             }`} />
 
@@ -156,10 +156,10 @@ export default function SearchBox({
 
           {search && (
             <button
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center group"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full glass hover:bg-gray-200 dark:hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center group"
               onClick={clearSearch}
             >
-              <X className="h-4 w-4 text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300" />
+              <X className="h-4 w-4 text-gray-400 hover:text-primary" />
             </button>
           )}
         </div>
@@ -167,12 +167,12 @@ export default function SearchBox({
 
       {/* Search Results Dropdown */}
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-white border border-gray-200 dark:border-neutral-700 rounded-2xl shadow-2xl max-h-[28rem] overflow-hidden z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-          <div className="overflow-y-auto max-h-[28rem] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className={`absolute top-full left-0 right-0 mt-3 bg-muted-40 border-gray-200 dark:border-neutral-700 rounded-2xl shadow-2xl max-h-[28rem] overflow-hidden z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200 ${showDropdown ?? 'hidden'} `}>
+          <div className="overflow-y-auto max-h-[28rem] glass scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
 
             {/* Loading State */}
             {isLoading && (
-              <div className="p-8 text-center">
+              <div className="p-8 text-center glass">
                 <div className="relative">
                   <div className="w-8 h-8 border-4 border-gray-200 dark:border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
                   <div className="absolute inset-0 w-8 h-8 border-4 border-transparent border-t-neutral-50 rounded-full animate-spin mx-auto" style={{ animationDelay: '0.1s' }}></div>
@@ -183,8 +183,8 @@ export default function SearchBox({
 
             {/* User Results */}
             {userResults.length > 0 && (
-              <div className="border-b border-gray-100 dark:border-neutral-800">
-                <div className="px-5 py-3 flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-50">
+              <div className="border-b border-gray-100 dark:border-neutral-800 bg-muted/40">
+                <div className="px-5 py-3 flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 glass">
                   <Users className="w-4 h-4" />
                   People ({userResults.length})
                 </div>
@@ -192,7 +192,7 @@ export default function SearchBox({
                   <Link
                     key={profile.username}
                     href={`/profile/${profile.username}`}
-                    className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-50 transition-all duration-150 group"
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-muted transition-all duration-150 group"
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="relative ">

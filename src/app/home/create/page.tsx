@@ -134,7 +134,7 @@ export default function CreatePublicationPage() {
     console.log("Publishing started", { title, description, pdfName: pdf?.name, retryCount });
 
     setError('');
-    
+
     // Check file size and warn user if it's very large
     if (pdf && pdf.size > 25 * 1024 * 1024) { // 25MB
       const confirmed = window.confirm(
@@ -144,7 +144,7 @@ export default function CreatePublicationPage() {
         return;
       }
     }
-    
+
     setUploading(true);
     setUploadRetries(retryCount);
     const supabase = createClient();
@@ -274,15 +274,6 @@ export default function CreatePublicationPage() {
     accept: {
       'application/pdf': ['.pdf'],
       'application/epub+zip': ['.epub'],
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/png': ['.png'],
-      'image/gif': ['.gif'],
-      'image/bmp': ['.bmp'],
-      'image/webp': ['.webp'],
-      'image/svg+xml': ['.svg'],
-      'image/tiff': ['.tiff'],
-      'image/x-icon': ['.ico'],
-      'image/heic': ['.heic'],
       'application/vnd.comicbook+zip': ['.cbz'],
       'application/zip': ['.zip'],
     },
@@ -292,8 +283,8 @@ export default function CreatePublicationPage() {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/50 py-8 px-2">
-      <div className="w-full max-w-2xl bg-card shadow-xl rounded-2xl p-0 sm:p-0 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-muted/20 py-8 px-2">
+      <div className="w-full max-w-2xl glass shadow-xl rounded-2xl p-0 sm:p-0 overflow-hidden">
         {/* Stepper */}
         <div className="flex items-center justify-between px-8 pt-8 pb-4">
           {steps.map((label, idx) => (
@@ -311,7 +302,7 @@ export default function CreatePublicationPage() {
             <div className="flex flex-col items-center justify-center min-h-[350px]">
               <div
                 {...getRootProps()}
-                className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 bg-gradient-card border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
                   ${isDragActive && !isDragReject ? 'border-primary bg-primary/5 shadow-glow scale-105' : ''}
                   ${isDragReject ? 'border-red-400 bg-red-50 dark:bg-red-900/20' : ''}
                   ${!isDragActive && !isDragReject ? 'border-primary/30 hover:border-primary/60 hover:scale-[1.02]' : ''}
@@ -323,7 +314,7 @@ export default function CreatePublicationPage() {
                 <input {...getInputProps()} />
                 <div className="relative">
                   <div className={`flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-2xl transition-all duration-300 ${isDragReject ? 'bg-red-100 dark:bg-red-900/30 animate-wiggle' : 'bg-gradient-hero shadow-glow'}`}>
-                    <FileText className={`w-12 h-12 transition-colors ${isDragReject ? 'text-red-600 dark:text-red-400' : 'text-white'}`} />
+                    <FileText className={`w-12 h-12 transition-colors ${isDragReject ? 'text-red-600 dark:text-red-400' : 'text-primary'}`} />
                   </div>
                   <h3 className="text-2xl font-bold text-foreground mb-4">
                     {isDragActive && !isDragReject
@@ -345,7 +336,7 @@ export default function CreatePublicationPage() {
                   </div>
                   <Button
                     type="button"
-                    className="bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
+                    className="hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
                     size="lg"
                   >
                     <UploadCloud className="w-5 h-5 mr-3" />
@@ -377,7 +368,7 @@ export default function CreatePublicationPage() {
                   placeholder="Enter a title for your publication"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full bg-gradient-card border-2 rounded-md p-2 border-border/20 outline-0 shadow-soft focus:shadow-glow focus:border-primary/50 transition-all duration-300 h-12 text-lg font-medium"
+                  className="w-full glass border-2 rounded-md p-2 focus:border-primary/50 h-12 text-lg font-medium"
                 />
               </div>
               <div>
@@ -386,7 +377,7 @@ export default function CreatePublicationPage() {
                   placeholder="Describe your publication"
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="bg-gradient-card border-2 border-border/30 shadow-soft focus:shadow-glow focus:border-primary/50 transition-all duration-300 min-h-[100px] resize-none"
+                  className="glass shadow-soft focus:shadow-glow focus:border-primary/50 transition-all duration-300 min-h-[100px] resize-none"
                 />
               </div>
               <div className="flex gap-3 justify-between mt-4">
@@ -400,7 +391,7 @@ export default function CreatePublicationPage() {
                 <Button
                   onClick={handleNext}
                   disabled={!title || !description}
-                  className='cursor-pointer bg-gradient-hero hover:shadow-glow text-white shadow-soft hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
+                  className='cursor-pointer hover:shadow-glow text-white shadow-soft hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
                 >
                   Next
                 </Button>
@@ -471,23 +462,23 @@ export default function CreatePublicationPage() {
                   )}
                 </Button>
               </div>
-                             {uploading && (
-                 <div className="mt-4 p-4 bg-muted rounded-lg">
-                   <div className="flex items-center gap-2 mb-2">
-                     <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                     <span className="text-sm text-muted-foreground">Uploading to cloud storage...</span>
-                   </div>
-                   <div className="text-xs text-muted-foreground mb-2">
-                     {pdf && `File size: ${(pdf.size / (1024 * 1024)).toFixed(1)} MB`}
-                   </div>
-                   <div className="text-xs text-muted-foreground">
-                     {pdf && pdf.size > 10 * 1024 * 1024 ? 
-                       `Large file detected. This may take several minutes. Please don't close this page.` :
-                       `This may take a few moments. Please don't close this page.`
-                     }
-                   </div>
-                 </div>
-               )}
+              {uploading && (
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm text-muted-foreground">Uploading to cloud storage...</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    {pdf && `File size: ${(pdf.size / (1024 * 1024)).toFixed(1)} MB`}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {pdf && pdf.size > 10 * 1024 * 1024 ?
+                      `Large file detected. This may take several minutes. Please don't close this page.` :
+                      `This may take a few moments. Please don't close this page.`
+                    }
+                  </div>
+                </div>
+              )}
               {error && !uploading && (
                 <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   <div className="flex items-start gap-3">

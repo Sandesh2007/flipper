@@ -58,15 +58,15 @@ export const ConversionInfo = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {conTypes.map((type, index) => (
             <Card 
-              key={index} 
-              className={`group bg-card border ${type.borderColor}  hover:scale-105 card-hover relative overflow-hidden animate-fade-in`}
+              key={index}
+              className={`group glass border ${type.borderColor}  hover:scale-105 card-hover relative overflow-hidden animate-fade-in`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Background Color */}
               <div className={`absolute inset-0 ${type.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
               
               {type.badge && (
-                <Badge className="absolute top-4 right-4 bg-blue-500 text-white border-0 z-10 animate-pulse-slow">
+                <Badge className="absolute top-4 right-4 bg-blue-500 text-white border-0 z-10">
                   <Sparkles className="w-3 h-3 mr-1" />
                   {type.badge}
                 </Badge>

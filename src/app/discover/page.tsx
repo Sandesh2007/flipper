@@ -4,10 +4,10 @@ import { Sparkles } from 'lucide-react';
 
 export default function PublicLandingPage() {
   return (
-    <div className="min-h-screen relative overflow-hidden py-10 px-2">
+    <div className="min-h-screen relative overflow-hidden py-10 px-2 bg-muted/20">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-glass border border-primary/20 mb-8 animate-fade-in shadow-soft">
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full glass border border-primary/20 mb-8 animate-fade-in shadow-soft">
             <Sparkles className="w-5 h-5 text-primary animate-pulse" />
             <span className="text-sm font-semibold text-primary">Discover amazing content</span>
           </div>

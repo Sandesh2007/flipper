@@ -16,7 +16,6 @@ const Pricing = () => {
   return (
     <GradientBackground
     showFloatingElements
-    showMovingGradient
     >
       <div className="min-h-screen relative overflow-hidden">
         {/* Background Elements */}
@@ -27,7 +26,7 @@ const Pricing = () => {
         <div className="relative max-w-6xl mx-auto py-20 px-4">
           {/* Header Section */}
           <div className="text-center mb-16 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary/20 mb-8">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-primary">Simple, transparent pricing</span>
             </div>
@@ -105,7 +104,7 @@ const Pricing = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="group p-6 rounded-2xl glass outline-2 hover:scale-105 card-hover">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center mb-4 group-hover:animate-heartbeat">
-                  <Zap className="w-6 h-6 text-white" />
+                  <Zap className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
                 <p className="text-sm text-muted-foreground">
@@ -115,7 +114,7 @@ const Pricing = () => {
 
               <div className="group p-6 rounded-2xl glass outline-2 hover:scale-105 card-hover">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center mb-4 group-hover:animate-heartbeat">
-                  <Shield className="w-6 h-6 text-white" />
+                  <Shield className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Secure & Private</h3>
                 <p className="text-sm text-muted-foreground">
@@ -125,7 +124,7 @@ const Pricing = () => {
 
               <div className="group p-6 rounded-2xl glass outline-2 hover:scale-105 card-hover">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center mb-4 group-hover:animate-heartbeat">
-                  <Users className="w-6 h-6" />
+                  <Users className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Easy Sharing</h3>
                 <p className="text-sm text-muted-foreground">

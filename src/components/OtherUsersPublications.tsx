@@ -43,7 +43,7 @@ interface OtherUsersPublicationsProps {
 
 // Cache for discover data
 const discoverCache = new Map<string, { data: UserProfile[]; timestamp: number }>();
-const DISCOVER_CACHE_DURATION = 3 * 60 * 1000; // 3 minutes
+const DISCOVER_CACHE_DURATION = 10 * 60 * 1000; // 3 minutes
 
 export default function OtherUsersPublications({
   title = "Community Publications",
@@ -344,19 +344,19 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
           style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
         >
           <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] bg-card border border-border/40 hover:border-border/60">
-            <CardContent className="p-0 relative">
+            <CardContent className="p-2 relative">
               <Link href={`/profile/${userProfile.username}`} className="block">
                 {/* Image */}
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden rounded-md border-2">
                   {pub.thumb_url ? (
                     <Image
                       src={pub.thumb_url}
                       alt={pub.title}
                       width={300}
                       height={200}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" />
+                      className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105" />
                   ) : (
-                    <div className="w-full h-48 flex items-center justify-center bg-muted/30 backdrop-blur-sm">
+                    <div className="w-full h-48 flex items-center rounded-md justify-center glass">
                       <div className="text-center">
                         <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted flex items-center justify-center">
                           <BookOpen className="w-5 h-5 text-muted-foreground" />

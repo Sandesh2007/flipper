@@ -2,21 +2,20 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import logo from "../../../../../public/logo.svg";
 import {
   Home,
   Library,
   FileText,
   Users,
   BarChart3,
-  HelpCircle,
   Upload,
   ChevronDown,
   ChevronRight,
-  ExternalLink,
-  Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/auth-context"
+import Image from "next/image";
 
 export default function Sidebar() {
   const [isLibraryOpen, setIsLibraryOpen] = useState(true)
@@ -25,12 +24,18 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex w-72 border-r border-border/20 flex-col">
+    <aside className="hidden lg:flex w-72 border-r border-border/20 flex-col glass">
       {/* Header Section */}
       <div className="p-6 border-b border-border/10">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
+            <Image
+            src={logo}
+            alt="Flippress Logo"
+            width={32}
+            height={32}
+            className="w-8 h-8 object-contain"
+            />
           </div>
           <div>
             <h2 className="font-semibold text-foreground">Flippress</h2>

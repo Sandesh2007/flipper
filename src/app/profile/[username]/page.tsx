@@ -61,7 +61,7 @@ export default function PublicProfileByUsernamePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size='lg' text='Loading profile...' />
       </div>
     );
@@ -69,7 +69,7 @@ export default function PublicProfileByUsernamePage() {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
           <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
             <BookOpen className="w-10 h-10 text-muted-foreground" />
@@ -85,9 +85,9 @@ export default function PublicProfileByUsernamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-background via-muted/20 to-background border-b border-border/50">
+      <div className="outline">
         <div className="max-w-4xl mx-auto px-4 py-12">
           {profile && (
             <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
@@ -191,13 +191,13 @@ export default function PublicProfileByUsernamePage() {
             {publications.map((pub, index) => (
               <Card 
                 key={pub.id} 
-                className="group overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border-border/50 hover:border-border animate-in fade-in-0 slide-in-from-bottom-4"
+                className="group overflow-hidden glass transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border-border/50 hover:border-border animate-in fade-in-0 slide-in-from-bottom-4"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <CardContent className="p-0">
+                <CardContent className="p-2">
                   <div className="flex flex-col sm:flex-row h-full">
                     {/* Thumbnail */}
-                    <div className="w-full sm:w-48 h-48 sm:h-auto flex-shrink-0 relative overflow-hidden">
+                    <div className="w-full rounded-md sm:w-48 h-48 sm:h-auto flex-shrink-0 relative overflow-hidden">
                       {pub.thumb_url ? (
                         <Image 
                           src={pub.thumb_url} 
@@ -207,7 +207,7 @@ export default function PublicProfileByUsernamePage() {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/70 text-muted-foreground">
+                        <div className="w-full h-full flex items-center justify-center border-2 rounded-md text-muted-foreground">
                           <div className="text-center">
                             <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
                             <span className="text-sm">No Preview</span>
@@ -249,7 +249,7 @@ export default function PublicProfileByUsernamePage() {
                           <Button 
                             variant="outline"
                             size="sm"
-                            onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
+                            onClick={() => window.location.href = `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`}
                             className='transition-all duration-200 hover:scale-105 group/btn'
                           >
                             <ExternalLink className="w-4 h-4 mr-2 group-hover/btn:rotate-12 transition-transform duration-200" />

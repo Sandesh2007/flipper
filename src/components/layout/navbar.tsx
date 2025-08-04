@@ -14,7 +14,6 @@ import {
     Upload,
     ChevronDown,
     ChevronRight,
-    RefreshCw,
     Sparkles,
 } from "lucide-react";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
@@ -25,9 +24,7 @@ import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
 import { useEffect, useState, useRef } from "react";
-import { clearAllCaches } from "@/lib/cache-utils";
 import { usePathname } from "next/navigation";
-import { RefreshButton } from "../refresh-button";
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -124,10 +121,11 @@ export function Navbar() {
                     <div className="hidden lg:flex items-center gap-4 xl:gap-6">
                         <div className="flex items-center gap-1">
                             <Button
+                            variant={'ghost'}
                                 onClick={() => {
                                     window.location.href = '/discover'
                                 }}
-                                className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
+                                className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
                                 <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
                             </Button>
                             <Link href="/pricing" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
@@ -285,7 +283,7 @@ export function Navbar() {
                                             handleCloseMenu();
                                             window.location.href = '/discover'
                                         }}
-                                        className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-3">
+                                        className="block px-4 py-3 rounded-xl transition-all duration-300 text-sm mb-3">
                                         Discover
                                     </Button>
                                     <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-4" onClick={handleCloseMenu}>

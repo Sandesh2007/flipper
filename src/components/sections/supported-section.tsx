@@ -12,7 +12,7 @@ const formats = [
 
 export const SupportedFormats = () => {
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 bg-muted/20">
       <div className="w-full max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
@@ -31,7 +31,7 @@ export const SupportedFormats = () => {
           {formats.map((format, index) => (
             <div
               key={index}
-              className="group p-6 rounded-2xl bg-card border border-border/50  hover:scale-105 card-hover text-center animate-fade-in"
+              className="group p-6 rounded-2xl glass border border-border/50  hover:scale-105 card-hover text-center animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-${format.color.replace('text-', '')}/10 to-${format.color.replace('text-', '')}/5 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>

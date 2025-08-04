@@ -130,30 +130,11 @@ export default function PublicationsTab() {
     };
 
     return (
-        <div>
+        <div >
             {loading ? (
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4"></div>
                     <p className="text-muted-foreground mb-4">Loading publications...</p>
-                    <Button 
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                        variant="outline"
-                        size="sm"
-                        className="transition-all duration-200 hover:scale-105"
-                    >
-                        {isRefreshing ? (
-                            <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
-                                Refreshing...
-                            </>
-                        ) : (
-                            <>
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                Refresh
-                            </>
-                        )}
-                    </Button>
                 </div>
             ) : publications.length === 0 ? (
                 <div className="text-center py-12">
@@ -199,7 +180,7 @@ export default function PublicationsTab() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => router.push('/home/profile')}
+                                onClick={() => window.location.href = '/profile'}
                                 className="bg-card border border-border/30 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all duration-300"
                             >
                                 View All

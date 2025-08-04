@@ -167,7 +167,7 @@ export default function View() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="min-h-screen flex items-center justify-center bg-muted/20">
                 <div className="text-center space-y-4 p-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                     <h2 className="text-xl font-semibold">Loading PDF...</h2>
@@ -194,7 +194,7 @@ export default function View() {
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
                 <div className="text-center space-y-6 max-w-md w-full">
                     <div className="flex justify-center">
                         <AlertCircle className="h-16 w-16 text-destructive" />
@@ -225,7 +225,7 @@ export default function View() {
 
     if (!pdfFile) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
                 <div className="text-center space-y-4">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto" />
                     <h2 className="text-xl font-semibold">No PDF file loaded</h2>
@@ -240,7 +240,7 @@ export default function View() {
 
     // Show PDF viewer
     return (
-        <div className="min-h-screen bg-background flex flex-col">
+        <div className="min-h-screen bg-muted/20 flex flex-col">
             {/* Header */}
             <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0">
                 <div className="container flex h-16 items-center justify-between">

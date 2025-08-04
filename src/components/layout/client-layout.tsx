@@ -18,14 +18,14 @@ export default function ClientLayout({
   const isNoFooterRoute = noFooterRoutes.includes(pathname);
 
   return (
-    <GradientBackground showMovingGradient={false} showFloatingElements={true}>
+    <GradientBackground showFloatingElements={true}>
       {!isNoLayoutRoute && (
         <header className="sticky top-0 z-50 border-b-[1px] border-neutral-700 ">
           <Navbar />
         </header>
       )}
       {children}
-      {!isNoFooterRoute && <Footer />}
+      {!isNoFooterRoute &&<Footer />}
     </GradientBackground>
   );
 }

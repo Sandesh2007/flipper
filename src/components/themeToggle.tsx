@@ -19,7 +19,9 @@ export function ThemeToggle() {
     }
 
     return (
-        <Button variant="ghost" size="lg" onClick={() => {
+        <Button
+        className="ouline-0"
+        variant="ghost" size="lg" onClick={() => {
             setTheme(theme === "dark" ? "light" : "dark")
             }} >
             {/* <SunMoon size={32} /> */}

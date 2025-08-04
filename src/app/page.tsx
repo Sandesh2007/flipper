@@ -7,7 +7,7 @@ import { Testimonials } from "@/components/features/testimonials";
 import { useAuth } from "@/components/auth/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Sparkles, BookOpen, Zap, Users, Star, ArrowRight, CheckCircle, Shield, Globe } from "lucide-react";
+import { Sparkles, BookOpen, Zap, Users, Star, ArrowRight, Shield, Globe } from "lucide-react";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -21,7 +21,7 @@ export default function Home() {
 
   if (!loading && user) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="flex flex-col justify-center items-center h-screen">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
           <div className="absolute inset-0 animate-ping rounded-full h-16 w-16 border-2 border-primary/30"></div>
@@ -36,17 +36,17 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden">
         <div className="relative max-w-7xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-glass border border-primary/20 mb-8 animate-fade-in shadow-soft">
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full glass border border-primary/20 mb-8 animate-fade-in shadow-soft">
             <Sparkles className="w-5 h-5 text-primary animate-pulse" />
             <span className="text-sm font-semibold text-primary">Transform your PDFs into interactive experiences</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-bold mb-8 animate-slide-up leading-tight">
+          <h1 className="text-6xl md:text-8xl font-bold mb-8 animate-slide-up leading-tight text-neutral-900 dark:text-neutral-50">
             <span className="text-gradient-hero">Transform PDFs</span>
             <br />
             <span className="text-foreground">into Interactive</span>
             <br />
-            <span className="text-gradient-hero">Flipbooks</span>
+            <span className="text-neutral-900 dark:text-neutral-50">Flipbooks</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -55,20 +55,20 @@ export default function Home() {
           
           {/* Enhanced Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <div className="group text-center p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-4xl font-bold text-gradient mb-2 group-hover:animate-bounce">10K+</div>
+            <div className="group text-center p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
+              <div className="text-4xl font-bold text-gradient mb-2">1K+</div>
               <div className="text-sm text-muted-foreground font-medium">Happy Users</div>
             </div>
-            <div className="group text-center p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-4xl font-bold text-gradient mb-2 group-hover:animate-bounce">50K+</div>
+            <div className="group text-center p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
+              <div className="text-4xl font-bold text-gradient mb-2 ">5K+</div>
               <div className="text-sm text-muted-foreground font-medium">PDFs Converted</div>
             </div>
-            <div className="group text-center p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-4xl font-bold text-gradient mb-2 group-hover:animate-bounce">99.9%</div>
+            <div className="group text-center p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
+              <div className="text-4xl font-bold text-gradient mb-2">99.9%</div>
               <div className="text-sm text-muted-foreground font-medium">Uptime</div>
             </div>
-            <div className="group text-center p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
-              <div className="text-4xl font-bold text-gradient mb-2 group-hover:animate-bounce">24/7</div>
+            <div className="group text-center p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
+              <div className="text-4xl font-bold text-gradient mb-2">24/7</div>
               <div className="text-sm text-muted-foreground font-medium">Support</div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function Home() {
       <section className="py-24 px-4 bg-gradient-to-b from-transparent to-muted/20 relative">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-glass border border-primary/20 mb-8">
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full glass border border-primary/20 mb-8">
               <Star className="w-5 h-5 text-primary" />
               <span className="text-sm font-semibold text-primary">Why Choose Flippress?</span>
             </div>
@@ -100,7 +100,7 @@ export default function Home() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
+            <div className="group p-8 rounded-3xl glass border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
                 <BookOpen className="w-10 h-10 text-primary" />
               </div>
@@ -114,7 +114,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
+            <div className="group p-8 rounded-3xl glass border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
                 <Zap className="w-10 h-10 text-primary" />
               </div>
@@ -128,7 +128,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="group p-8 rounded-3xl bg-gradient-card border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
+            <div className="group p-8 rounded-3xl glass border border-border/50 hover:scale-105 card-hover shadow-soft hover:shadow-glow transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero flex items-center justify-center mb-6 group-hover:animate-heartbeat">
                 <Users className="w-10 h-10 text-primary" />
               </div>
@@ -145,7 +145,7 @@ export default function Home() {
           
           {/* Additional Features Grid */}
           <div className="grid md:grid-cols-2 gap-8 mt-16">
-            <div className="group p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
+            <div className="group p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
                   <Shield className="w-6 h-6 text-primary" />
@@ -157,7 +157,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="group p-6 rounded-2xl bg-gradient-card border border-border/50 hover:scale-105 card-hover">
+            <div className="group p-6 rounded-2xl glass border border-border/50 hover:scale-105 card-hover">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
                   <Globe className="w-6 h-6 text-primary" />

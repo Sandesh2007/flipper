@@ -42,7 +42,7 @@ export const Testimonials = () => {
     <section className="py-20 px-4 bg-muted/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-500/20 mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-blue-500/20 mb-6 animate-fade-in">
             <Sparkles className="w-4 h-4 text-blue-500" />
             <span className="text-sm font-medium text-blue-500">Trusted by professionals worldwide</span>
           </div>
@@ -58,12 +58,12 @@ export const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
-              className="group bg-card border border-border/50  hover:scale-105 card-hover overflow-hidden animate-fade-in"
+              className="group glass border border-border/50  hover:scale-105 card-hover overflow-hidden animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <CardContent className="p-8 relative">
                 {/* Quote Icon */}
-                <div className="absolute top-6 right-6 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+                <div className="absolute top-6 right-6 opacity-70 group-hover:opacity-20 transition-opacity duration-300">
                   <Quote className="w-12 h-12 text-primary" />
                 </div>
                 
@@ -111,11 +111,11 @@ export const Testimonials = () => {
         <div className="mt-16 text-center">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-500 mb-2">10K+</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">1K+</div>
               <div className="text-sm text-muted-foreground">Happy Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-500 mb-2">50K+</div>
+              <div className="text-3xl font-bold text-blue-500 mb-2">5K+</div>
               <div className="text-sm text-muted-foreground">PDFs Converted</div>
             </div>
             <div className="text-center">
