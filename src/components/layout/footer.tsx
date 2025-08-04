@@ -82,7 +82,7 @@ export const Footer = () => {
                 <div className="absolute inset-0 rounded-2xl opacity-20 animate-pulse-slow"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-blue-500">Flipper</span>
+                <span className="text-2xl font-bold text-blue-500">Flippress</span>
                 <span className="text-sm text-muted-foreground">Digital Publishing</span>
               </div>
             </div>
@@ -176,7 +176,7 @@ export const Footer = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground flex items-center gap-2">
-              © 2024 Flipper. Made with <Heart className="w-4 h-4 fill-red-500 text-red-500" /> for creators worldwide.
+              © 2024 Flippress. Made with <Heart className="w-4 h-4 fill-red-500 text-red-500" /> for creators worldwide.
             </p>
             <div className="flex items-center gap-6">
               <a href="#status" className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-y-[-1px]">

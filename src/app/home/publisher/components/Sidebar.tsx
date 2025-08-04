@@ -33,7 +33,7 @@ export default function Sidebar() {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">Flipper</h2>
+            <h2 className="font-semibold text-foreground">Flippress</h2>
             <p className="text-xs text-muted-foreground">Publisher Dashboard</p>
           </div>
         </div>

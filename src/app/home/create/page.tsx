@@ -165,7 +165,7 @@ export default function CreatePublicationPage() {
       if (userError || !user) {
         console.log("User not authenticated, redirecting to register");
         // Not logged in ? store state and redirect to register
-        localStorage.setItem('flipper_publish_redirect', JSON.stringify({
+        localStorage.setItem('flippress_publish_redirect', JSON.stringify({
           title,
           description,
           pdfMeta: pdfCtx,
@@ -231,7 +231,7 @@ export default function CreatePublicationPage() {
 
   // On mount, if redirected from register, restore state
   useEffect(() => {
-    const redirectData = localStorage.getItem('flipper_publish_redirect');
+    const redirectData = localStorage.getItem('flippress_publish_redirect');
     if (redirectData) {
       try {
         const { title, description, pdfMeta, step } = JSON.parse(redirectData);
@@ -245,7 +245,7 @@ export default function CreatePublicationPage() {
           setPdfCtx(pdfMeta);
         }
       } catch { }
-      localStorage.removeItem('flipper_publish_redirect');
+      localStorage.removeItem('flippress_publish_redirect');
     }
   }, [setPdfCtx]);
 
@@ -532,7 +532,7 @@ export default function CreatePublicationPage() {
                 <div className="flex flex-col gap-2 items-center justify-center">
                   <span
                     onClick={() => { navigator.clipboard.writeText(`/view?pdf=${pdfUrl}`); toastify.success("Copied to clipboard!"); }}
-                    className="bg-muted border-border rounded-2xl cursor-pointer p-2" >{`flipper.vercel.app/view?pdf=${pdfUrl}`}</span>
+                    className="bg-muted border-border rounded-2xl cursor-pointer p-2" >{`flippress.vercel.app/view?pdf=${pdfUrl}`}</span>
                   <Button size="sm" variant="outline" onClick={() => { window.open(`/view?pdf=${pdfUrl}`, '_blank'); }} className='cursor-pointer' >View</Button>
                 </div>
                 <Button

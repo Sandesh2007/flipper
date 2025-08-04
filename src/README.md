@@ -1,6 +1,6 @@
-# Flipper Source Code Organization
+# Flippress Source Code Organization
 
-This document outlines the organized file structure for the Flipper application.
+This document outlines the organized file structure for the Flippress application.
 
 ## Directory Structure
 

@@ -113,7 +113,7 @@ export function Navbar() {
                                 <Image src={logo} alt="logo" height={36} width={36} className="sm:h-12 sm:w-12 transition-transform duration-300 group-hover:scale-110" priority />
                             </div>
                             <div className="flex flex-col">
-                                <span className="font-bold text-lg sm:text-xl text-blue-500">Flipper</span>
+                                <span className="font-bold text-lg sm:text-xl text-blue-500">Flippress</span>
                                 <span className="text-xs text-muted-foreground hidden sm:block">Digital Publishing</span>
                             </div>
                         </Link>
@@ -191,7 +191,7 @@ export function Navbar() {
                                 <Link href="/" className="flex gap-2 sm:gap-3 items-center" onClick={handleCloseMenu}>
                                     <Image src={logo} alt="logo" height={32} width={32} priority />
                                     <div className="flex flex-col min-w-0">
-                                        <span className="font-bold text-base sm:text-lg text-blue-500 truncate">Flipper</span>
+                                        <span className="font-bold text-base sm:text-lg text-blue-500 truncate">Flippress</span>
                                         <span className="text-xs text-muted-foreground">Digital Publishing</span>
                                     </div>
                                 </Link>

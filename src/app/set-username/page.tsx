@@ -177,7 +177,7 @@ export default function SetUsernamePage() {
           <br />
           <br />
           <span className="text-xs text-muted-foreground">
-            Example: https://flipper.vercel.app/profile/username
+            Example: https://flippress.vercel.app/profile/username
           </span>
         </p>
         <Input
