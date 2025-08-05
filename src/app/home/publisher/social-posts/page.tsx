@@ -7,10 +7,10 @@ export default function SocialPostsPage() {
   return (
     <div className="p-6 lg:p-8">
       {/* Hero Section */}
-      <section className="glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
+      <section className="glass outline-1 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
-            <Share2 className="w-6 h-6 text-white" />
+            <Share2 className="w-6 h-6 text-primary" />
           </div>
           <div>
             <h1 className="text-3xl lg:text-4xl font-bold text-foreground">Social Posts</h1>
@@ -37,7 +37,7 @@ export default function SocialPostsPage() {
             })}
           </div>
         </div>
-        <Card className="bg-gradient-card border border-border/30 shadow-soft backdrop-blur-xl">
+        <Card className="glass outline-1 shadow-soft backdrop-blur-xl">
           <CardContent className="p-6 lg:p-8">
             <div className="text-center py-12">
               <div className="w-20 h-20 rounded-2xl bg-gradient-hero/10 flex items-center justify-center mx-auto mb-6">

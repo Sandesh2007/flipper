@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import logo from "../../../public/logo.svg";
 import Image from "next/image";
-import { Facebook, Instagram, Linkedin, Youtube, TwitterIcon, Sparkles, Mail, Heart } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, TwitterIcon, Sparkles, Mail, Heart, XIcon } from "lucide-react";
 import { useAuth } from "../auth/auth-context";
+import Link from "next/link";
 
 const footerLinks = {
   product: [
@@ -26,7 +27,7 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: TwitterIcon, href: "#", label: "Twitter" },
+  { icon: XIcon, href: "#", label: "Twitter" },
   { icon: Facebook, href: "#", label: "Facebook" },
   { icon: Instagram, href: "#", label: "Instagram" },
   { icon: Linkedin, href: "#", label: "LinkedIn" },
@@ -94,14 +95,14 @@ export const Footer = () => {
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
-                <a
+                <Link
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-500  hover:scale-105 transition-all duration-300 group"
+                  className="w-10 h-10 rounded-xl glass border border-border/50 flex items-center justify-center text-muted-foreground hover:text-blue-500  hover:scale-105 transition-all duration-300 group"
                   aria-label={social.label}
                 >
                   <social.icon className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -176,15 +177,21 @@ export const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-border/50">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              © 2024 Flippress. Made with <Heart className="w-4 h-4 fill-red-500 text-red-500" /> for creators worldwide.
+          <div className="flex flex-col-reverse sm:flex-col md:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <p className="text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-2">
+              &copy; 2024 Flippress. Made with <Heart className="w-4 h-4 fill-red-500 text-red-500" />.
             </p>
-            <div className="flex items-center gap-6">
-              <a href="#status" className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-y-[-1px]">
+            <div className="flex flex-wrap justify-center md:justify-end items-center gap-4 sm:gap-6">
+              <a
+                href="#status"
+                className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5"
+              >
                 Status
               </a>
-              <a href="#sitemap" className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:translate-y-[-1px]">
+              <a
+                href="#sitemap"
+                className="text-sm text-muted-foreground hover:text-primary transition-all duration-300 hover:-translate-y-0.5"
+              >
                 Sitemap
               </a>
             </div>

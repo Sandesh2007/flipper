@@ -10,7 +10,7 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner = ({ 
   size = "md", 
-  text = "Loading...", 
+  text = "Loading...",
   showSparkles = false 
 }: LoadingSpinnerProps) => {
   const sizeClasses = {
@@ -35,7 +35,7 @@ export const LoadingSpinner = ({
       </div>
       {text && (
         <div className="flex items-center gap-2">
-          <span className={`${textSizes[size]} text-muted-foreground animate-pulse-slow`}>
+          <span className={`${textSizes[size]} text-primary animate-pulse-slow`}>
             {text}
           </span>
           {showSparkles && (

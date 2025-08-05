@@ -139,13 +139,17 @@ const CountryDropdownComponent = (
         side="bottom"
         className="min-w-[--radix-popper-anchor-width] p-0"
       >
-        <Command className="w-full max-h-[200px] sm:max-h-[270px]">
-          <CommandList>
-            <div className="sticky top-0 z-10 bg-popover">
+        <Command className="glass w-full max-h-[200px] sm:max-h-[270px]">
+          <CommandList
+          className="glass"
+          >
+            <div className="sticky top-0 z-10 glass">
               <CommandInput placeholder="Search country..." />
             </div>
             <CommandEmpty>No country found.</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup
+            className="glass"
+            >
               {options
                 .filter((x) => x.name)
                 .map((option, key: number) => (

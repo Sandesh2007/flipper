@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, X, Users, FileText, Clock, TrendingUp } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase/client';
 import Link from 'next/link';
+import { LoadingSpinner } from './ui/loading-spinner';
 
 interface SearchResult {
   username: string;
@@ -173,11 +174,7 @@ export default function SearchBox({
             {/* Loading State */}
             {isLoading && (
               <div className="p-8 text-center glass">
-                <div className="relative">
-                  <div className="w-8 h-8 border-4 border-gray-200 dark:border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-                  <div className="absolute inset-0 w-8 h-8 border-4 border-transparent border-t-neutral-50 rounded-full animate-spin mx-auto" style={{ animationDelay: '0.1s' }}></div>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Searching the community...</p>
+                <LoadingSpinner showSparkles text='Searching the community...' />
               </div>
             )}
 

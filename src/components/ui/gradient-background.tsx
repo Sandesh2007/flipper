@@ -6,36 +6,18 @@ interface GlowingGridBackgroundProps {
   children: React.ReactNode
   className?: string
   showFloatingElements?: boolean
-  showGlowingLines?: boolean
 }
 
 export const GradientBackground = ({
   children,
   className = "",
   showFloatingElements = false,
-  showGlowingLines = false,
 }: GlowingGridBackgroundProps) => {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  const glowingLines = useMemo(
-    () =>
-      [...Array(8)].map((_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        width: Math.random() > 0.5 ? "100%" : `${60 + Math.random() * 40}%`,
-        height: Math.random() > 0.5 ? "100%" : `${60 + Math.random() * 40}%`,
-        delay: `${i * 0.5}s`,
-        duration: `${4 + Math.random() * 3}s`,
-        isHorizontal: Math.random() > 0.5,
-        intensity: 0.3 + Math.random() * 0.4,
-      })),
-    [],
-  )
 
   const particles = useMemo(
     () =>
@@ -51,7 +33,7 @@ export const GradientBackground = ({
   return (
     <div className={`relative min-h-screen overflow-hidden ${className}`}>
       {/* Base Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 z-0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 z-0" />
 
       {/* Static Grid */}
       <div className="absolute inset-0 z-5 opacity-20">
@@ -66,58 +48,6 @@ export const GradientBackground = ({
           }}
         />
       </div>
-
-      {showGlowingLines && mounted && (
-        <>
-          {/* Glowing Grid Lines */}
-          {glowingLines.map((line) => (
-            <div
-              key={line.id}
-              className={`absolute z-10 pointer-events-none ${line.isHorizontal ? "h-px" : "w-px"}`}
-              style={{
-                left: line.isHorizontal ? "0" : line.left,
-                top: line.isHorizontal ? line.top : "0",
-                width: line.isHorizontal ? line.width : "1px",
-                height: line.isHorizontal ? "1px" : line.height,
-                background: `linear-gradient(${
-                  line.isHorizontal ? "to right" : "to bottom"
-                }, transparent, rgba(59, 130, 246, ${line.intensity}), transparent)`,
-                boxShadow: `0 0 10px rgba(59, 130, 246, ${line.intensity * 0.8})`,
-                animation: `glowPulse ${line.duration} ease-in-out infinite ${line.delay}`,
-              }}
-            />
-          ))}
-
-          {/* Traveling Light Dots */}
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={`dot-${i}`}
-              className="absolute w-1 h-1 bg-blue-400 rounded-full z-15 pointer-events-none"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                boxShadow: "0 0 8px rgba(59, 130, 246, 0.8), 0 0 16px rgba(59, 130, 246, 0.4)",
-                animation: `travelDot ${8 + Math.random() * 4}s linear infinite ${i * 1.2}s`,
-              }}
-            />
-          ))}
-
-          {/* Intersection Glows */}
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={`intersection-${i}`}
-              className="absolute w-3 h-3 rounded-full z-12 pointer-events-none"
-              style={{
-                left: `${20 + i * 20}%`,
-                top: `${30 + i * 15}%`,
-                background: "radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, transparent 70%)",
-                boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)",
-                animation: `intersectionGlow ${3 + i * 0.5}s ease-in-out infinite ${i * 0.8}s`,
-              }}
-            />
-          ))}
-        </>
-      )}
 
       {showFloatingElements && mounted && (
         <>

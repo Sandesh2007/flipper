@@ -284,8 +284,8 @@ export default function OtherUsersPublications({
                 <div className="group mb-6">
                   <Link
                     href={`/profile/${userProfile.username}`}
-                    className="flex items-center gap-4 p-6 bg-card
-                    border border-border/40
+                    className="flex items-center gap-4 p-6 glass
+                    outline-1
                     rounded-xl hover:border-border/60 transition-all duration-300 hover:shadow-soft hover:scale-[1.01]"
                   >
                     <div className="relative">
@@ -344,7 +344,7 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
         className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
         style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
       >
-        <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] border border-border/40 hover:border-border/60">
+        <Card className="h-full glass hover:outline-1 overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] hover:outline-primary/40 ">
           <CardContent className="p-2 relative">
             <div 
             onClick={() => {
@@ -376,7 +376,7 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
               </div>
 
               {/* Content */}
-              <div className="p-4 border-t border-border/30 bg-card">
+              <div className="p-4">
                 <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-foreground
                   truncate
                   transition-colors duration-300">

@@ -196,7 +196,7 @@ export default function EditProfile() {
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 onCloseAutoFocus={(e) => e.preventDefault()}
-                className="sm:max-w-md">
+                className="sm:max-w-md glass">
                 <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
@@ -208,7 +208,7 @@ export default function EditProfile() {
                         </Label>
                         <Input
                             id="name"
-                            className="w-full bg-background border border-input rounded-xl px-4 py-2 text-sm"
+                            className="w-full glass outline-0 focus:outline-primary rounded-xl px-4 py-2 text-sm"
                             value={username}
                             onChange={e => setUsername(e.target.value.toLowerCase())}
                         />
@@ -220,8 +220,9 @@ export default function EditProfile() {
                             Bio
                         </Label>
                         <Input
+                            type="text"
                             id="bio"
-                            className="w-full bg-background border border-input rounded-xl px-4 py-2 text-sm"
+                            className="w-full glass outline-0 focus:outline-primary rounded-xl px-4 py-2 text-sm"
                             placeholder="Short description about you"
                             value={bio}
                             onChange={e => setBio(e.target.value)}
@@ -285,7 +286,7 @@ export default function EditProfile() {
 
                 <DialogFooter>
                     <div
-                    className='w-full flex justify-between'
+                        className='w-full flex justify-between'
                     >
                         <Button
                             className='cursor-pointer'

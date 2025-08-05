@@ -101,7 +101,7 @@ export default function StatisticsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <Card className="glass border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass outline-1 ">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -112,7 +112,7 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="glass border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass outline-1 ">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -123,7 +123,7 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="glass border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass outline-1 ">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -134,7 +134,7 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="glass border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass outline-1 ">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -150,11 +150,11 @@ export default function StatisticsPage() {
       </section>
 
       {!loading && totalPublications > 0 && (
-        <section>
+        <section >
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Recent Publications</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {publications.slice(0, 6).map((pub) => (
-              <Card key={pub.id} className="glass border border-neutral-300 dark:border-neutral-700">
+              <Card key={pub.id} className="glass outline-1">
                 <CardContent className="p-4">
                   <label htmlFor="title" className=" text-muted-foreground" >Title</label>
                   <h4 id="title" className="font-semibold text-neutral-800 dark:text-neutral-100 mb-2 line-clamp-2">{pub.title}</h4>

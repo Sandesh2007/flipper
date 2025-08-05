@@ -10,7 +10,7 @@ import { createClient } from '@/lib/database/supabase/client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { AlertDialog, usePublications } from "@/components";
+import { AlertDialog, Input, usePublications } from "@/components";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -253,9 +253,9 @@ export default function UserProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+      <GradientBackground className="min-h-screen  flex items-center justify-center">
         <LoadingSpinner size="lg" text="Loading profile..." />
-      </div>
+      </GradientBackground>
     );
   }
 
@@ -395,7 +395,7 @@ export default function UserProfile() {
                 <div className="flex flex-col items-center justify-center py-20 px-4">
                   <div className="text-center max-w-md">
                     <div className="w-24 h-24 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-6">
-                      <BookOpen className="w-12 h-12 text-white" />
+                      <BookOpen className="w-12 h-12 text-primary" />
                     </div>
                     <h3 className="text-2xl font-semibold mb-3 text-gradient-hero">No publications yet</h3>
                     <p className="text-muted-foreground mb-8 text-lg">Start sharing your work with the world</p>
@@ -435,7 +435,7 @@ export default function UserProfile() {
                                   }}
                                 />
                               ) : null}
-                              <div className={`w-full h-48 flex items-center justify-center bg-gradient-to-br from-muted to-muted/70 text-muted-foreground text-sm ${pub.thumb_url ? 'hidden' : ''}`}>
+                              <div className={`w-full h-48 flex items-center justify-center glass text-muted-foreground text-sm ${pub.thumb_url ? 'hidden' : ''}`}>
                                 <div className="text-center">
                                   <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
                                   No Preview
@@ -493,17 +493,17 @@ export default function UserProfile() {
                         {editingId === pub.id ? (
                           // Edit Mode
                           <div className="p-6">
-                            <input
+                            <Input
                               type="file"
                               accept="image/*"
                               ref={editThumbInputRef}
-                              className="hidden"
+                              className="hidden glass"
                               onChange={e => setEditThumb(e.target.files?.[0] || null)}
                             />
                             <div className="flex flex-col lg:flex-row gap-6">
                               {/* Image Upload Area */}
                               <div
-                                className="w-full lg:w-32 h-48 lg:h-40 flex items-center justify-center bg-muted border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 transition-colors duration-200"
+                                className="w-full lg:w-32 h-48 lg:h-40 flex items-center justify-center glass outine-2 outline-dashed outline-primary/40 rounded-xl cursor-pointer hover:border-primary/50 transition-colors duration-200"
                                 onClick={() => editThumbInputRef.current?.click()}
                               >
                                 {editThumb ? (
@@ -533,13 +533,13 @@ export default function UserProfile() {
                               {/* Edit Form */}
                               <div className="flex-1 space-y-4">
                                 <input
-                                  className="w-full text-lg font-semibold text-foreground bg-muted border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+                                  className="w-full text-lg font-semibold text-foreground glass border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
                                   value={editTitle}
                                   onChange={e => setEditTitle(e.target.value)}
                                   placeholder="Publication title..."
                                 />
                                 <textarea
-                                  className="w-full text-muted-foreground bg-muted border border-border rounded-xl px-4 py-3 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+                                  className="w-full text-muted-foreground glass border border-border rounded-xl px-4 py-3 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
                                   value={editDescription}
                                   onChange={e => setEditDescription(e.target.value)}
                                   placeholder="Description..."
@@ -585,7 +585,7 @@ export default function UserProfile() {
                                   className="w-full h-full object-cover rounded-md"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground rounded-md">
+                                <div className="w-full h-full glass flex items-center justify-center text-muted-foreground rounded-md">
                                   <div className="text-center">
                                     <BookOpen className="w-6 h-6 mx-auto mb-1 opacity-50" />
                                     <span className="text-xs">No Preview</span>
@@ -655,7 +655,7 @@ export default function UserProfile() {
           <div className="flex items-center justify-center h-full">
             <div className="text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
               <div className="w-24 h-24 bg-gradient-hero rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <User className="w-12 h-12 text-white" />
+                <User className="w-12 h-12 text-primary" />
               </div>
               <h1 className="text-3xl font-bold mb-4 text-gradient-hero">You are not logged in</h1>
               <p className="text-muted-foreground mb-8 text-lg">Please log in to view your profile.</p>

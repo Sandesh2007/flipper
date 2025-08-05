@@ -2,4 +2,4 @@
 export * from './user';
 export * from './utils';
 export * from './database';
-export * from './middleware'; 
+export * from '../middleware'; 

@@ -10,9 +10,9 @@ export default function PublicationsPage() {
   return (
     <div className="p-6 lg:p-8">
       {/* Hero Section */}
-      <section className="bg-gradient-glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
+      <section className="glass outline-1 border-border rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl glass flex items-center justify-center">
             <FileText className="w-6 h-6 text-primary" />
           </div>
           <div>
@@ -42,7 +42,7 @@ export default function PublicationsPage() {
             })}
           </div>
         </div>
-        <Card className="bg-gradient-card border border-border/30 shadow-soft backdrop-blur-xl">
+        <Card className="glass outline-1 shadow-soft">
           <CardContent className="p-6 lg:p-8">
             <PublicationsTab/>
           </CardContent>

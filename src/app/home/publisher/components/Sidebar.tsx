@@ -45,7 +45,7 @@ export default function Sidebar() {
         <Link href="/home/create">
           <Button 
             variant="outline" 
-            className="w-full cursor-pointer bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+            className="w-full cursor-pointer border-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
           >
             <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
             Upload Publication
@@ -108,13 +108,13 @@ export default function Sidebar() {
 
       {/* Footer Section */}
       <div className={`p-6 border-t border-border/10 ${isLoggedIn ? "block" : "hidden"}`}>
-        <div className="bg-gradient-card border border-border/20 rounded-xl p-4">
+        <div className="glass outline-1 outline-primary rounded-xl p-4">
           <div className="text-sm text-muted-foreground mb-2">
             Current Plan
           </div>
           <div className="flex items-center justify-between">
             <span className="font-semibold text-foreground">Basic Plan</span>
-            <div className="w-2 h-2 rounded-full bg-primary/60"></div>
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
           </div>
           <div className="text-xs text-muted-foreground mt-1">
             Upgrade for more features

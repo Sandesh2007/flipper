@@ -340,8 +340,8 @@
 }
 
 .dark .glass {
-  background: rgba(30, 41, 59, 0.203); /* slate-800 with opacity */
-  border: 1px solid rgba(147, 197, 253, 0.1); /* blue-300 with opacity */
+  background: rgba(40, 42, 45, 0.203); /* slate-800 with opacity */
+  border: 1px solid rgba(30, 35, 42, 0.1); /* blue-300 with opacity */
 }
 
 /* Modern Button Styles */

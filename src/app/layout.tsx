@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${poppins.className} antialiased scroll-smooth`}>
+        className={`${poppins.className} bg-transparent antialiased scroll-smooth`}>
         <PdfUploadProvider>
           <AuthProvider>
             <PublicationsProvider>
