@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent } from "@/components/ui/card"
 import { usePublications } from "@/components"
-import { BarChart3, FileText, Heart, Calendar } from "lucide-react"
+import { BarChart3, FileText, Heart, Calendar, ChartLine } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/database/supabase/client"
 
@@ -20,10 +20,10 @@ export default function StatisticsPage() {
   useEffect(() => {
     const fetchLikes = async () => {
       if (!publications.length) return;
-      
+
       const supabase = createClient();
       const pubIds = publications.map((p) => p.id);
-      
+
       if (pubIds.length > 0) {
         try {
           const { data: allLikes, error } = await supabase
@@ -41,13 +41,13 @@ export default function StatisticsPage() {
           allLikes?.forEach((row: LikeRow) => {
             likeMap[row.publication_id] = (likeMap[row.publication_id] || 0) + 1;
           });
-          
+
           setLikes(likeMap);
-          
+
           // Calculate total and average likes
           const total = Object.values(likeMap).reduce((sum, count) => sum + count, 0);
           const average = publications.length > 0 ? Math.round(total / publications.length) : 0;
-          
+
           setTotalLikes(total);
           setAverageLikes(average);
         } catch (err) {
@@ -55,7 +55,7 @@ export default function StatisticsPage() {
         }
       }
     };
-    
+
     // Only fetch likes if we have publications and they're not loading
     if (!loading && publications.length > 0) {
       fetchLikes();
@@ -72,8 +72,11 @@ export default function StatisticsPage() {
 
   return (
     <div className="p-3 sm:p-6 lg:p-8">
-      <section className="bg-neutral-200 dark:bg-neutral-800 rounded-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4">Statistics</h1>
+      <section className="glass outline-primary outline-1 rounded-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
+        <div className="flex items-center gap-2 mb-2">
+          <ChartLine className="text-primary"/>
+          <h1 className="text-2xl sm:text-3xl font-bold">Statistics</h1>
+        </div>
         <p className="text-neutral-600 dark:text-neutral-300 mb-4">
           View your content performance and analytics.
         </p>
@@ -84,7 +87,7 @@ export default function StatisticsPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i} className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+              <Card key={i} className="glass border border-neutral-300 dark:border-neutral-700">
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="animate-pulse">
@@ -98,18 +101,18 @@ export default function StatisticsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass border border-neutral-300 dark:border-neutral-700">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
-                    <FileText className="w-6 h-6 text-blue-500" />
+                    <FileText className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="text-2xl font-bold text-neutral-800 dark:text-neutral-100">{totalPublications}</h3>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">Total Publications</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass border border-neutral-300 dark:border-neutral-700">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -120,7 +123,7 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass border border-neutral-300 dark:border-neutral-700">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -131,7 +134,7 @@ export default function StatisticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+            <Card className="glass border border-neutral-300 dark:border-neutral-700">
               <CardContent className="p-4">
                 <div className="text-center">
                   <div className="flex justify-center mb-2">
@@ -151,7 +154,7 @@ export default function StatisticsPage() {
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Recent Publications</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {publications.slice(0, 6).map((pub) => (
-              <Card key={pub.id} className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+              <Card key={pub.id} className="glass border border-neutral-300 dark:border-neutral-700">
                 <CardContent className="p-4">
                   <label htmlFor="title" className=" text-muted-foreground" >Title</label>
                   <h4 id="title" className="font-semibold text-neutral-800 dark:text-neutral-100 mb-2 line-clamp-2">{pub.title}</h4>

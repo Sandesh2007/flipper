@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import InfoDialog from "./dialog"
 import { useRouter } from "next/navigation"
 import { PublicationsTab, usePdfUpload } from '@/components';
-import { Upload, FileText, Users, Sparkles, Zap, BookOpen, TrendingUp } from 'lucide-react';
+import { Upload, FileText, Users, Sparkles, Zap, BookOpen } from 'lucide-react';
 
 export default function DashboardMain() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function DashboardMain() {
               <p className="text-muted-foreground mb-6">Transform your PDF into an interactive flipbook</p>
 
               <Button
-                className="w-full sm:w-auto bg-gradient-hero hover:shadow-glow text-white font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn"
+                className="w-full sm:w-auto glass hover:shadow-glow text-primary font-medium px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105 group/btn"
                 onClick={() => router.push('/home/create')}
               >
                 <Upload className="w-5 h-5 mr-2 group-hover/btn:animate-bounce" />

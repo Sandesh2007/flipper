@@ -293,7 +293,7 @@ export default function UserProfile() {
                         <User className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-primary">Your Profile</span>
                       </div>
-                      <h1 className="text-3xl sm:text-4xl font-bold text-gradient-hero mb-2 truncate">
+                      <h1 className="text-2xl sm:text-2xl font-bold mb-2 truncate">
                         {user.username || user.email}
                       </h1>
                       <p className="text-muted-foreground text-lg mb-3">{user.bio}</p>
@@ -359,7 +359,7 @@ export default function UserProfile() {
                   <h2 className="text-3xl sm:text-4xl font-bold text-gradient-hero mb-2">My Publications</h2>
                   <p className="text-muted-foreground text-lg">{sortedPublications.length} publication{sortedPublications.length !== 1 ? 's' : ''}</p>
                 </div>
-                <div className="flex items-center gap-2 bg-gradient-card border border-border/50 p-1 rounded-xl shadow-soft">
+                <div className="flex items-center gap-2 bg-gradient-card outline-1 p-1 rounded-xl shadow-soft">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="sm"

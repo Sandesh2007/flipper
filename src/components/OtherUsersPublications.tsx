@@ -30,6 +30,7 @@ interface Publication {
   title: string;
   thumb_url: string | null;
   created_at: string;
+  pdf_url: string;
 }
 
 interface OtherUsersPublicationsProps {
@@ -57,14 +58,14 @@ export default function OtherUsersPublications({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  
+
   const isMountedRef = useRef(true);
   const fetchControllerRef = useRef<AbortController | null>(null);
   const isInitializedRef = useRef(false);
 
   useEffect(() => {
     isMountedRef.current = true;
-    
+
     return () => {
       isMountedRef.current = false;
       if (fetchControllerRef.current) {
@@ -75,7 +76,7 @@ export default function OtherUsersPublications({
 
   const fetchData = useCallback(async (forceRefresh = false) => {
     if (!isMountedRef.current) return;
-    
+
     // Skip loading if we're navigating and have cached data
     if (!forceRefresh && shouldSkipLoading()) {
       const cacheKey = `discover_${maxUsers}_${maxPublicationsPerUser}`;
@@ -87,13 +88,13 @@ export default function OtherUsersPublications({
         return;
       }
     }
-    
+
     // Check cache first 
     const cacheKey = `discover_${maxUsers}_${maxPublicationsPerUser}`;
     const cached = discoverCache.get(cacheKey);
     const now = Date.now();
     const cacheAge = now - (cached?.timestamp || 0);
-    
+
     // Use shorter cache duration for better data freshness
     if (!forceRefresh && cached && cacheAge < DISCOVER_CACHE_DURATION) {
       if (isMountedRef.current) {
@@ -103,37 +104,37 @@ export default function OtherUsersPublications({
       }
       return;
     }
-    
+
     // If cache is stale, show loading but use cached data temporarily
     if (cached && cacheAge < DISCOVER_CACHE_DURATION * 2) {
       if (isMountedRef.current) {
         setUsers(cached.data);
       }
     }
-    
+
     if (fetchControllerRef.current) {
       fetchControllerRef.current.abort();
     }
-    
+
     fetchControllerRef.current = new AbortController();
     const signal = fetchControllerRef.current.signal;
 
     setLoading(true);
     setError(null);
-    
+
     try {
       const supabase = createClient();
-      
+
       if (!isMountedRef.current || signal.aborted) return;
-      
+
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id,username,avatar_url')
         .limit(maxUsers);
-      
+
       if (profilesError) throw profilesError;
       if (!isMountedRef.current || signal.aborted) return;
-      
+
       if (!profiles) {
         if (isMountedRef.current) {
           setUsers([]);
@@ -141,12 +142,12 @@ export default function OtherUsersPublications({
         }
         return;
       }
-      
+
       const { data: allPubs, error: pubsError } = await supabase
         .from('publications')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (pubsError) throw pubsError;
       if (!isMountedRef.current || signal.aborted) return;
 
@@ -166,12 +167,12 @@ export default function OtherUsersPublications({
           publications: pubsByUser[userProfile.id] || [],
         }))
         .filter(userProfile => userProfile.publications.length > 0);
-      
+
       if (!isMountedRef.current || signal.aborted) return;
-      
+
       // Update cache
       discoverCache.set(cacheKey, { data: usersWithPubs, timestamp: now });
-      
+
       if (isMountedRef.current) {
         setUsers(usersWithPubs);
         setLoading(false);
@@ -180,7 +181,7 @@ export default function OtherUsersPublications({
       if (err.name === 'AbortError' || !isMountedRef.current) {
         return;
       }
-      
+
       console.error('Error fetching data:', err);
       if (isMountedRef.current) {
         setError('Failed to load data. Please try again.');
@@ -216,7 +217,7 @@ export default function OtherUsersPublications({
           {description && <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{description}</p>}
         </div>
       )}
-      
+
       {loading ? (
         <div className="space-y-12">
           {Array.from({ length: 3 }).map((_, userIndex) => (
@@ -273,28 +274,28 @@ export default function OtherUsersPublications({
       ) : (
         <div className="space-y-12">
           {users.map((userProfile, userIndex) => (
-            <div 
-              key={userProfile.id} 
+            <div
+              key={userProfile.id}
               className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
               style={{ animationDelay: `${userIndex * 200}ms` }}
             >
               {/* User Header */}
               {showUserInfo && (
                 <div className="group mb-6">
-                  <Link 
-                    href={`/profile/${userProfile.username}`} 
+                  <Link
+                    href={`/profile/${userProfile.username}`}
                     className="flex items-center gap-4 p-6 bg-card
                     border border-border/40
                     rounded-xl hover:border-border/60 transition-all duration-300 hover:shadow-soft hover:scale-[1.01]"
                   >
                     <div className="relative">
                       {userProfile.avatar_url ? (
-                        <Image 
-                          src={userProfile.avatar_url} 
+                        <Image
+                          src={userProfile.avatar_url}
                           alt={`${userProfile.username}'s avatar`}
                           width={48}
                           height={48}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-border group-hover:border-foreground/30 transition-all duration-300 shadow-soft" 
+                          className="w-12 h-12 rounded-full object-cover border-2 border-border group-hover:border-foreground/30 transition-all duration-300 shadow-soft"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
@@ -324,7 +325,7 @@ export default function OtherUsersPublications({
                   </Link>
                 </div>
               )}
-              
+
               {/* Publications Grid */}
               {userPublications(userProfile, userIndex)}
             </div>
@@ -336,64 +337,68 @@ export default function OtherUsersPublications({
 }
 
 const userPublications = (userProfile: UserProfile, userIndex: number) => {
-    return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pl-0 sm:pl-6">
-      {userProfile.publications.map((pub: Publication, pubIndex) => (
-        <div
-          key={pub.id}
-          className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
-          style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
-        >
-          <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] bg-card border border-border/40 hover:border-border/60">
-            <CardContent className="p-2 relative">
-              <Link href={`/profile/${userProfile.username}`} className="block">
-                {/* Image */}
-                <div className="relative overflow-hidden rounded-md border-2">
-                  {pub.thumb_url ? (
-                    <Image
-                      src={pub.thumb_url}
-                      alt={pub.title}
-                      width={300}
-                      height={200}
-                      className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105" />
-                  ) : (
-                    <div className="w-full h-48 flex items-center rounded-md justify-center glass">
-                      <div className="text-center">
-                        <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 text-muted-foreground" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">No Preview</span>
+  return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pl-0 sm:pl-6">
+    {userProfile.publications.map((pub: Publication, pubIndex) => (
+      <div
+        key={pub.id}
+        className="group animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+        style={{ animationDelay: `${(userIndex * 200) + (pubIndex * 100)}ms` }}
+      >
+        <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-soft hover:-translate-y-1 hover:scale-[1.02] border border-border/40 hover:border-border/60">
+          <CardContent className="p-2 relative">
+            <div 
+            onClick={() => {
+              window.location.href = `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`
+            }}
+            className="block cursor-pointer">
+              {/* Image */}
+              <div className="relative overflow-hidden rounded-md border-2">
+                {pub.thumb_url ? (
+                  <Image
+                    src={pub.thumb_url}
+                    alt={pub.title}
+                    width={300}
+                    height={200}
+                    className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105" />
+                ) : (
+                  <div className="w-full h-48 flex items-center rounded-md justify-center glass">
+                    <div className="text-center">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-muted flex items-center justify-center">
+                        <BookOpen className="w-5 h-5 text-muted-foreground" />
                       </div>
+                      <span className="text-sm text-muted-foreground">No Preview</span>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Enhanced Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
+                {/* Enhanced Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
 
-                {/* Content */}
-                <div className="p-4 border-t border-border/30 bg-card">
-                  <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-foreground
+              {/* Content */}
+              <div className="p-4 border-t border-border/30 bg-card">
+                <h4 className="font-semibold text-foreground mb-2 line-clamp-2 text-sm leading-tight group-hover:text-foreground
                   truncate
                   transition-colors duration-300">
-                    {pub.title}
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(pub.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </Link>
-
-              {/* Enhanced Like Button */}
-              <div className="absolute bottom-2 right-3 duration-300 cursor-pointer">
-                <div className="bg-background/90 backdrop-blur-sm rounded-full shadow-soft border border-border/50 hover:bg-background/95 transition-all duration-300 hover:scale-110">
-                  <LikeButton
-                    publicationId={pub.id}
-                    showText={false} />
-                </div>
+                  {pub.title}
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(pub.created_at).toLocaleDateString()}
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      ))}
-    </div>;
-  }
+            </div>
+
+            {/* Enhanced Like Button */}
+            <div className="absolute bottom-2 right-3 duration-300 cursor-pointer">
+              <div className="bg-background/90 backdrop-blur-sm rounded-full shadow-soft border border-border/50 hover:bg-background/95 transition-all duration-300 hover:scale-110">
+                <LikeButton
+                  publicationId={pub.id}
+                  showText={false} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    ))}
+  </div>;
+}

@@ -15,6 +15,7 @@ import {
     ChevronDown,
     ChevronRight,
     Sparkles,
+    User,
 } from "lucide-react";
 import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
 
@@ -250,21 +251,15 @@ export function Navbar() {
                                                                 onClick={handleCloseMenu}
                                                             />
                                                             <MobileSidebarItem
-                                                                icon={<FileText className="w-4 h-4" />}
-                                                                label="Articles"
-                                                                href="/home/publisher/articles"
+                                                                icon={<Users className="w-4 h-4" />}
+                                                                label="Social Posts"
+                                                                href="/home/publisher/social-posts"
                                                                 onClick={handleCloseMenu}
                                                             />
                                                         </div>
                                                     )}
                                                 </div>
 
-                                                <MobileSidebarItem
-                                                    icon={<Users className="w-5 h-5" />}
-                                                    label="Social Posts"
-                                                    href="/home/publisher/social-posts"
-                                                    onClick={handleCloseMenu}
-                                                />
                                                 <MobileSidebarItem
                                                     icon={<BarChart3 className="w-5 h-5" />}
                                                     label="Statistics"
@@ -279,6 +274,7 @@ export function Navbar() {
                                 {/* User Section */}
                                 <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-border/50 bg-background flex-shrink-0">
                                     <Button
+                                    variant={'ghost'}
                                         onClick={() => {
                                             handleCloseMenu();
                                             window.location.href = '/discover'

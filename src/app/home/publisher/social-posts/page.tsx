@@ -7,7 +7,7 @@ export default function SocialPostsPage() {
   return (
     <div className="p-6 lg:p-8">
       {/* Hero Section */}
-      <section className="bg-gradient-glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
+      <section className="glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
             <Share2 className="w-6 h-6 text-white" />
@@ -19,7 +19,7 @@ export default function SocialPostsPage() {
             </p>
           </div>
         </div>
-        <Button className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300 group">
+        <Button className="hover:bg-primary/60 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300">
           <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Post
         </Button>

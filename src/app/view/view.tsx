@@ -17,6 +17,10 @@ export default function View() {
     const [viewerHeight, setViewerHeight] = useState('600px');
     const [isMounted, setIsMounted] = useState(true);
     const [somethingWentWrong, setSomethingWentWrong] = useState(false);
+    const [forceRerender, setForceRerender] = useState(0); // Add this to control rerenders
+    
+    // Add stable responsive values that only change on significant viewport changes
+    const [isMobile, setIsMobile] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -36,19 +40,41 @@ export default function View() {
         }
     }, []);
 
-    // Handle window resize
+    // Separate function to check if mobile
+    const checkMobileView = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            const newIsMobile = window.innerWidth <= 768;
+            setIsMobile(prev => {
+                if (prev !== newIsMobile) {
+                    return newIsMobile;
+                }
+                return prev;
+            });
+        }
+    }, []);
+
     useEffect(() => {
         calculateViewerHeight();
+        checkMobileView();
 
+        let resizeTimeout: NodeJS.Timeout;
         const handleResize = () => {
             calculateViewerHeight();
+            
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                checkMobileView();
+            }, 250);
         };
 
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', handleResize);
-            return () => window.removeEventListener('resize', handleResize);
+            return () => {
+                window.removeEventListener('resize', handleResize);
+                clearTimeout(resizeTimeout);
+            };
         }
-    }, [calculateViewerHeight]);
+    }, [calculateViewerHeight, checkMobileView]);
 
     const loadPdfFile = useCallback(async () => {
         if (!isMounted) return;
@@ -131,6 +157,7 @@ export default function View() {
 
     const handleReload = useCallback(() => {
         setRetryCount(prev => prev + 1);
+        setForceRerender(prev => prev + 1);
         loadPdfFile();
     }, [loadPdfFile]);
 
@@ -143,12 +170,17 @@ export default function View() {
     }, [router]);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            loadPdfFile();
-        }, 300);
+        loadPdfFile();
 
-        return () => clearTimeout(timer);
-    }, [loadPdfFile, retryCount]);
+        // Add a backup timer for retry if initial load fails
+        const backupTimer = setTimeout(() => {
+            if (!pdfFile) {
+                loadPdfFile();
+            }
+        }, 1000);
+
+        return () => clearTimeout(backupTimer);
+    }, [loadPdfFile]);
 
     // Cleanup effect to handle component unmounting
     useEffect(() => {
@@ -173,20 +205,16 @@ export default function View() {
                     <h2 className="text-xl font-semibold">Loading PDF...</h2>
                     <p className="text-muted-foreground">Please wait while we prepare your document</p>
                     {somethingWentWrong && (
-                        <div
-                        className='flex flex-col justify-center gap-4'
-                        >
-                        <p className="text-muted-foreground">Stuck on loading??</p>
-                        <Button onClick={
-                            () => {
+                        <div className='flex flex-col justify-center gap-4'>
+                            <p className="text-muted-foreground">Stuck on loading??</p>
+                            <Button onClick={() => {
                                 window.location.reload();
-                            }
-                        } className="gap-2 cursor-pointer">
-                            <RefreshCw className="h-4 w-4" />
-                            Reload
-                        </Button>
+                            }} className="gap-2 cursor-pointer">
+                                <RefreshCw className="h-4 w-4" />
+                                Reload
+                            </Button>
                         </div>
-                        )}
+                    )}
                 </div>
             </div>
         );
@@ -265,15 +293,15 @@ export default function View() {
 
             {/* PDF Viewer */}
             <div className="flex-1 self-center container py-6">
-                <div className="border rounded-lg overflow-hidden bg-card h-full">
+                <div className="border rounded-lg overflow-hidden glass outline-1 outline-primary h-full">
                     <DFlipViewer
-                        key={`${pdfFile.name}-${pdfFile.size}-${retryCount}`} // Well force it to rerender if pdfFile changes
+                        key={`${pdfFile.name}-${forceRerender}`} // Use a simpler key that updates when the file changes
                         pdfFile={pdfFile}
                         options={{
                             webgl: true,
                             autoEnableOutline: true,
-                            pageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 2,
-                            singlePageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 0,
+                            pageMode: isMobile ? 1 : 2,
+                            singlePageMode: isMobile ? 1 : 0,
                             responsive: true,
                             height: viewerHeight,
                             duration: 800,

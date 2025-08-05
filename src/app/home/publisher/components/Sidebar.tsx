@@ -76,7 +76,7 @@ export default function Sidebar() {
             <span className="font-medium">My Library</span>
           </div>
           {isLibraryOpen && (
-            <div className="ml-8 space-y-1 mt-2">
+            <div className="ml-8 flex flex-col gap-2 mt-2">
               <Link href="/home/publisher/publications">
                 <SidebarItem 
                   icon={<FileText className="w-4 h-4" />} 
@@ -85,30 +85,22 @@ export default function Sidebar() {
                   isSubItem
                 />
               </Link>
-              <Link href="/home/publisher/articles">
+              <Link href="/home/publisher/social-posts">
                 <SidebarItem 
-                  icon={<FileText className="w-4 h-4" />} 
-                  label="Articles" 
-                  isActive={pathname === "/home/publisher/articles"}
+                  icon={<Users className="w-4 h-4" />} 
+                  label="Social Posts" 
+                  isActive={pathname === "/home/publisher/social-posts"}
                   isSubItem
                 />
               </Link>
             </div>
           )}
         </div>
-        
-        <Link href="/home/publisher/social-posts">
-          <SidebarItem 
-            icon={<Users className="w-5 h-5" />} 
-            label="Social Posts" 
-            isActive={pathname === "/home/publisher/social-posts"}
-          />
-        </Link>
-        
+
         <Link href="/home/publisher/statistics">
           <SidebarItem 
             icon={<BarChart3 className="w-5 h-5" />} 
-            label="Analytics" 
+            label="Statistics" 
             isActive={pathname === "/home/publisher/statistics"}
           />
         </Link>

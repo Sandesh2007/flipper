@@ -157,7 +157,7 @@ export default function PublicationsTab() {
                             <h3 className="text-xl font-bold text-foreground">Your Publications</h3>
                             <p className="text-sm text-muted-foreground">{publications.length} publication{publications.length !== 1 ? 's' : ''}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col items-center gap-2 sm:flex-row md:flex-row">
                             <Button
                                 onClick={handleRefresh}
                                 disabled={isRefreshing}
@@ -172,7 +172,7 @@ export default function PublicationsTab() {
                                     </>
                                 ) : (
                                     <>
-                                        <RefreshCw className="w-4 h-4 mr-2" />
+                                        <RefreshCw className="w-4 h-4" />
                                         Refresh
                                     </>
                                 )}

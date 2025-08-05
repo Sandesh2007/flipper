@@ -332,7 +332,7 @@ export default function CreatePublicationPage() {
                   </p>
                   <div className="text-sm text-muted-foreground mb-8 space-y-1">
                     <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
-                    <p>Supported formats: PDF, EPUB, JPG, PNG, GIF, BMP, WEBP, SVG, TIFF, ICO, HEIC, CBZ, ZIP</p>
+                    <p>Supported formats: PDF, EPUB</p>
                   </div>
                   <Button
                     type="button"

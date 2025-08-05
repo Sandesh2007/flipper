@@ -13,7 +13,7 @@ export default function PublicationsPage() {
       <section className="bg-gradient-glass border border-border/20 rounded-2xl p-6 lg:p-8 mb-8 backdrop-blur-xl">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
-            <FileText className="w-6 h-6 text-white" />
+            <FileText className="w-6 h-6 text-primary" />
           </div>
           <div>
             <h1 className="text-3xl lg:text-4xl font-bold text-foreground">Publications</h1>
@@ -24,7 +24,7 @@ export default function PublicationsPage() {
         </div>
         <Button
         onClick={() => router.push('/home/create')}
-        className="bg-gradient-hero hover:bg-gradient-hero/90 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300 group">
+        className="glass text-primary outline-1 outline-primary border-0 shadow-soft hover:shadow-glow transition-all duration-300">
           <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Publication
         </Button>
@@ -32,7 +32,7 @@ export default function PublicationsPage() {
 
       {/* Publications Content */}
       <section>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-row items-center justify-between mb-6">
           <h2 className="text-2xl lg:text-3xl font-bold text-foreground">Your Publications</h2>
           <div className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString('en-US', { 

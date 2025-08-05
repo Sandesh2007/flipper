@@ -8,24 +8,9 @@ import { useRouter } from "next/navigation";
 import { usePdfUpload } from "../PdfUploadContext";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-const ACCEPTED_FILE_TYPES = [
-  'application/pdf',
-  'application/epub+zip',
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/bmp',
-  'image/webp',
-  'image/svg+xml',
-  'image/tiff',
-  'image/x-icon',
-  'image/heic',
-  'application/vnd.comicbook+zip', // CBZ
-  'application/zip',
-];
 
 const ACCEPTED_EXTENSIONS = [
-  '.pdf', '.epub', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg', '.tiff', '.ico', '.heic', '.cbz', '.zip'
+  '.pdf', '.epub',
 ];
 
 export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = ({ onFileSelected }) => {
@@ -272,7 +257,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
           
           <div className="text-sm text-muted-foreground mb-8 space-y-1">
             <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
-            <p>Supported formats: PDF, EPUB, JPG, PNG, GIF, BMP, WEBP, SVG, TIFF, ICO, HEIC, CBZ, ZIP</p>
+            <p>Supported formats: PDF, EPUB</p>
           </div>
           
           <div className="flex items-center justify-center gap-4 mb-8">

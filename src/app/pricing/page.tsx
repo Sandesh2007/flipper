@@ -52,7 +52,7 @@ const Pricing = () => {
               <div className="relative flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-hero flex items-center justify-center">
-                    <Star className="w-6 h-6 text-white" />
+                    <Star className="w-6 h-6 text-primary" />
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gradient-hero">Basic Plan</h2>
