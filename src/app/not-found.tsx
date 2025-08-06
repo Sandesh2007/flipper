@@ -3,8 +3,11 @@ import FuzzyText from '@/components/features/fuzzy-text';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function NotFound() {
+  const pathname = usePathname();
+  
   return (
     <div className="min-h-screen overflow-hidden flex items-center justify-center">
       {/* Background Elements */}
@@ -42,7 +45,7 @@ export default function NotFound() {
         </div>
         
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-          The page you're looking for <code className='bg-neutral-700 w-fit rounded text-white p-1' >{ window.location.pathname }</code> doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
+          The page you're looking for <code className='bg-neutral-700 w-fit rounded text-white p-1' >{ pathname }</code> doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
