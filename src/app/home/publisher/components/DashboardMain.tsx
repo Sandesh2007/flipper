@@ -38,7 +38,7 @@ export default function DashboardMain() {
           {/* Mobile Layout */}
           <div className="block lg:hidden relative">
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-glass border border-primary/20 mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass outline outline-primary mb-6">
                 <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Create New Publication</span>
               </div>
@@ -70,8 +70,8 @@ export default function DashboardMain() {
                   Supported:&nbsp;
                   <Tooltip>
                     <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
-                    <TooltipContent className="bg-gradient-card border border-border/50 rounded-xl p-3">
-                      <p className="text-sm">.pdf, .doc, .docx, .pptx</p>
+                    <TooltipContent className="glass border border-border/50 rounded-xl p-3">
+                      <p className="text-sm text-black dark:text-white">.pdf, .doc, .docx, .pptx</p>
                     </TooltipContent>
                   </Tooltip>
                 </p>
@@ -95,7 +95,7 @@ export default function DashboardMain() {
               <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
 
               <Button
-                className="w-fit cursor-pointer bg-gradient-card border border-primary text-black dark:text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+                className="w-fit cursor-pointer border border-primary text-black dark:text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
 
                 onClick={() => router.push('/home/create')}
               >

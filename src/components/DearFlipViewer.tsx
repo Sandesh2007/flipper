@@ -1,10 +1,9 @@
 'use client'
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import useDFlip from '../hooks/useDearFlip';
 import { useTheme } from 'next-themes';
 
-// Main component
 const DFlipViewer = ({
     pdfFile = null,
     options = {}
@@ -16,62 +15,74 @@ const DFlipViewer = ({
     const [dataUrl, setDataUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isReady, setIsReady] = useState(false);
-    const { theme, resolvedTheme } = useTheme();
+    const { resolvedTheme } = useTheme();
+    const fileProcessedRef = useRef<File | null>(null);
 
-    // Convert File to data URL
-    useEffect(() => {
-        if (pdfFile) {
-            setIsLoading(true);
-            setIsReady(false);
-            
+    const convertFileToDataUrl = useCallback((file: File) => {
+        return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const result = e.target?.result as string;
-                setDataUrl(result);
-                setIsLoading(false);
-                // Add a small delay to ensure the data URL is fully processed
-                // Or else it will cause `pdf not loaded error` which is very annoying ;)
-                setTimeout(() => setIsReady(true), 100);
+                resolve(result);
             };
             reader.onerror = () => {
-                console.error('Error reading PDF file');
-                setIsLoading(false);
-                setIsReady(false);
+                reject(new Error('Error reading PDF file'));
             };
-            reader.readAsDataURL(pdfFile);
-        } else {
+            reader.readAsDataURL(file);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (pdfFile && pdfFile !== fileProcessedRef.current) {
+            setIsLoading(true);
+            setIsReady(false);
+            fileProcessedRef.current = pdfFile;
+
+            convertFileToDataUrl(pdfFile)
+                .then((result) => {
+                    setDataUrl(result);
+                    setIsLoading(false);
+                    setTimeout(() => setIsReady(true), 100);
+                })
+                .catch((error) => {
+                    console.error('Error reading PDF file:', error);
+                    setIsLoading(false);
+                    setIsReady(false);
+                });
+        } else if (!pdfFile) {
             setDataUrl(null);
             setIsReady(false);
+            fileProcessedRef.current = null;
         }
-    }, [pdfFile]);
+    }, [pdfFile, convertFileToDataUrl]);
 
-    // Get theme-aware colors
-    const getThemeColors = () => {
+    const themeColors = useMemo(() => {
         if (typeof window === 'undefined') return {};
         
         const isDark = resolvedTheme === 'dark';
-        
         return {
-            backgroundColor: isDark 
-                ? 'rgb(23, 23, 23)' 
-                : 'rgb(248, 250, 252)', 
-            controlsColor: isDark 
+            backgroundColor: isDark
+                ? 'rgb(23, 23, 23)'
+                : 'rgb(248, 250, 252)',
+            controlsColor: isDark
                 ? 'rgb(255, 255, 255)'
                 : 'rgb(64, 64, 64)',
-            textColor: isDark 
+            textColor: isDark
                 ? 'rgb(255, 255, 255)'
                 : 'rgb(23, 23, 23)'
         };
-    };
+    }, [resolvedTheme]);
 
-    // Merge theme-aware options
-    const themeAwareOptions = {
-        ...getThemeColors(),
+    const memoizedOptions = useMemo(() => ({
+        ...themeColors,
         ...options
-    };
+    }), [themeColors, options]);
 
-    // Use the custom hook only when dataUrl is available and ready
-    useDFlip(containerRef, (isReady && dataUrl) ? dataUrl : '', themeAwareOptions);
+    // Only initialize when we have both dataUrl and isReady
+    const shouldInitialize = isReady && dataUrl && !isLoading;
+    const initializationUrl = shouldInitialize ? dataUrl : '';
+
+    useDFlip(containerRef, initializationUrl, memoizedOptions);
 
     if (isLoading) {
         return (

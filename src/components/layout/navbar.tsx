@@ -179,11 +179,11 @@ export function Navbar() {
                     {/* Full Screen Panel */}
                     <div
                         ref={menuRef}
-                        className={`fixed inset-0 w-screen h-screen bg-background backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-out ${isAnimating ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+                        className={`fixed inset-0 w-screen h-screen glass shadow-2xl transform transition-all duration-300 ease-out ${isAnimating ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
                             }`}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50 bg-background backdrop-blur-sm flex-shrink-0">
+                        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50 flex-shrink-0">
                             <Link href="/" className="flex gap-2 sm:gap-3 items-center" onClick={handleCloseMenu}>
                                 <Image src={logo} alt="logo" height={32} width={32} priority />
                                 <div className="flex flex-col min-w-0">
@@ -203,7 +203,7 @@ export function Navbar() {
                         </div>
 
                         {/* Upload Button */}
-                        <div className="p-4 sm:p-6 border-b border-border/50 bg-background flex-shrink-0">
+                        <div className="p-4 sm:p-6 border-b border-border/50 glass flex-shrink-0">
                             <Button
                                 variant="outline"
                                 className="w-full bg-blue-500 hover:shadow-glow text-white border-blue-500/30 rounded-xl transition-all duration-300 hover:scale-105"
@@ -217,7 +217,7 @@ export function Navbar() {
                         {/* Navigation Menu */}
                         <div className="flex flex-col flex-1 min-h-0">
                             {/* Main content area */}
-                            <div className="flex-1 overflow-y-auto bg-background">
+                            <div className="flex-1 overflow-y-auto">
                                 {/* Dashboard Navigation */}
                                 {user && (
                                     <div className="px-4 sm:px-6 py-4">
@@ -269,15 +269,15 @@ export function Navbar() {
                             </div>
 
                             {/* User Section */}
-                            <div className="px-4 sm:px-6 py-4 self-end sm:py-6 border-t border-border/50 bg-background flex-shrink-0">
+                            <div className="w-full px-4 sm:px-6 py-4 self-start sm:py-6 border-t border-border/50 flex-shrink-0">
                                 <Button
                                     variant={'ghost'}
                                     onClick={() => {
                                         handleCloseMenu();
                                         window.location.href = '/discover'
                                     }}
-                                    className="block px-4 py-3 rounded-xl transition-all duration-300 text-sm mb-3">
-                                    Discover
+                                    className="w-full flex justify-start p-5 rounded-xl transition-all duration-300 text-sm mb-3">
+                                    <span>Discover</span>
                                 </Button>
                                 <Link href="/pricing" className="block px-4 py-3 rounded-xl hover:bg-accent/50 transition-all duration-300 text-sm mb-4" onClick={handleCloseMenu}>
                                     Pricing
@@ -303,9 +303,9 @@ export function Navbar() {
 
                                 {/* Plan Info */}
                                 {user && (
-                                    <div className="mt-4 px-4 py-3 bg-card rounded-xl border border-border/50">
-                                        <div className="text-xs text-muted-foreground">
-                                            Current plan: <span className="text-foreground font-medium">Basic</span>
+                                    <div className="mt-4 px-4 py-3 glass rounded-xl border border-border/50">
+                                        <div className="text-xs text-black dark:text-white font-medium mb-1">
+                                            Current plan: <span className="text-green-500 font-medium">Basic</span>
                                         </div>
                                     </div>
                                 )}
@@ -338,28 +338,5 @@ function MobileSidebarItem({
             <span className="mr-3">{icon}</span>
             {label}
         </Link>
-    );
-}
-
-function ListItem({
-    title,
-    children,
-    href,
-    ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
-    return (
-        <li {...props}>
-            <NavigationMenuLink asChild>
-                <Link
-                    href={href}
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                >
-                    <div className="text-sm font-medium leading-none">{title}</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {children}
-                    </p>
-                </Link>
-            </NavigationMenuLink>
-        </li>
     );
 }

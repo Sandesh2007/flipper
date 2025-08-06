@@ -6,7 +6,7 @@ import { Home, Search, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen overflow-hidden flex items-center justify-center">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
@@ -42,13 +42,13 @@ export default function NotFound() {
         </div>
         
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-          The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
+          The page you're looking for <code className='bg-neutral-700 w-fit rounded text-white p-1' >{ window.location.pathname }</code> doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
           <Link href="/" className="w-full sm:w-auto">
             <Button
-              className="w-full sm:w-auto bg-gradient-hero hover:shadow-glow text-white px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+              className="w-full sm:w-auto hover:shadow-glow text-white px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105"
             >
               <Home className="w-5 h-5 mr-2" />
               Go Home

@@ -2,8 +2,11 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Share2, Plus, MessageCircle } from "lucide-react"
+import { useRouter } from "next/navigation";
 
 export default function SocialPostsPage() {
+  const router = useRouter();
+
   return (
     <div className="p-6 lg:p-8">
       {/* Hero Section */}
@@ -19,7 +22,11 @@ export default function SocialPostsPage() {
             </p>
           </div>
         </div>
-        <Button className="hover:bg-primary/60 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300">
+        <Button
+        onClick={() => {
+          router.push('/home/create/social-posts');
+        }}
+        className="hover:bg-primary/60 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300">
           <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Post
         </Button>
@@ -48,8 +55,9 @@ export default function SocialPostsPage() {
                 Start creating your first social post to engage with your audience.
               </p>
               <Button 
-                variant="outline" 
-                className="bg-gradient-card border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+                variant="outline"
+                onClick={() => router.push('/home/create/social-posts')}
+                className="border border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
               >
                 <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                 Create Your First Post

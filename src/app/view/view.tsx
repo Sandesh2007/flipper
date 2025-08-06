@@ -171,13 +171,12 @@ export default function View() {
 
     useEffect(() => {
         loadPdfFile();
-
         // Add a backup timer for retry if initial load fails
         const backupTimer = setTimeout(() => {
             if (!pdfFile) {
                 loadPdfFile();
             }
-        }, 1000);
+        }, 400);
 
         return () => clearTimeout(backupTimer);
     }, [loadPdfFile]);
@@ -270,8 +269,8 @@ export default function View() {
     return (
         <div className="min-h-screen bg-muted/20 flex flex-col">
             {/* Header */}
-            <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0">
-                <div className="container flex h-16 items-center justify-between">
+            <div className="border-b glass flex-shrink-0">
+                <div className="container flex md:flex-row lg:flex-row sm:flex-row h-16 items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                         <Button variant="ghost" size="sm" onClick={handleGoBack} className="cursor-pointer flex-shrink-0">
                             <ArrowLeft className="h-4 w-4 mr-2" />

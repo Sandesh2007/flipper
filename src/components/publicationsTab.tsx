@@ -143,7 +143,7 @@ export default function PublicationsTab() {
                     </div>
                     <h3 className="text-2xl font-bold text-foreground mb-3">No Publications Yet</h3>
                     <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">Start by creating your first publication to showcase your work.</p>
-                    <Button 
+                    <Button
                         onClick={() => router.push('/home/create')}
                         className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300"
                     >
@@ -189,35 +189,48 @@ export default function PublicationsTab() {
                     </div>
                     <div className="space-y-4">
                         {publications.map((pub) => (
-                            <div key={pub.id} className="flex items-center gap-4 p-6 glass border border-border rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102">
-                                {pub.thumb_url ? (
-                                    <Image
-                                        src={pub.thumb_url}
-                                        alt="Thumbnail"
-                                        width={60}
-                                        height={60}
-                                        className="w-15 h-15 object-cover rounded-lg"
-                                    />
-                                ) : (
-                                    <div className="w-15 h-15 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                                        <FileText className="w-6 h-6 text-primary" />
-                                    </div>
-                                )}
-                                <div className="flex-1">
-                                    <h4 className="font-semibold text-foreground mb-1">{pub.title}</h4>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{pub.description}</p>
-                                    <div className="flex items-center gap-2">
-                                        <Calendar className="w-3 h-3 text-muted-foreground" />
-                                        <span className="text-xs text-muted-foreground">
-                                            {formatDate(pub.created_at)}
-                                        </span>
+                            <div
+                                key={pub.id}
+                                className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 glass border border-border rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 hover:scale-102"
+                            >
+                                <div className="flex items-start gap-4 flex-1 min-w-0">
+                                    {pub.thumb_url ? (
+                                        <Image
+                                            src={pub.thumb_url}
+                                            alt="Thumbnail"
+                                            width={60}
+                                            height={60}
+                                            className="w-15 h-15 object-cover rounded-lg shrink-0"
+                                        />
+                                    ) : (
+                                        <div className="w-15 h-15 bg-blue-500/10 rounded-lg flex items-center justify-center shrink-0">
+                                            <FileText className="w-6 h-6 text-primary" />
+                                        </div>
+                                    )}
+                                    <div className="flex flex-col min-w-0">
+                                        <h4 className="font-semibold text-foreground mb-1 truncate">
+                                            {pub.title}
+                                        </h4>
+                                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2 overflow-hidden">
+                                            {pub.description}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="w-3 h-3 text-muted-foreground" />
+                                            <span className="text-xs text-muted-foreground">
+                                                {formatDate(pub.created_at)}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => router.push(`/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`)}
+                                        onClick={() =>
+                                            router.push(
+                                                `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`
+                                            )
+                                        }
                                         className="hover:bg-primary/10 transition-all duration-300"
                                     >
                                         <Eye className="w-4 h-4" />
@@ -242,6 +255,7 @@ export default function PublicationsTab() {
                             </div>
                         ))}
                     </div>
+
                 </div>
             )}
 

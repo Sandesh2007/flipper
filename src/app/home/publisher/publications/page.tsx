@@ -24,7 +24,7 @@ export default function PublicationsPage() {
         </div>
         <Button
         onClick={() => router.push('/home/create')}
-        className="glass text-primary outline-1 outline-primary border-0 shadow-soft hover:shadow-glow transition-all duration-300">
+        className="text-white outline-1 outline-primary border-0 shadow-soft hover:shadow-glow transition-all duration-300">
           <Plus className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
           Create New Publication
         </Button>
