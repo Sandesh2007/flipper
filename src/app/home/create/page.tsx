@@ -399,10 +399,10 @@ export default function CreatePublicationPage() {
             </div>
           )}
           {step === 2 && (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 ">
               <h2 className="text-xl font-semibold text-center">Preview your PDF</h2>
               {pdf ? (
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-hidden w-full h-full">
                   <DFlipViewer
                     pdfFile={pdf}
                     options={{
