@@ -40,6 +40,8 @@ export default function CreatePublicationPage() {
   const { pdf: pdfCtx, setPdf: setPdfCtx, clearPdf, loadStoredPdf, storedPdfData } = usePdfUpload();
   const router = useRouter();
   const [isLoadingStoredPdf, setIsLoadingStoredPdf] = useState(false);
+  const [viewerKey] = useState(0);
+  const [isViewerReady, setIsViewerReady] = useState(false);
 
   // Add beforeunload warning to prevent accidental data loss
   useEffect(() => {
@@ -116,6 +118,17 @@ export default function CreatePublicationPage() {
 
     initializePdf();
   }, [pdfCtx, pdf, hasShownToast, storedPdfData, loadStoredPdf, router]);
+
+  useEffect(() => {
+    if (step === 2 && pdf) {
+      setIsViewerReady(false);
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        setIsViewerReady(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [step, pdf]);
 
   // When a PDF is selected, store it in context
   const handlePdfChange = (file: File | null) => {
@@ -402,17 +415,29 @@ export default function CreatePublicationPage() {
             <div className="flex flex-col gap-6 ">
               <h2 className="text-xl font-semibold text-center">Preview your PDF</h2>
               {pdf ? (
-                <div className="border rounded-lg overflow-hidden w-full h-full">
-                  <DFlipViewer
-                    pdfFile={pdf}
-                    options={{
-                      webgl: true,
-                      autoEnableOutline: true,
-                      pageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 2,
-                      singlePageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 0,
-                      responsive: true
-                    }}
-                  />
+                <div className="border rounded-lg overflow-hidden w-full h-full min-h-[400px]">
+                  {!isViewerReady ? (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        <span>Initializing PDF viewer...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <DFlipViewer
+                      key={viewerKey}
+                      pdfFile={pdf}
+                      options={{
+                        webgl: true,
+                        autoEnableOutline: true,
+                        pageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 2,
+                        singlePageMode: typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 0,
+                        responsive: true,
+                        height: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 700 :
+                          typeof window !== 'undefined' && window.innerWidth >= 768 ? 600 : 400,
+                      }}
+                    />
+                  )}
                 </div>
               ) : (
                 <p className="text-muted-foreground text-center">No PDF selected for preview.</p>

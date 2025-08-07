@@ -19,10 +19,10 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const {setPdf, storePdfFile} = usePdfUpload(); 
+  const { setPdf, storePdfFile } = usePdfUpload();
 
   function onConvertClick(file: File) {
-    setPdf({file, name: file.name, lastModified: file.lastModified});
+    setPdf({ file, name: file.name, lastModified: file.lastModified });
     router.push("/home/create");
   }
 
@@ -30,7 +30,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
     async (acceptedFiles: File[], rejectedFiles: any[]) => {
       // Clear previous errors
       setError(null);
-      
+
       // Handle rejected files
       if (rejectedFiles.length > 0) {
         const rejection = rejectedFiles[0];
@@ -47,13 +47,13 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       if (acceptedFiles.length === 0) return;
 
       const file = acceptedFiles[0];
-      
+
       // Additional file validation
       if (file.size > MAX_FILE_SIZE) {
         setError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
         return;
       }
-      
+
       // Validate by extension as well (for browsers that don't set type)
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (!ACCEPTED_EXTENSIONS.some(e => file.name.toLowerCase().endsWith(e))) {
@@ -65,23 +65,25 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       setUploadProgress(0);
 
       // Simulate upload progress with more realistic timing
-      const interval = setInterval(async () => {
+      const interval = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev >= 100) {
             clearInterval(interval);
             setUploading(false);
             setUploadedFile(file);
-            
+
             // Store the PDF file for persistence
-            storePdfFile(file).catch(error => {
+            storePdfFile(file).catch((error) => {
               console.warn('Failed to store file:', error);
             });
-            
+
             return 100;
           }
-          return prev + Math.random();
+
+          return Math.min(prev + 7 + Math.random() * 10, 100);
         });
       }, 300);
+
     },
     []
   );
@@ -210,62 +212,59 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
           </button>
         </div>
       )}
-      
+
       <div
         {...getRootProps()}
-        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-          isDragActive && !isDragReject
+        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isDragActive && !isDragReject
             ? "border-blue-500 bg-blue-500/5 shadow-glow scale-105"
             : isDragReject
-            ? "border-red-400 bg-red-50 dark:bg-red-900/20"
-            : "border-blue-500/30 hover:border-blue-500/60 hover:scale-[1.02]"
-        }`}
+              ? "border-red-400 bg-red-50 dark:bg-red-900/20"
+              : "border-blue-500/30 hover:border-blue-500/60 hover:scale-[1.02]"
+          }`}
         role="button"
         tabIndex={0}
         aria-label="Upload PDF file by dragging and dropping or clicking to browse"
       >
         {/* Background Animation */}
         <div className="absolute inset-0 bg-blue-500/5 animate-pulse-slow"></div>
-        
+
         <input {...getInputProps()} id="file-input" aria-describedby="upload-description" />
         <div className="relative">
-          <div className={`flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-2xl transition-all duration-300 ${
-            isDragReject 
-              ? "bg-red-100 dark:bg-red-900/30 animate-wiggle" 
+          <div className={`flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-2xl transition-all duration-300 ${isDragReject
+              ? "bg-red-100 dark:bg-red-900/30 animate-wiggle"
               : "bg-blue-500 shadow-glow"
-          }`}>
-            <FileText className={`w-12 h-12 transition-colors ${
-              isDragReject ? "text-red-600 dark:text-red-400" : "text-white"
-            }`} />
+            }`}>
+            <FileText className={`w-12 h-12 transition-colors ${isDragReject ? "text-red-600 dark:text-red-400" : "text-white"
+              }`} />
           </div>
-          
+
           <h3 className="text-2xl font-bold text-foreground mb-4">
             {isDragActive && !isDragReject
               ? "Drop your PDF here"
               : isDragReject
-              ? "Invalid file type"
-              : "Drag & Drop your PDF"}
+                ? "Invalid file type"
+                : "Drag & Drop your PDF"}
           </h3>
-          
+
           <p id="upload-description" className="text-muted-foreground mb-6 text-lg">
             {isDragActive && !isDragReject
               ? "Release to upload your PDF"
               : isDragReject
-              ? "Please select a PDF file"
-              : "Drag your PDF file here, or click to browse"}
+                ? "Please select a PDF file"
+                : "Drag your PDF file here, or click to browse"}
           </p>
-          
+
           <div className="text-sm text-muted-foreground mb-8 space-y-1">
             <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
             <p>Supported formats: PDF, EPUB</p>
           </div>
-          
+
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="flex-1 h-px bg-border"></div>
             <span className="text-sm text-muted-foreground px-4">OR</span>
             <div className="flex-1 h-px bg-border"></div>
           </div>
-          
+
           <Button
             onClick={handleUploadClick}
             className="bg-blue-500 hover:shadow-glow text-white shadow-soft hover:scale-105 px-8 py-4 text-lg"
