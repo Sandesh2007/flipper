@@ -43,7 +43,7 @@ export default function AuthForm() {
             setError("Please fill in all fields");
             return false;
         }
-        
+
         if (isLogin && (!formData.email || !formData.password)) {
             setError("Please fill in all fields");
             return false;
@@ -52,10 +52,10 @@ export default function AuthForm() {
         // Username validation (only for signup)
         if (!isLogin) {
             if (!/^[a-z0-9_\s]+$/.test(formData.username)) {
-                setError('Username can only contain lowercase letters, numbers, underscores, and spaces.');
+                setError('Username can only contain numbers, underscores, and spaces.');
                 return false;
             }
-            
+
             if (formData.username.length < 3) {
                 setError('Username must be at least 3 characters long.');
                 return false;
@@ -90,7 +90,7 @@ export default function AuthForm() {
 
         // Clear previous errors
         setError('');
-        
+
         // Validate form
         if (!validateForm()) {
             return;
@@ -161,7 +161,7 @@ export default function AuthForm() {
                         }
                     }
                 });
-                
+
                 if (error) {
                     toast.custom(
                         (t) => (
@@ -233,7 +233,7 @@ export default function AuthForm() {
 
         setIsTransitioning(true);
         setError(''); // Clear errors when switching modes
-        
+
         setTimeout(() => {
             setIsLogin(!isLogin);
             setFormData({ username: "", email: "", password: "" });
@@ -288,7 +288,7 @@ export default function AuthForm() {
                 </div>
 
                 {/* Right Panel - Form */}
-                <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dakr:bg-neutral-900">
+                <div className="w-full lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex items-center dark:bg-neutral-900">
                     <div className="max-w-md mx-auto w-full">
                         {/* Mobile logo */}
                         <div className="lg:hidden text-foreground text-2xl font-bold mb-8 text-center">Flip Press</div>
@@ -351,24 +351,21 @@ export default function AuthForm() {
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             {/* Username field - Only for signup */}
                             <div
-                                className={`w-full transition-all duration-600 ease-in-out overflow-hidden ${!isLogin
-                                    ? 'max-h-20 opacity-100 transform translate-y-0'
-                                    : 'max-h-0 opacity-0 transform -translate-y-2'
+                                className={`transition-all duration-600 ease-in-out overflow-hidden ${!isLogin ? 'opacity-100 transform' : 'max-h-0 opacity-0 transform'
                                     }`}
                             >
-                                <div className="pb-1">
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        placeholder="Username"
-                                        value={formData.username}
-                                        onChange={handleInputChange}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 glass border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
-                                        disabled={isTransitioning || isLoading}
-                                        autoComplete="username"
-                                    />
-                                </div>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    placeholder="Username"
+                                    value={formData.username}
+                                    onChange={handleInputChange}
+                                    className="w-full p-3 sm:px-4 sm:py-3 glass border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 text-sm sm:text-base"
+                                    disabled={isTransitioning || isLoading}
+                                    autoComplete="username"
+                                />
                             </div>
+
 
                             {/* Email field */}
                             <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
@@ -454,7 +451,9 @@ export default function AuthForm() {
                             {/* Submit button */}
                             <button
                                 type="submit"
-                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground cursor-pointer font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
+                                className={`w-full py-2.5 sm:py-3 bg-primary text-primary-foreground cursor-pointer font-semibold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2
+                                    focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-all duration-300
+                                    transform hover:scale-[1.02] text-sm sm:text-base ${(isLoading || isTransitioning) ? 'opacity-50 cursor-not-allowed scale-100' : ''
                                     }`}
                                 disabled={isLoading || isTransitioning}
                             >
@@ -468,7 +467,7 @@ export default function AuthForm() {
                                 <div className="w-full border-t border-border bg-neutral-500"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-popover text-muted-foreground">
+                                <span className="px-2 bg-white/40 border-none dark:bg-neutral-900 text-muted-foreground">
                                     Or {isLogin ? 'log in' : 'register'} with
                                 </span>
                             </div>

@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, X, Users, FileText, Clock, TrendingUp } from 'lucide-react';
+import { Search, X, Users, FileText } from 'lucide-react';
 import { createClient } from '@/lib/database/supabase/client';
 import Link from 'next/link';
 import { LoadingSpinner } from './ui/loading-spinner';
@@ -106,12 +106,6 @@ export default function SearchBox({
     setShowDropdown(true);
   };
 
-  const handleBlur = () => {
-    setIsFocused(false);
-    // Delay hiding dropdown to allow clicks
-    setTimeout(() => setShowDropdown(false), 150);
-  };
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -148,11 +142,10 @@ export default function SearchBox({
           <input
             ref={inputRef}
             placeholder={placeholder}
-            className="w-full h-14 pl-12 pr-12 text-base bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full h-14 pl-12 pr-12 text-base glass rounded-md focus:outline-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={handleFocus}
-            onBlur={handleBlur}
           />
 
           {search && (
@@ -202,13 +195,12 @@ export default function SearchBox({
                             border-gray-200 dark:border-gray-700 group-hover:border-blue-500 transition-colors overflow-hidden uppercase`}
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-blue-500 border-2 border-gray-200 dark:border-neutral-700 group-hover:border-blue-500 flex items-center justify-start transition-colors">
-                          <span className="text-sm font-semibold text-white">
-                            {profile.username.charAt(0).toUpperCase()}start
+                        <div className="w-10 h-10 rounded-full bg-blue-500 border-2 border-gray-200 dark:border-neutral-700 group-hover:border-blue-500 flex items-center justify-center transition-colors">
+                          <span className="text-lg font-semibold text-white">
+                            {profile.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"></div>
                     </div>
                     <div className="flex flex-col">
                       <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">

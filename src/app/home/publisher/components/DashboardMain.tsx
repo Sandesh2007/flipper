@@ -99,7 +99,7 @@ export default function DashboardMain() {
 
                 onClick={() => router.push('/home/create')}
               >
-                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-black dark:text-white"/>
+                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform dark:text-white"/>
                 Upload a File
               </Button>
             </div>

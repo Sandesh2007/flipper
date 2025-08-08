@@ -35,7 +35,7 @@ export default function PublicProfileByUsernamePage() {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const profileUrl = typeof window !== 'undefined' ? 'flippress.vercel.app/profile/' + username : '';
   const router = useRouter();
 
   useEffect(() => {
