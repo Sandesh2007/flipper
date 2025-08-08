@@ -95,7 +95,7 @@ export default function DashboardMain() {
               <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
 
               <Button
-                className="w-fit cursor-pointer border border-primary text-black dark:text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+                className="w-fit cursor-pointer border border-primary text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
 
                 onClick={() => router.push('/home/create')}
               >
