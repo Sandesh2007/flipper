@@ -41,7 +41,7 @@ export default function CreatePublicationPage() {
   const { pdf: pdfCtx, setPdf: setPdfCtx, clearPdf, loadStoredPdf, storedPdfData } = usePdfUpload();
   const router = useRouter();
   const [isLoadingStoredPdf, setIsLoadingStoredPdf] = useState(false);
-  
+
   // Fix 1: Make viewerKey dynamic and reset when step changes
   const [viewerKey, setViewerKey] = useState(0);
   const [isViewerReady, setIsViewerReady] = useState(false);
@@ -117,15 +117,15 @@ export default function CreatePublicationPage() {
   useEffect(() => {
     if (step === 2 && pdf) {
       setIsViewerReady(false);
-      
+
       // Generate a new key to force re-render of viewer
       setViewerKey(prev => prev + 1);
-      
+
       // Longer delay to ensure everything is properly mounted
       const timer = setTimeout(() => {
         setIsViewerReady(true);
       }, 500);
-      
+
       return () => clearTimeout(timer);
     } else {
       setIsViewerReady(false);
@@ -137,7 +137,7 @@ export default function CreatePublicationPage() {
     setPdf(file);
     if (file) {
       setPdfCtx({ file, name: file.name, lastModified: file.lastModified });
-      
+
       // Generate thumbnail for the PDF
       try {
         const thumbnailDataUrl = await generatePdfThumbnailDataUrl(file, {
@@ -226,7 +226,7 @@ export default function CreatePublicationPage() {
 
       console.log("Uploading PDF to storage...");
       pdfPath = `pdfs/${Date.now()}_${freshPdf.name}`;
-      
+
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('publications')
         .upload(pdfPath, freshPdf, {
@@ -252,17 +252,17 @@ export default function CreatePublicationPage() {
       if (thumbnailDataUrl) {
         try {
           console.log("Uploading thumbnail to storage...");
-          
+
           // Convert data URL to blob
           const response = await fetch(thumbnailDataUrl);
           const thumbnailBlob = await response.blob();
-          
+
           // Create thumbnail file
           const thumbnailFile = new File([thumbnailBlob], `thumb_${Date.now()}.jpg`, {
             type: 'image/jpeg',
             lastModified: Date.now()
           });
-          
+
           const thumbnailPath = `thumbs/${Date.now()}_${thumbnailFile.name}`;
           const { error: thumbUploadError } = await supabase.storage
             .from('publications')
@@ -270,7 +270,7 @@ export default function CreatePublicationPage() {
               cacheControl: '3600',
               upsert: false
             });
-          
+
           if (thumbUploadError) {
             console.error("Thumbnail upload error:", thumbUploadError);
             console.warn("Thumbnail upload failed, continuing without thumbnail");
@@ -305,7 +305,7 @@ export default function CreatePublicationPage() {
       }
 
       console.log("Publication created successfully!", insertData);
-      
+
       // Set published state and move to next step
       setPublished(true);
       handleNext();
@@ -370,9 +370,12 @@ export default function CreatePublicationPage() {
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'application/epub+zip': ['.epub'],
-      'application/vnd.comicbook+zip': ['.cbz'],
-      'application/zip': ['.zip'],
+      // I will add support for more formats later
+      // 'application/epub+zip': ['.epub'],
+      // 'application/vnd.ms-powerpoint': ['.ppt'],
+      // 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+      // 'application/msword': ['.doc'],
+      // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
@@ -401,7 +404,7 @@ export default function CreatePublicationPage() {
           ))}
         </div>
         <div className="border-b border-border mx-8" />
-        
+
         {/* Content */}
         <div className="p-8">
           {!pdf && step > 0 && (
@@ -410,7 +413,7 @@ export default function CreatePublicationPage() {
             </div>
           )}
           {error && <div className="text-destructive mb-4 text-center">{error}</div>}
-          
+
           {step === 0 && (
             <div className="flex flex-col items-center justify-center min-h-[350px]">
               <div
@@ -457,7 +460,7 @@ export default function CreatePublicationPage() {
                   </Button>
                 </div>
               </div>
-              
+
               {/* Show file info and continue button if file is selected */}
               {pdf && (
                 <div className="mt-6 w-full max-w-md text-center">
@@ -465,18 +468,18 @@ export default function CreatePublicationPage() {
                   {thumbnailDataUrl && (
                     <div className="mb-4 flex justify-center">
                       <div className="w-24 h-32 rounded-lg border border-border overflow-hidden bg-white shadow-sm">
-                        <img 
-                          src={thumbnailDataUrl} 
-                          alt="PDF Thumbnail" 
+                        <img
+                          src={thumbnailDataUrl}
+                          alt="PDF Thumbnail"
                           className="w-full h-full object-cover"
                         />
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="font-semibold text-lg text-primary">{pdf.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">{(pdf.size / 1024 / 1024).toFixed(2)} MB</div>
-                  
+
                   <div className="flex gap-2 mt-4 justify-center">
                     <Button variant="outline" size="sm" onClick={() => handlePdfChange(null)} className="cursor-pointer">Remove File</Button>
                     <Button variant="outline" size="sm" onClick={() => pdfInputRef.current?.click()} className="cursor-pointer">Choose Different File</Button>
@@ -486,7 +489,7 @@ export default function CreatePublicationPage() {
               )}
             </div>
           )}
-          
+
           {step === 1 && (
             <div className="flex flex-col gap-6">
               <div>
@@ -525,7 +528,7 @@ export default function CreatePublicationPage() {
               </div>
             </div>
           )}
-          
+
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <h2 className="text-xl font-semibold text-center">Preview your PDF</h2>
@@ -569,9 +572,9 @@ export default function CreatePublicationPage() {
               <div className="flex items-center gap-4">
                 <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border overflow-hidden">
                   {thumbnailDataUrl ? (
-                    <img 
-                      src={thumbnailDataUrl} 
-                      alt="PDF Thumbnail" 
+                    <img
+                      src={thumbnailDataUrl}
+                      alt="PDF Thumbnail"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -659,7 +662,7 @@ export default function CreatePublicationPage() {
               )}
             </div>
           )}
-          
+
           {step === 4 && published && (
             <div className="flex flex-col gap-6 items-center text-center">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-2">

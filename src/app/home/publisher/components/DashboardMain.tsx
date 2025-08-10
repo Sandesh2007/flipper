@@ -12,7 +12,7 @@ export default function DashboardMain() {
   const router = useRouter();
   const { setPdf } = usePdfUpload();
   const [activeTab, setActiveTab] = useState("Publications")
-  const tabs = ["Publications", "Articles", "Social posts"]
+  const tabs = ["Publications", "Social posts"]
 
   // Add a handler for file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +71,9 @@ export default function DashboardMain() {
                   <Tooltip>
                     <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
                     <TooltipContent className="glass border border-border/50 rounded-xl p-3">
-                      <p className="text-sm text-black dark:text-white">.pdf, .doc, .docx, .pptx</p>
+                      <p className="text-sm text-black dark:text-white">.pdf
+                         {/* ,.doc, .docx, .pptx */}
+                         </p>
                     </TooltipContent>
                   </Tooltip>
                 </p>
@@ -116,7 +118,9 @@ export default function DashboardMain() {
                 <Tooltip>
                   <TooltipTrigger className="underline cursor-pointer text-primary">file types</TooltipTrigger>
                   <TooltipContent className="bg-gradient-glass border border-border/50 rounded-xl p-3">
-                    <p className="text-sm text-primary">.pdf, .doc, .docx, .pptx</p>
+                    <p className="text-sm text-primary">.pdf
+                       {/* .doc, .docx, .pptx */}
+                       </p>
                   </TooltipContent>
                 </Tooltip>
               </p>

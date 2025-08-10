@@ -23,7 +23,8 @@ export async function GET(request: Request) {
         .eq('id', user.id)
         .single()
 
-      // If no profile username then redirect to set-username
+      // // If no profile username then redirect to set-username
+      // I removed set-username because i fix the issue with the auth flow 
       if (!profile?.username) {
         return NextResponse.redirect(`${origin}`) // may add another url in future (meh im bored rn)
       }

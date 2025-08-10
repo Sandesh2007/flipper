@@ -10,7 +10,10 @@ import { usePdfUpload } from "../PdfUploadContext";
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 const ACCEPTED_EXTENSIONS = [
-  '.pdf', '.epub',
+  '.pdf',
+  // '.epub',
+  // '.ppt', '.pptx',
+  // '.doc', '.docx',
 ];
 
 export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = ({ onFileSelected }) => {
@@ -99,18 +102,11 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
-      "application/epub+zip": [".epub"],
-      "image/jpeg": [".jpg", ".jpeg"],
-      "image/png": [".png"],
-      "image/gif": [".gif"],
-      "image/bmp": [".bmp"],
-      "image/webp": [".webp"],
-      "image/svg+xml": [".svg"],
-      "image/tiff": [".tiff"],
-      "image/x-icon": [".ico"],
-      "image/heic": [".heic"],
-      "application/vnd.comicbook+zip": [".cbz"],
-      "application/zip": [".zip"],
+      // "application/epub+zip": [".epub"],
+      // 'application/vnd.ms-powerpoint': ['.ppt'],
+      // 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+      // 'application/msword': ['.doc'],
+      // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
@@ -263,7 +259,9 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
 
           <div className="text-sm text-muted-foreground mb-8 space-y-1">
             <p>Maximum file size: {MAX_FILE_SIZE / 1024 / 1024}MB</p>
-            <p>Supported formats: PDF, EPUB</p>
+            <p>Supported formats : pdf
+               {/* ppt, pptx, doc, docx, epub */}
+               </p>
           </div>
 
           <div className="flex items-center justify-center gap-4 mb-8">

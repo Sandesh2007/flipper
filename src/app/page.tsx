@@ -172,7 +172,7 @@ export default function Home() {
         </div>
       </section>
       
-      <SupportedFormats />
+      {/* <SupportedFormats /> */}
       <ConversionInfo />
       <Testimonials />
     </main>

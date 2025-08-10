@@ -55,10 +55,10 @@ export const Footer = () => {
                 Get the latest updates, tips, and resources delivered to your inbox. Join our community of creators.
               </p>
               <div className="flex justify-center w-full">
-                <div className="flex gap-4 max-w-md border w-full border-border/50 mx-auto glass rounded-2xl p-2 shadow-soft">
+                <div className="flex gap-4 max-w-md outline-1 w-full outline-primary mx-auto glass rounded-2xl p-2 shadow-soft">
                   <Input
                     placeholder="Enter your email"
-                    className="flex-1 p-2 bg-transparent w-full float-left rounded-2xl text-foreground placeholder:text-muted-foreground"
+                    className="flex-1 p-2 bg-transparent w-full border-0 focus:border-0 outline-0 float-left rounded-2xl text-foreground placeholder:text-muted-foreground"
                     type="email"
                   />
                   <Button className="bg-blue-500 float-right relative hover:shadow-glow text-white px-6">
