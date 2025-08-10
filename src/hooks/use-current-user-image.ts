@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/database/supabase/client'
 import { useEffect, useState } from 'react'
-import avatar from '../../public/avatar.png'
 
 export const useCurrentUserImage = () => {
   const [image, setImage] = useState<string | null>(null)
@@ -77,5 +76,5 @@ export const useCurrentUserImage = () => {
     fetchUserImage()
   }, [retryCount])
 
-  return image || avatar.src
+  return image
 }

@@ -274,7 +274,7 @@ export default function UserProfile() {
                         {user.avatar_url ? (
                           <Image
                             src={user.avatar_url}
-                            alt="Avatar"
+                            alt= {user.username ? user.username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                             width={128}
                             height={128}
                             className="w-full h-full object-cover"

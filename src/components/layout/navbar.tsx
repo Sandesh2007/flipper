@@ -16,7 +16,6 @@ import {
     ChevronRight,
     Sparkles,
 } from "lucide-react";
-import { NavigationMenuLink } from "@radix-ui/react-navigation-menu";
 
 import { Button } from "../ui/button";
 import { ThemeToggle } from "../themeToggle";
@@ -24,7 +23,7 @@ import Link from "next/link";
 import { useAuth } from "../auth/auth-context";
 import { CurrentUserAvatar } from "../features/current-user-avatar";
 import { useEffect, useState, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,6 +33,7 @@ export function Navbar() {
     const homePage = user ? "/home/publisher" : "/";
     const menuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+    const router = useRouter();
 
     // Close mobile menu when screen becomes large
     useEffect(() => {
@@ -120,9 +120,7 @@ export function Navbar() {
                     <div className="flex items-center gap-1">
                         <Button
                             variant={'ghost'}
-                            onClick={() => {
-                                window.location.href = '/discover'
-                            }}
+                            onClick={() => router.push('/discover')}
                             className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
                             <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
                         </Button>
@@ -131,7 +129,7 @@ export function Navbar() {
                         </Link>
                         {user ? (
                             <div className="flex items-center gap-2 xl:gap-3">
-                                <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 rounded-xl p-2 hover:bg-accent">
+                                <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 outline-1 rounded-xl p-2 hover:bg-accent">
                                     <CurrentUserAvatar />
                                 </Link>
                             </div>
@@ -274,7 +272,7 @@ export function Navbar() {
                                     variant={'ghost'}
                                     onClick={() => {
                                         handleCloseMenu();
-                                        window.location.href = '/discover'
+                                        router.push('/discover');
                                     }}
                                     className="w-full flex justify-start p-5 rounded-xl transition-all duration-300 text-sm mb-3">
                                     <span>Discover</span>

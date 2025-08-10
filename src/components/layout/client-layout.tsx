@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { GlobalLoadingIndicator } from "@/components/ui/global-loading-indicator";
 
 export default function ClientLayout({
   children,
@@ -26,6 +27,7 @@ export default function ClientLayout({
       )}
       {children}
       {!isNoFooterRoute &&<Footer />}
+      <GlobalLoadingIndicator />
     </GradientBackground>
   );
 }

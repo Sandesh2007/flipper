@@ -18,8 +18,8 @@ export default function DashboardMain() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      setPdf({ file, name: file.name, lastModified: file.lastModified });
-      router.push('/home/create');
+      router.push('/home/create?from=dashboard');
+      return;
     }
   };
 
@@ -95,11 +95,11 @@ export default function DashboardMain() {
               <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
 
               <Button
-                className="w-fit cursor-pointer border border-primary text-white hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+                className="w-fit cursor-pointer border border-primary text-white hover:text-black  hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
 
                 onClick={() => router.push('/home/create')}
               >
-                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform dark:text-white"/>
+                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-black "/>
                 Upload a File
               </Button>
             </div>

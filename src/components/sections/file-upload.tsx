@@ -44,6 +44,13 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
         return;
       }
 
+      // Instead of handling upload here, redirect to /home/create
+      // for better user experience
+      if (acceptedFiles.length > 0) {
+        router.push('/home/create?from=upload');
+        return;
+      }
+
       if (acceptedFiles.length === 0) return;
 
       const file = acceptedFiles[0];
@@ -85,7 +92,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       }, 300);
 
     },
-    []
+    [router]
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({

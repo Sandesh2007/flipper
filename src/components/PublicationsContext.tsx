@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/database/supabase/client';
 import { useAuth } from '@/components';
-import { shouldSkipLoading, clearNavigationState } from '@/components/layout/navigation-state-manager';
+import { shouldSkipLoading, clearNavigationState, registerDataFetch, unregisterDataFetch } from '@/components/layout/navigation-state-manager';
 
 export interface Publication {
   id: string;
@@ -41,9 +41,14 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
   const isInitializedRef = useRef(false);
   const fetchControllerRef = useRef<AbortController | null>(null);
   const lastFetchTimeRef = useRef<number>(0);
+  const fetchIdRef = useRef<string>('');
 
   const fetchPublications = useCallback(async (forceRefresh = false) => {
     if (!user) return;
+    
+    // Generate unique fetch ID for this operation
+    const fetchId = `publications_${user.id}_${Date.now()}`;
+    fetchIdRef.current = fetchId;
     
     // Check if we should skip loading during navigation
     const skipLoading = shouldSkipLoading();
@@ -80,6 +85,9 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
     fetchControllerRef.current = new AbortController();
     const signal = fetchControllerRef.current.signal;
     
+    // Register this fetch operation
+    registerDataFetch(fetchId);
+    
     setLoading(true);
     setError(null);
     lastFetchTimeRef.current = now;
@@ -92,10 +100,20 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (signal.aborted) return;
+      if (signal.aborted) {
+        unregisterDataFetch(fetchId);
+        return;
+      }
 
       if (fetchError) {
         setError(fetchError.message);
+        unregisterDataFetch(fetchId);
+        return;
+      }
+
+      // Check if this is still the current fetch
+      if (fetchId !== fetchIdRef.current) {
+        unregisterDataFetch(fetchId);
         return;
       }
 
@@ -103,26 +121,66 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
       setPublications(publicationsData);
       
       // Update cache
-      publicationsCache.set(cacheKey, { data: publicationsData, timestamp: now });
+      publicationsCache.set(cacheKey, {
+        data: publicationsData,
+        timestamp: now
+      });
       
-      // Clear navigation state after successful fetch
-      clearNavigationState();
+      setError(null);
     } catch (err) {
-      if (signal.aborted) return;
+      if (signal.aborted) {
+        unregisterDataFetch(fetchId);
+        return;
+      }
+      
+      console.error('Error fetching publications:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch publications');
     } finally {
-      if (!signal.aborted) {
+      // Only update loading state if this is still the current fetch
+      if (fetchId === fetchIdRef.current) {
         setLoading(false);
       }
+      unregisterDataFetch(fetchId);
     }
   }, [user]);
 
+  // Initialize publications on mount
+  useEffect(() => {
+    if (user && !isInitializedRef.current) {
+      isInitializedRef.current = true;
+      fetchPublications();
+    }
+  }, [user, fetchPublications]);
+
+  // Refresh publications when user changes
+  useEffect(() => {
+    if (user) {
+      fetchPublications(true);
+    } else {
+      setPublications([]);
+      setError(null);
+      setLoading(false);
+    }
+  }, [user, fetchPublications]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchControllerRef.current) {
+        fetchControllerRef.current.abort();
+      }
+      // Clear navigation state when component unmounts
+      clearNavigationState();
+    };
+  }, []);
+
   const refreshPublications = useCallback(async () => {
-    await fetchPublications(true); // Force refresh
+    await fetchPublications(true);
   }, [fetchPublications]);
 
   const addPublication = useCallback((publication: Publication) => {
     setPublications(prev => [publication, ...prev]);
+    
     // Update cache
     if (user) {
       const cacheKey = `publications_${user.id}`;
@@ -137,16 +195,20 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const updatePublication = useCallback((id: string, updates: Partial<Publication>) => {
-    setPublications(prev => 
-      prev.map(pub => pub.id === id ? { ...pub, ...updates } : pub)
-    );
+    setPublications(prev => prev.map(pub => 
+      pub.id === id ? { ...pub, ...updates } : pub
+    ));
+    
     // Update cache
     if (user) {
       const cacheKey = `publications_${user.id}`;
       const cached = publicationsCache.get(cacheKey);
       if (cached) {
+        const updatedData = cached.data.map(pub => 
+          pub.id === id ? { ...pub, ...updates } : pub
+        );
         publicationsCache.set(cacheKey, {
-          data: cached.data.map(pub => pub.id === id ? { ...pub, ...updates } : pub),
+          data: updatedData,
           timestamp: Date.now()
         });
       }
@@ -155,13 +217,15 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
 
   const deletePublication = useCallback((id: string) => {
     setPublications(prev => prev.filter(pub => pub.id !== id));
+    
     // Update cache
     if (user) {
       const cacheKey = `publications_${user.id}`;
       const cached = publicationsCache.get(cacheKey);
       if (cached) {
+        const filteredData = cached.data.filter(pub => pub.id !== id);
         publicationsCache.set(cacheKey, {
-          data: cached.data.filter(pub => pub.id !== id),
+          data: filteredData,
           timestamp: Date.now()
         });
       }
@@ -176,59 +240,20 @@ export const PublicationsProvider = ({ children }: { children: ReactNode }) => {
     return publications.filter(pub => pub.user_id === userId);
   }, [publications]);
 
-  const getAllPublications = useCallback(async (): Promise<Publication[]> => {
+  const getAllPublications = useCallback(async () => {
     try {
       const supabase = createClient();
-      const { data, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from('publications')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (fetchError) {
-        throw new Error(fetchError.message);
-      }
-
+      if (error) throw error;
       return data || [];
     } catch (err) {
-      throw new Error(err instanceof Error ? err.message : 'Failed to fetch all publications');
+      console.error('Error fetching all publications:', err);
+      return [];
     }
-  }, []);
-
-  // Fetch publications when user changes, but only once per user
-  useEffect(() => {
-    if (user && !isInitializedRef.current) {
-      isInitializedRef.current = true;
-      fetchPublications();
-    } else if (!user) {
-      isInitializedRef.current = false;
-      setPublications([]);
-      setLoading(false);
-      setError(null);
-    }
-  }, [user, fetchPublications]);
-
-  // Add a periodic refresh mechanism for better data consistency
-  useEffect(() => {
-    if (!user) return;
-    
-    const interval = setInterval(() => {
-      const now = Date.now();
-      // Refresh data if it's been more than 5 minutes since last fetch
-      if (now - lastFetchTimeRef.current > 5 * 60 * 1000) {
-        fetchPublications();
-      }
-    }, 60 * 1000); // Check every minute
-    
-    return () => clearInterval(interval);
-  }, [user, fetchPublications]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (fetchControllerRef.current) {
-        fetchControllerRef.current.abort();
-      }
-    };
   }, []);
 
   const value: PublicationsContextType = {

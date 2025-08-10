@@ -17,7 +17,7 @@ export const CurrentUserAvatar = (className:any) => {
     <Avatar >
       <AvatarImage
       className={className}
-        src={profileImage}
+        src={profileImage || ''}
         alt={initials} 
       />
       <AvatarFallback>{initials}</AvatarFallback>

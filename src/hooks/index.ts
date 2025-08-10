@@ -4,6 +4,7 @@ export { useCurrentUserImage } from './use-current-user-image';
 export { useCurrentUserName } from './use-current-user-name';
 export { useIsMobile } from './use-mobile';
 export { default as useDearFlip } from './useDearFlip';
+export { useDataFetching, clearDataCache, getCachedData } from './use-data-fetching';
 
 // Custom hook for data loading with retry logic
 export function useDataLoader<T>(

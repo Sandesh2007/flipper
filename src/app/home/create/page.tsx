@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { toastify } from '@/components/toastify';
 import { useDropzone } from 'react-dropzone';
+import { generatePdfThumbnailDataUrl } from '@/utils/pdfThumbnail';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
@@ -30,7 +30,8 @@ export default function CreatePublicationPage() {
   const [published, setPublished] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [thumbUrl] = useState('');
+  const [thumbUrl, setThumbUrl] = useState('');
+  const [thumbnailDataUrl, setThumbnailDataUrl] = useState('');
   const [error, setError] = useState('');
   const [uploadRetries, setUploadRetries] = useState(0);
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +41,9 @@ export default function CreatePublicationPage() {
   const { pdf: pdfCtx, setPdf: setPdfCtx, clearPdf, loadStoredPdf, storedPdfData } = usePdfUpload();
   const router = useRouter();
   const [isLoadingStoredPdf, setIsLoadingStoredPdf] = useState(false);
-  const [viewerKey] = useState(0);
+  
+  // Fix 1: Make viewerKey dynamic and reset when step changes
+  const [viewerKey, setViewerKey] = useState(0);
   const [isViewerReady, setIsViewerReady] = useState(false);
 
   // Add beforeunload warning to prevent accidental data loss
@@ -93,19 +96,12 @@ export default function CreatePublicationPage() {
         }
 
         if (pdfCtx?.name && !pdfCtx.file && !storedPdfData && !pdf) {
-          toastify.error("Your PDF session expired. Please upload your PDF again.");
-          setHasShownToast(true);
-          return;
-        }
-
-        if (!pdf && !pdfCtx && !storedPdfData && !hasShownToast) {
-          toastify.info("Ready to create a publication! Upload a PDF to get started.");
+          toastify.error("Your upload session expired. Please upload your PDF again.");
           setHasShownToast(true);
           return;
         }
 
         // If we reach here and still no PDF, mark as shown to prevent loops
-        // Mehh idk what to do then
         if (!pdf && !hasShownToast) {
           setHasShownToast(true);
         }
@@ -119,122 +115,216 @@ export default function CreatePublicationPage() {
     initializePdf();
   }, [pdfCtx, pdf, hasShownToast, storedPdfData, loadStoredPdf, router]);
 
+  // Fix 1: Better viewer initialization logic
   useEffect(() => {
     if (step === 2 && pdf) {
       setIsViewerReady(false);
-      // Small delay to ensure DOM is ready
+      
+      // Generate a new key to force re-render of viewer
+      setViewerKey(prev => prev + 1);
+      
+      // Longer delay to ensure everything is properly mounted
       const timer = setTimeout(() => {
         setIsViewerReady(true);
-      }, 300);
+      }, 500);
+      
       return () => clearTimeout(timer);
+    } else {
+      setIsViewerReady(false);
     }
   }, [step, pdf]);
 
-  // When a PDF is selected, store it in context
-  const handlePdfChange = (file: File | null) => {
+  // When a PDF is selected, store it in context and generate thumbnail
+  const handlePdfChange = async (file: File | null) => {
     setPdf(file);
     if (file) {
       setPdfCtx({ file, name: file.name, lastModified: file.lastModified });
+      
+      // Generate thumbnail for the PDF
+      try {
+        const thumbnailDataUrl = await generatePdfThumbnailDataUrl(file, {
+          width: 300,
+          height: 400,
+          page: 1,
+          quality: 0.8
+        });
+        setThumbnailDataUrl(thumbnailDataUrl);
+        toast.success('PDF thumbnail generated successfully!');
+      } catch (error) {
+        console.error('Failed to generate thumbnail:', error);
+        toast.error('Failed to generate thumbnail, but PDF was uploaded successfully');
+      }
     } else {
       clearPdf();
+      setThumbnailDataUrl('');
+      setThumbUrl('');
     }
   };
 
   const handleNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
 
+  // Fix 2: Improved publish function with better error handling and state management
   const handlePublish = async (retryCount = 0) => {
     console.log("Publishing started", { title, description, pdfName: pdf?.name, retryCount });
 
+    // Reset states at the beginning
     setError('');
+    setUploading(true);
+    setUploadRetries(retryCount);
+
+    // Validate required fields
+    if (!pdf) {
+      setError('No PDF file selected');
+      setUploading(false);
+      return;
+    }
+
+    if (!title.trim() || !description.trim()) {
+      setError('Title and description are required');
+      setUploading(false);
+      return;
+    }
 
     // Check file size and warn user if it's very large
-    if (pdf && pdf.size > 25 * 1024 * 1024) { // 25MB
+    if (pdf.size > 25 * 1024 * 1024) { // 25MB
       const confirmed = window.confirm(
         `Your file is ${(pdf.size / (1024 * 1024)).toFixed(1)} MB. Large files may take several minutes to upload. Continue?`
       );
       if (!confirmed) {
+        setUploading(false);
         return;
       }
     }
 
-    setUploading(true);
-    setUploadRetries(retryCount);
     const supabase = createClient();
     let pdfPath = '';
     let pdfPublicUrl = '';
 
-    // Add intelligent timeout based on file size
-    const fileSizeMB = pdf ? pdf.size / (1024 * 1024) : 0;
-    const timeoutSeconds = Math.max(60, Math.ceil(fileSizeMB * 2));
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error(`Upload timeout after ${timeoutSeconds} seconds. Please check your connection and try again.`)), timeoutSeconds * 1000);
-    });
-
     try {
-      // Get current user
+      // Get current user first
       console.log("Getting user...");
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         console.log("User not authenticated, redirecting to register");
-        // Not logged in ? store state and redirect to register
+        // Store state and redirect to register
         localStorage.setItem('flippress_publish_redirect', JSON.stringify({
           title,
           description,
-          pdfMeta: pdfCtx,
+          pdfMeta: { file: pdf, name: pdf.name, lastModified: pdf.lastModified },
           step,
         }));
         toastify.info('You need to be logged in to publish.');
+        setUploading(false);
         router.push('/auth/register?next=/home/create');
         return;
       }
 
       console.log("User authenticated:", user.id);
 
-      if (pdf) {
-        console.log("Uploading PDF to storage...");
-        pdfPath = `pdfs/${Date.now()}_${pdf.name}`;
-        const { error: uploadError } = await supabase.storage.from('publications').upload(pdfPath, pdf);
-        if (uploadError) {
-          console.error("Storage upload error:", uploadError);
-          throw uploadError;
-        }
-        console.log("PDF uploaded successfully to:", pdfPath);
+      // Create a fresh File object to avoid any stale references
+      const freshPdf = new File([pdf], pdf.name, {
+        type: pdf.type,
+        lastModified: pdf.lastModified
+      });
 
-        const { data: urlData } = supabase.storage.from('publications').getPublicUrl(pdfPath);
-        pdfPublicUrl = urlData.publicUrl;
-        setPdfUrl(pdfPublicUrl);
-        console.log("PDF public URL:", pdfPublicUrl);
+      console.log("Uploading PDF to storage...");
+      pdfPath = `pdfs/${Date.now()}_${freshPdf.name}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('publications')
+        .upload(pdfPath, freshPdf, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error("Storage upload error:", uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      console.log("PDF uploaded successfully to:", pdfPath);
+
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('publications').getPublicUrl(pdfPath);
+      pdfPublicUrl = urlData.publicUrl;
+      setPdfUrl(pdfPublicUrl);
+      console.log("PDF public URL:", pdfPublicUrl);
+
+      // Upload thumbnail if available
+      let thumbnailPublicUrl = '';
+      if (thumbnailDataUrl) {
+        try {
+          console.log("Uploading thumbnail to storage...");
+          
+          // Convert data URL to blob
+          const response = await fetch(thumbnailDataUrl);
+          const thumbnailBlob = await response.blob();
+          
+          // Create thumbnail file
+          const thumbnailFile = new File([thumbnailBlob], `thumb_${Date.now()}.jpg`, {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+          });
+          
+          const thumbnailPath = `thumbs/${Date.now()}_${thumbnailFile.name}`;
+          const { error: thumbUploadError } = await supabase.storage
+            .from('publications')
+            .upload(thumbnailPath, thumbnailFile, {
+              cacheControl: '3600',
+              upsert: false
+            });
+          
+          if (thumbUploadError) {
+            console.error("Thumbnail upload error:", thumbUploadError);
+            console.warn("Thumbnail upload failed, continuing without thumbnail");
+          } else {
+            console.log("Thumbnail uploaded successfully to:", thumbnailPath);
+            const { data: thumbUrlData } = supabase.storage.from('publications').getPublicUrl(thumbnailPath);
+            thumbnailPublicUrl = thumbUrlData.publicUrl;
+            setThumbUrl(thumbnailPublicUrl);
+            console.log("Thumbnail public URL:", thumbnailPublicUrl);
+          }
+        } catch (thumbError) {
+          console.error("Error processing thumbnail:", thumbError);
+          console.warn("Thumbnail processing failed, continuing without thumbnail");
+        }
       }
 
       // Insert publication row
       console.log("Inserting publication into database...");
-      const { error: insertError } = await supabase.from('publications').insert([
+      const { data: insertData, error: insertError } = await supabase.from('publications').insert([
         {
           user_id: user.id,
-          title,
-          description,
+          title: title.trim(),
+          description: description.trim(),
           pdf_url: pdfPublicUrl,
+          thumb_url: thumbnailPublicUrl || null,
         }
-      ]);
+      ]).select();
+
       if (insertError) {
         console.error("Database insert error:", insertError);
-        throw insertError;
+        throw new Error(`Database error: ${insertError.message}`);
       }
 
-      console.log("Publication created successfully!");
+      console.log("Publication created successfully!", insertData);
+      
+      // Set published state and move to next step
       setPublished(true);
       handleNext();
 
-      // If we published successfully, clear the PDF context
-      clearPdf();
+      // Clear the PDF context after successful publish
+      setTimeout(() => {
+        clearPdf();
+      }, 1000);
 
       // Show success message
       toast.success('Publication published successfully!');
 
     } catch (e: unknown) {
       console.error("Publishing error:", e);
-      const errorMessage = e instanceof Error ? e.message : 'Upload failed';
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
       setError(errorMessage);
       toast.error(`Failed to publish: ${errorMessage}`);
     } finally {
@@ -252,19 +342,17 @@ export default function CreatePublicationPage() {
         setDescription(description || '');
         setStep(step || 0);
 
-        // If we have pdfMeta and it contains the file, well then wel will restore it
+        // If we have pdfMeta and it contains the file data, restore it
         if (pdfMeta && pdfMeta.file) {
           setPdf(pdfMeta.file);
           setPdfCtx(pdfMeta);
         }
-      } catch { }
+      } catch (error) {
+        console.error('Error restoring redirect data:', error);
+      }
       localStorage.removeItem('flippress_publish_redirect');
     }
   }, [setPdfCtx]);
-
-  function handleRetry(): void {
-    // Retry to process the pdf
-  }
 
   const onDrop = React.useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     if (acceptedFiles.length > 0) {
@@ -280,7 +368,7 @@ export default function CreatePublicationPage() {
         setError('File upload failed. Please try again.');
       }
     }
-  }, [handlePdfChange]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
@@ -295,6 +383,13 @@ export default function CreatePublicationPage() {
     multiple: false,
   });
 
+  useEffect(() => {
+    if (step > 0 && !pdf) {
+      setStep(0);
+      toastify.error('You must upload a PDF before continuing.');
+    }
+  }, [step, pdf]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 py-8 px-2">
       <div className="w-full max-w-2xl glass shadow-xl rounded-2xl p-0 sm:p-0 overflow-hidden">
@@ -302,15 +397,24 @@ export default function CreatePublicationPage() {
         <div className="flex items-center justify-between px-8 pt-8 pb-4">
           {steps.map((label, idx) => (
             <div key={label} className="flex-1 flex flex-col items-center">
-              <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-200 ${idx === step ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border'} ${idx < step ? 'bg-primary/80 text-primary-foreground border-primary' : ''}`}>{idx < step ? <CheckCircle className="w-5 h-5" /> : idx + 1}</div>
+              <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-200 ${idx === step ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border'} ${idx < step ? 'bg-primary/80 text-primary-foreground border-primary' : ''}`}>
+                {idx < step ? <CheckCircle className="w-5 h-5" /> : idx + 1}
+              </div>
               <span className={`mt-2 text-xs font-medium ${idx === step ? 'text-primary' : 'text-muted-foreground'}`}>{label}</span>
             </div>
           ))}
         </div>
         <div className="border-b border-border mx-8" />
+        
         {/* Content */}
         <div className="p-8">
+          {!pdf && step > 0 && (
+            <div className="text-destructive text-center p-4 font-bold bg-red-50 border border-red-200 rounded mb-4">
+              You must upload a PDF before continuing. Please upload your file to proceed.
+            </div>
+          )}
           {error && <div className="text-destructive mb-4 text-center">{error}</div>}
+          
           {step === 0 && (
             <div className="flex flex-col items-center justify-center min-h-[350px]">
               <div
@@ -357,11 +461,26 @@ export default function CreatePublicationPage() {
                   </Button>
                 </div>
               </div>
+              
               {/* Show file info and continue button if file is selected */}
               {pdf && (
                 <div className="mt-6 w-full max-w-md text-center">
+                  {/* Thumbnail preview */}
+                  {thumbnailDataUrl && (
+                    <div className="mb-4 flex justify-center">
+                      <div className="w-24 h-32 rounded-lg border border-border overflow-hidden bg-white shadow-sm">
+                        <img 
+                          src={thumbnailDataUrl} 
+                          alt="PDF Thumbnail" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="font-semibold text-lg text-primary">{pdf.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">{(pdf.size / 1024 / 1024).toFixed(2)} MB</div>
+                  
                   <div className="flex gap-2 mt-4 justify-center">
                     <Button variant="outline" size="sm" onClick={() => handlePdfChange(null)} className="cursor-pointer">Remove File</Button>
                     <Button variant="outline" size="sm" onClick={() => pdfInputRef.current?.click()} className="cursor-pointer">Choose Different File</Button>
@@ -369,10 +488,9 @@ export default function CreatePublicationPage() {
                   <Button onClick={handleNext} className="w-full mt-4 cursor-pointer" size="lg">Continue to Details</Button>
                 </div>
               )}
-              {/* Error message */}
-              {error && <div className="text-destructive mt-4 text-center">{error}</div>}
             </div>
           )}
+          
           {step === 1 && (
             <div className="flex flex-col gap-6">
               <div>
@@ -411,8 +529,9 @@ export default function CreatePublicationPage() {
               </div>
             </div>
           )}
+          
           {step === 2 && (
-            <div className="flex flex-col gap-6 ">
+            <div className="flex flex-col gap-6">
               <h2 className="text-xl font-semibold text-center">Preview your PDF</h2>
               {pdf ? (
                 <div className="border rounded-lg overflow-hidden w-full h-full min-h-[400px]">
@@ -442,13 +561,6 @@ export default function CreatePublicationPage() {
               ) : (
                 <p className="text-muted-foreground text-center">No PDF selected for preview.</p>
               )}
-              <div>
-                <span>Failed to view preview ??</span>
-                &nbsp;&nbsp;&nbsp;
-                <Button onClick={handleRetry} className="cursor-pointer">
-                  <RefreshCw className="w-4 h-4" />
-                </Button>
-              </div>
               <div className="flex gap-2 justify-between mt-2">
                 <Button variant="secondary" onClick={handleBack} className='cursor-pointer'>Back</Button>
                 <Button onClick={handleNext} disabled={!pdf} className="cursor-pointer">Next</Button>
@@ -459,8 +571,16 @@ export default function CreatePublicationPage() {
           {step === 3 && (
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
-                <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border">
-                  <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                <div className="w-24 h-24 flex items-center justify-center rounded-xl bg-muted border border-border overflow-hidden">
+                  {thumbnailDataUrl ? (
+                    <img 
+                      src={thumbnailDataUrl} 
+                      alt="PDF Thumbnail" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="w-10 h-10 text-muted-foreground" />
+                  )}
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Title</Label>
@@ -470,13 +590,19 @@ export default function CreatePublicationPage() {
                   <div id='description' className="text-foreground text-lg mt-1">{description}</div>
                   <div className="mt-2 flex items-center gap-2 border border-border rounded-lg p-2 bg-muted">
                     <FileText className="w-4 h-4 text-primary" />
-                    <span className="text-primary text-sm font-medium">{pdf?.name}</span>
+                    <span className="text-medium text-sm font-medium">{pdf?.name}</span>
                   </div>
+                  {thumbnailDataUrl && (
+                    <div className="mt-2 flex items-center gap-2 border border-green-200 rounded-lg p-2 bg-green-50">
+                      <ImageIcon className="w-4 h-4 text-green-600" />
+                      <span className="text-green-600 text-sm font-medium">Thumbnail generated</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2 justify-between mt-2">
                 <Button variant="secondary" onClick={handleBack} disabled={uploading} className='cursor-pointer'>Back</Button>
-                <Button onClick={() => handlePublish()} disabled={uploading} className={uploading ? 'opacity-75' : 'cursor-pointer'}>
+                <Button onClick={() => handlePublish()} disabled={uploading || !title.trim() || !description.trim()} className={uploading ? 'opacity-75' : 'cursor-pointer'}>
                   {uploading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white text-white border-t-transparent rounded-full animate-spin"></div>
@@ -537,6 +663,7 @@ export default function CreatePublicationPage() {
               )}
             </div>
           )}
+          
           {step === 4 && published && (
             <div className="flex flex-col gap-6 items-center text-center">
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-2">
@@ -547,8 +674,8 @@ export default function CreatePublicationPage() {
                 <div className="text-muted-foreground text-xs mb-1">Share your publication link:</div>
                 <div className="flex flex-col gap-2 items-center justify-center">
                   <span
-                    onClick={() => { navigator.clipboard.writeText(`/view?pdf=${pdfUrl}`); toastify.success("Copied to clipboard!"); }}
-                    className="bg-muted border-border rounded-2xl cursor-pointer p-2" >{`flippress.vercel.app/view?pdf=${pdfUrl}`}</span>
+                    onClick={() => { navigator.clipboard.writeText(`flippress.vercel.app/view?pdf=${pdfUrl}`); toastify.success("Copied to clipboard!"); }}
+                    className="bg-muted border-border rounded-2xl cursor-pointer p-2" >{title}</span>
                   <Button size="sm" variant="outline" onClick={() => { window.open(`/view?pdf=${pdfUrl}`, '_blank'); }} className='cursor-pointer' >View</Button>
                 </div>
                 <Button
@@ -561,17 +688,6 @@ export default function CreatePublicationPage() {
                   Finish
                 </Button>
               </div>
-              {thumbUrl && (
-                <div className="mt-2">
-                  <Image
-                    src={thumbUrl}
-                    alt="PDF Thumbnail"
-                    width={160}
-                    height={160}
-                    className="mx-auto max-h-40 rounded-xl border border-border shadow"
-                  />
-                </div>
-              )}
             </div>
           )}
         </div>
