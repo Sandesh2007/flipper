@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 const useDFlip = (containerRef, pdfURL, options = {}) => {
     const flipbookRef = useRef(null);
+    const initializationRef = useRef(false);
 
     const loadScript = (src) => {
         if (document.querySelector(`script[src="${src}"]`)) return Promise.resolve();
@@ -30,21 +31,56 @@ const useDFlip = (containerRef, pdfURL, options = {}) => {
         let isMounted = true;
 
         const initFlipbook = async () => {
-            if (!containerRef?.current || containerRef.current.dataset.dflipInitialized === 'true') return;
+            // FIXED: Better initialization checks
+            if (!containerRef?.current || !pdfURL || initializationRef.current) {
+                return;
+            }
+
+            // Prevent multiple initializations
+            initializationRef.current = true;
 
             try {
+                // Dispose any existing flipbook first
+                if (flipbookRef.current?.dispose) {
+                    flipbookRef.current.dispose();
+                    flipbookRef.current = null;
+                }
+
+                // Clear the container
+                if (containerRef.current) {
+                    containerRef.current.innerHTML = '';
+                    containerRef.current.removeAttribute('data-dflip-initialized');
+                }
+
                 // Load required resources
                 loadStyle('/dflip/css/dflip.min.css');
                 await loadScript('/dflip/js/libs/jquery.min.js');
 
-                // Wait until jQuery is available
-                while (typeof window.jQuery === 'undefined') {
+                // Wait until jQuery is available with timeout
+                let jqueryWaitCount = 0;
+                while (typeof window.jQuery === 'undefined' && jqueryWaitCount < 100) {
                     await new Promise((r) => setTimeout(r, 50));
+                    jqueryWaitCount++;
+                }
+
+                if (typeof window.jQuery === 'undefined') {
+                    console.error('jQuery failed to load');
+                    return;
                 }
 
                 await loadScript('/dflip/js/dflip.min.js');
 
-                if (!isMounted || !containerRef.current) return;
+                // FIXED: Add additional wait for dFlip to be ready
+                let dflipWaitCount = 0;
+                while (typeof window.jQuery.fn.flipBook === 'undefined' && dflipWaitCount < 100) {
+                    await new Promise((r) => setTimeout(r, 50));
+                    dflipWaitCount++;
+                }
+
+                if (!isMounted || !containerRef.current || typeof window.jQuery.fn.flipBook === 'undefined') {
+                    console.error('dFlip failed to load or component unmounted');
+                    return;
+                }
 
                 const defaultOptions = {
                     webgl: true,
@@ -70,32 +106,63 @@ const useDFlip = (containerRef, pdfURL, options = {}) => {
 
                 const mergedOptions = { ...defaultOptions, ...options };
 
+                // FIXED: Add a small delay before initializing to ensure DOM is ready
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                if (!isMounted || !containerRef.current) {
+                    return;
+                }
+
                 // Mark as initialized
                 containerRef.current.dataset.dflipInitialized = 'true';
 
                 // Initialize the flipbook
                 flipbookRef.current = window.jQuery(containerRef.current).flipBook(pdfURL, mergedOptions);
+
+                console.log('DFlip initialized successfully');
             } catch (error) {
                 console.error('Error initializing dFlip:', error);
+            } finally {
+                initializationRef.current = false;
             }
         };
 
-        if (typeof window !== 'undefined') {
-            initFlipbook();
+        if (typeof window !== 'undefined' && pdfURL) {
+            // FIXED: Add a small delay to ensure component is fully mounted
+            const initTimer = setTimeout(() => {
+                initFlipbook();
+            }, 50);
+
+            return () => {
+                clearTimeout(initTimer);
+                isMounted = false;
+            };
         }
 
         return () => {
             isMounted = false;
+        };
+    }, [pdfURL]); // FIXED: Only depend on pdfURL, not options to prevent re-initialization
 
-            // Dispose flipbook if applicable
+    // FIXED: Cleanup effect
+    useEffect(() => {
+        return () => {
+            // Dispose flipbook on unmount
             if (flipbookRef.current?.dispose) {
                 flipbookRef.current.dispose();
-                if (containerRef?.current) {
-                    containerRef.current.dataset.dflipInitialized = 'false';
-                }
+                flipbookRef.current = null;
+            }
+            
+            // Reset initialization flag
+            initializationRef.current = false;
+            
+            // Clear container
+            if (containerRef?.current) {
+                containerRef.current.innerHTML = '';
+                containerRef.current.removeAttribute('data-dflip-initialized');
             }
         };
-    }, [pdfURL]);
+    }, []);
 
     return flipbookRef.current;
 };

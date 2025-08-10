@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { createClient } from '@/lib/database/supabase/client';
-import { CheckCircle, FileText, Image as ImageIcon, RefreshCw, UploadCloud } from 'lucide-react';
+import { CheckCircle, FileText, Image as ImageIcon, UploadCloud } from 'lucide-react';
 import { DFlipViewer, Label, usePdfUpload } from '@/components';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';

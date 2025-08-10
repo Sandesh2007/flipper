@@ -18,30 +18,39 @@ const DFlipViewer = ({
     const [isReady, setIsReady] = useState(false);
     const { theme, resolvedTheme } = useTheme();
 
-    // Convert File to data URL
+    // FIXED: Convert File to data URL with proper cleanup
     useEffect(() => {
         if (pdfFile) {
             setIsLoading(true);
             setIsReady(false);
+            setDataUrl(null); // Clear previous data URL
             
             const reader = new FileReader();
             reader.onload = (e) => {
                 const result = e.target?.result as string;
                 setDataUrl(result);
                 setIsLoading(false);
-                // Add a small delay to ensure the data URL is fully processed
-                // Or else it will cause `pdf not loaded error` which is very annoying ;)
-                setTimeout(() => setIsReady(true), 100);
+                // FIXED: Longer delay to ensure proper initialization
+                setTimeout(() => setIsReady(true), 300);
             };
             reader.onerror = () => {
                 console.error('Error reading PDF file');
                 setIsLoading(false);
                 setIsReady(false);
+                setDataUrl(null);
             };
             reader.readAsDataURL(pdfFile);
+
+            // Cleanup function
+            return () => {
+                reader.abort();
+                setIsReady(false);
+                setIsLoading(false);
+            };
         } else {
             setDataUrl(null);
             setIsReady(false);
+            setIsLoading(false);
         }
     }, [pdfFile]);
 
@@ -70,7 +79,7 @@ const DFlipViewer = ({
         ...options
     };
 
-    // Use the custom hook only when dataUrl is available and ready
+    // FIXED: Use the custom hook only when dataUrl is available and ready
     useDFlip(containerRef, (isReady && dataUrl) ? dataUrl : '', themeAwareOptions);
 
     if (isLoading) {
@@ -79,6 +88,16 @@ const DFlipViewer = ({
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
                     <p className="text-muted-foreground">Loading PDF...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!dataUrl) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <p className="text-muted-foreground">No PDF file provided</p>
                 </div>
             </div>
         );
