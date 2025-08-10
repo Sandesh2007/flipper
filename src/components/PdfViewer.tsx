@@ -52,7 +52,6 @@ export default function PdfViewer({
         setUploadedFile(file);
         setPdf({ file, name: file.name, lastModified: file.lastModified });
         
-        toast.success(`PDF "${file.name}" uploaded successfully!`);
       } catch (error) {
         toast.error('Failed to upload PDF. Please try again.');
         console.error('Upload error:', error);
@@ -75,8 +74,6 @@ export default function PdfViewer({
       const file = await loadStoredPdf();
       if (file) {
         setUploadedFile(file);
-        toast.success(`Loaded "${file.name}" from storage`);
-      } else {
         toast.error('Failed to load stored PDF');
       }
     } catch (error) {

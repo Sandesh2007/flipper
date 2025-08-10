@@ -103,7 +103,6 @@ export default function View() {
                     const file = new File([blob], filename, { type: 'application/pdf' });
                     if (isMounted) {
                         setPdfFile(file);
-                        toast.success(`Loaded "${filename}"`);
                     }
                     return;
                 } catch (fetchError) {
@@ -116,7 +115,6 @@ export default function View() {
             if (pdfContext?.file) {
                 if (isMounted) {
                     setPdfFile(pdfContext.file);
-                    toast.success(`Loaded "${pdfContext.name || pdfContext.file.name}"`);
                 }
                 return;
             }
@@ -126,7 +124,6 @@ export default function View() {
                 const storedFile = await loadStoredPdf();
                 if (storedFile && isMounted) {
                     setPdfFile(storedFile);
-                    toast.success(`Loaded "${storedFile.name}" from storage`);
                     return;
                 }
             } catch (storageError) {

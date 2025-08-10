@@ -73,7 +73,6 @@ export default function CreatePublicationPage() {
         // Priority 1: Check if we have a PDF in context with actual file
         if (pdfCtx?.file && !pdf) {
           setPdf(pdfCtx.file);
-          toast.success(`PDF "${pdfCtx.name}" loaded successfully!`);
           setHasShownToast(true);
           return;
         }
@@ -84,7 +83,6 @@ export default function CreatePublicationPage() {
             const restoredFile = await loadStoredPdf();
             if (restoredFile) {
               setPdf(restoredFile);
-              toast.success(`PDF "${storedPdfData.name}" restored from storage!`);
               setHasShownToast(true);
               return;
             }
@@ -149,10 +147,8 @@ export default function CreatePublicationPage() {
           quality: 0.8
         });
         setThumbnailDataUrl(thumbnailDataUrl);
-        toast.success('PDF thumbnail generated successfully!');
       } catch (error) {
         console.error('Failed to generate thumbnail:', error);
-        toast.error('Failed to generate thumbnail, but PDF was uploaded successfully');
       }
     } else {
       clearPdf();
