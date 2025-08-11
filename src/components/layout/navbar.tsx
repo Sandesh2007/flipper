@@ -120,7 +120,7 @@ export function Navbar() {
                     <div className="flex items-center gap-1">
                         <Button
                             variant={'ghost'}
-                            onClick={() => router.push('/discover')}
+                            onClick={() => window.location.href = '/discover'}
                             className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
                             <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
                         </Button>
@@ -272,7 +272,7 @@ export function Navbar() {
                                     variant={'ghost'}
                                     onClick={() => {
                                         handleCloseMenu();
-                                        router.push('/discover');
+                                        window.location.href = '/discover'
                                     }}
                                     className="w-full flex justify-start p-5 rounded-xl transition-all duration-300 text-sm mb-3">
                                     <span>Discover</span>

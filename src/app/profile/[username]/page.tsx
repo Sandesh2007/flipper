@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import LikeButton from '@/components/likes-button';
 import { MapPin, BookOpen, Calendar, Share2, ExternalLink } from 'lucide-react';
+import logo from '../../../../public/logo.svg';
 
 interface UserProfile {
   id: string;
@@ -96,12 +97,12 @@ export default function PublicProfileByUsernamePage() {
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-border/50 group-hover:border-primary/50 transition-all duration-300 shadow-xl">
                     {profile.avatar_url ? (
-                      <Image 
-                        src={profile.avatar_url} 
-                        alt="Avatar" 
+                      <Image
+                        src={profile.avatar_url}
+                        alt="Avatar"
                         width={128}
                         height={128}
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-muted to-muted/70 flex items-center justify-center">
@@ -169,8 +170,8 @@ export default function PublicProfileByUsernamePage() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2">Publications</h2>
           <p className="text-muted-foreground">
-            {publications.length === 0 
-              ? "No publications shared yet" 
+            {publications.length === 0
+              ? "No publications shared yet"
               : `${publications.length} publication${publications.length !== 1 ? 's' : ''} shared`
             }
           </p>
@@ -179,7 +180,11 @@ export default function PublicProfileByUsernamePage() {
         {publications.length === 0 ? (
           <div className="text-center py-20 animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <BookOpen className="w-10 h-10 text-muted-foreground" />
+              <img
+                src={logo.src}
+                draggable="false"
+                alt="logo"
+                className="w-12 h-12" />
             </div>
             <h3 className="text-xl font-semibold mb-2">No publications yet</h3>
             <p className="text-muted-foreground">
@@ -189,8 +194,8 @@ export default function PublicProfileByUsernamePage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {publications.map((pub, index) => (
-              <Card 
-                key={pub.id} 
+              <Card
+                key={pub.id}
                 className="group overflow-hidden glass transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border-border/50 hover:border-border animate-in fade-in-0 slide-in-from-bottom-4"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
@@ -199,12 +204,12 @@ export default function PublicProfileByUsernamePage() {
                     {/* Thumbnail */}
                     <div className="w-full rounded-md sm:w-48 h-48 sm:h-auto flex-shrink-0 relative overflow-hidden">
                       {pub.thumb_url ? (
-                        <Image 
-                          src={pub.thumb_url} 
-                          alt="Thumbnail" 
+                        <Image
+                          src={pub.thumb_url}
+                          alt="Thumbnail"
                           width={192}
                           height={192}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center border-2 rounded-md text-muted-foreground">
@@ -214,7 +219,7 @@ export default function PublicProfileByUsernamePage() {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Overlay gradient */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
@@ -235,18 +240,18 @@ export default function PublicProfileByUsernamePage() {
                             <LikeButton publicationId={pub.id} />
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between pt-4 border-t border-border/50">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(pub.created_at).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric' 
+                            <span>{new Date(pub.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
                             })}</span>
                           </div>
-                          
-                          <Button 
+
+                          <Button
                             variant="outline"
                             size="sm"
                             onClick={() => window.location.href = `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`}

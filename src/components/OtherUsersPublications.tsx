@@ -223,7 +223,7 @@ export default function OtherUsersPublications({
           {Array.from({ length: 3 }).map((_, userIndex) => (
             <div key={userIndex} className="space-y-6">
               {/* User Header Skeleton */}
-              <div className="flex items-center gap-4 p-6 bg-card rounded-xl border border-border/30 shadow-soft">
+              <div className="flex items-center gap-4 p-6 glass rounded-xl border border-border/30 shadow-soft">
                 <Skeleton className="w-12 h-12 rounded-full bg-neutral-500" />
                 <div className="space-y-2">
                   <Skeleton className="w-32 h-5 bg-neutral-500" />
@@ -233,7 +233,7 @@ export default function OtherUsersPublications({
               {/* Publications Grid Skeleton */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pl-6">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse bg-card border-border/30">
+                  <Card key={i} className="animate-pulse glass border-border/30">
                     <CardContent className="p-4">
                       <Skeleton className="w-full h-40 rounded mb-3 bg-neutral-500" />
                       <Skeleton className="h-4 rounded mb-2 bg-neutral-500" />
@@ -359,7 +359,7 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
                     alt={pub.title}
                     width={300}
                     height={200}
-                    className="w-full h-48 object-cover rounded-md transition-transform duration-500 group-hover:scale-105" />
+                    className="w-full h-full object-cover rounded-md transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <div className="w-full h-48 flex items-center rounded-md justify-center glass">
                     <div className="text-center">

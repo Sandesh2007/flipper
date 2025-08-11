@@ -5,12 +5,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import InfoDialog from "./dialog"
 import { useRouter } from "next/navigation"
-import { PublicationsTab, usePdfUpload } from '@/components';
+import { PublicationsTab } from '@/components';
 import { Upload, FileText, Users, Sparkles, Zap, BookOpen } from 'lucide-react';
 
 export default function DashboardMain() {
   const router = useRouter();
-  const { setPdf } = usePdfUpload();
   const [activeTab, setActiveTab] = useState("Publications")
   const tabs = ["Publications", "Social posts"]
 
@@ -97,11 +96,11 @@ export default function DashboardMain() {
               <p className="text-lg text-muted-foreground mb-6">Transform your PDF into an interactive flipbook with stunning animations</p>
 
               <Button
-                className="w-fit cursor-pointer border border-primary text-white hover:text-black  hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
+                className="w-fit cursor-pointer border border-primary text-white hover:text-black dark:hover:text-white  hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group"
 
                 onClick={() => router.push('/home/create')}
               >
-                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-black "/>
+                <Upload className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform  "/>
                 Upload a File
               </Button>
             </div>

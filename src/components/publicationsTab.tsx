@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { AlertDialog, Button } from '@/components';
 import { Calendar, Edit, Eye, FileText, Trash2, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -14,10 +14,10 @@ export default function PublicationsTab() {
     const { publications, loading, deletePublication, refreshPublications } = usePublications();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deletingPublicationId, setDeletingPublicationId] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [deletingIdInProgress, setDeletingIdInProgress] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Add a refresh mechanism
+    // Refresh mechanism
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
@@ -35,84 +35,58 @@ export default function PublicationsTab() {
     const handleDeleteConfirm = async () => {
         if (!deletingPublicationId) return;
 
-        setIsDeleting(true);
+        setDeletingIdInProgress(deletingPublicationId); // track deleting ID
 
         try {
             const supabase = createClient();
 
-            // Get publication details first
             const { data: publication, error: fetchError } = await supabase
                 .from('publications')
                 .select('*')
                 .eq('id', deletingPublicationId)
                 .single();
-
             if (fetchError) throw fetchError;
             if (!publication) throw new Error('Publication not found');
 
-            // Delete likes first (foreign key constraint)
-            const { error: likesError } = await supabase
-                .from('publication_likes')
-                .delete()
-                .eq('publication_id', deletingPublicationId);
-            if (likesError && likesError.code !== 'PGRST116') throw likesError;
-
-            // Delete the publication record
             const { error: deleteError } = await supabase
                 .from('publications')
                 .delete()
                 .eq('id', deletingPublicationId);
             if (deleteError) throw deleteError;
 
-            // Wait a moment for the deletion to propagate
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Try multiple times to verify deletion
-            let retries = 3;
-            while (retries > 0) {
-                const { data: verifyData, error: verifyError } = await supabase
-                    .from('publications')
-                    .select('id')
-                    .eq('id', deletingPublicationId)
-                    .maybeSingle();
-                if (!verifyData) break;
-                if (retries === 1) throw new Error('Publication deletion could not be verified');
-                retries--;
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            // Delete associated files from storage (do this after DB deletion succeeds)
-            try {
-                if (publication.pdf_url) {
-                    const pdfPath = new URL(publication.pdf_url).pathname.split('/').pop();
-                    if (pdfPath) {
-                        await supabase.storage.from('publications').remove([`pdfs/${pdfPath}`]);
-                    }
+            const deleteStorageFile = async (url: string) => {
+                if (!url) return;
+                const pathInsideBucket = decodeURIComponent(
+                    url.split('/public/publications/')[1]
+                );
+                if (pathInsideBucket) {
+                    const { error: storageError } = await supabase
+                        .storage
+                        .from('publications')
+                        .remove([pathInsideBucket]);
+                    if (storageError) console.warn('Storage delete error:', storageError);
                 }
-                if (publication.thumb_url) {
-                    const thumbPath = new URL(publication.thumb_url).pathname.split('/').pop();
-                    if (thumbPath) {
-                        await supabase.storage.from('publications').remove([`thumbs/${thumbPath}`]);
-                    }
-                }
-            } catch (storageError) {
-                // Non-blocking
-            }
+            };
 
-            // Update local state only if everything succeeded
+            await deleteStorageFile(publication.pdf_url);
+            await deleteStorageFile(publication.thumb_url);
+
             deletePublication(deletingPublicationId);
-            toastify.success("Successfully deleted publication");
+            toastify.success('Successfully deleted publication');
+
+            // Close dialog only after deletion success
+            setDeleteDialogOpen(false);
+            setDeletingPublicationId(null);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             toastify.error(`Failed to delete publication: ${errorMessage}`);
         } finally {
-            setIsDeleting(false);
-            setDeleteDialogOpen(false);
-            setDeletingPublicationId(null);
+            setDeletingIdInProgress(null);
         }
     };
 
     const handleDeleteCancel = () => {
+        if (deletingIdInProgress) return; // prevent cancel while deleting
         setDeleteDialogOpen(false);
         setDeletingPublicationId(null);
     };
@@ -130,7 +104,7 @@ export default function PublicationsTab() {
     };
 
     return (
-        <div >
+        <div>
             {loading ? (
                 <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4"></div>
@@ -246,16 +220,20 @@ export default function PublicationsTab() {
                                     <Button
                                         variant="ghost"
                                         size="sm"
+                                        disabled={deletingIdInProgress !== null} // disable all deletes while one in progress
                                         onClick={() => handleDeleteClick(pub.id)}
                                         className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 transition-all duration-300"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        {deletingIdInProgress === pub.id ? (
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-destructive"></div>
+                                        ) : (
+                                            <Trash2 className="w-4 h-4" />
+                                        )}
                                     </Button>
                                 </div>
                             </div>
                         ))}
                     </div>
-
                 </div>
             )}
 
@@ -265,12 +243,12 @@ export default function PublicationsTab() {
                 onOpenChange={setDeleteDialogOpen}
                 title="Delete Publication"
                 description={`Are you sure you want to delete "${getPublicationToDelete()?.title}"? This action cannot be undone and will permanently remove the publication from your account.`}
-                confirmText="Delete Publication"
+                confirmText={deletingIdInProgress ? "Deleting..." : "Delete Publication"}
                 cancelText="Cancel"
                 onConfirm={handleDeleteConfirm}
                 onCancel={handleDeleteCancel}
                 variant="destructive"
-                isLoading={isDeleting}
+                isLoading={!!deletingIdInProgress}
             />
         </div>
     );
