@@ -17,4 +17,4 @@ export default function PublisherLayout({
       </div>
     </GradientBackground>
   )
-} 
+}

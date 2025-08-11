@@ -50,4 +50,4 @@ export default function PublicationsPage() {
       </section>
     </div>
   )
-} 
+}

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { PublicationsTab } from '@/components';
 import { Upload, FileText, Users, Sparkles, Zap, BookOpen } from 'lucide-react';
 
-export default function DashboardMain() {
+export default function Dashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Publications")
   const tabs = ["Publications", "Social posts"]

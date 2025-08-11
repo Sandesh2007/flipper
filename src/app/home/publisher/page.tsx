@@ -1,11 +1,5 @@
-import { GradientBackground } from "@/components/ui/gradient-background"
-import DashboardMain from "./components/DashboardMain"
+import Dashboard from "./components/DashboardMain"
 
 export default function PublisherPage() {
-  return (
-    <GradientBackground
-    >
-      <DashboardMain />
-    </GradientBackground>
-  )
+  return <Dashboard />
 }

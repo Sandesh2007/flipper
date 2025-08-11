@@ -1,6 +1,6 @@
 "use client"
 import { Card, CardContent } from "@/components/ui/card"
-import { usePublications } from "@/components"
+import { NoPublications, usePublications } from "@/components"
 import { BarChart3, FileText, Heart, Calendar, ChartLine } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/database/supabase/client"
@@ -149,7 +149,7 @@ export default function StatisticsPage() {
         )}
       </section>
 
-      {!loading && totalPublications > 0 && (
+      {!loading && totalPublications > 0 ? (
         <section >
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Recent Publications</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,7 +174,11 @@ export default function StatisticsPage() {
             ))}
           </div>
         </section>
-      )}
+      ):
+      (
+        <NoPublications/>
+      )
+    }
     </div>
   )
-} 
+}

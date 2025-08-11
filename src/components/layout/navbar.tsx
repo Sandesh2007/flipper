@@ -129,7 +129,7 @@ export function Navbar() {
                         </Link>
                         {user ? (
                             <div className="flex items-center gap-2 xl:gap-3">
-                                <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 outline-1 rounded-xl p-2 hover:bg-accent">
+                                <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 rounded-xl p-2 glass">
                                     <CurrentUserAvatar />
                                 </Link>
                             </div>

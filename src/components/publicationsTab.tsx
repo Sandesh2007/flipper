@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AlertDialog, Button } from '@/components';
+import { AlertDialog, Button, NoPublications } from '@/components';
 import { Calendar, Edit, Eye, FileText, Trash2, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -111,19 +111,7 @@ export default function PublicationsTab() {
                     <p className="text-muted-foreground mb-4">Loading publications...</p>
                 </div>
             ) : publications.length === 0 ? (
-                <div className="text-center py-12">
-                    <div className="w-20 h-20 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-6">
-                        <FileText className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-foreground mb-3">No Publications Yet</h3>
-                    <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">Start by creating your first publication to showcase your work.</p>
-                    <Button
-                        onClick={() => router.push('/home/create')}
-                        className="bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-soft hover:shadow-glow transition-all duration-300"
-                    >
-                        Create Publication
-                    </Button>
-                </div>
+                <NoPublications/>
             ) : (
                 <div className="space-y-6">
                     <div className="flex justify-between items-center">
