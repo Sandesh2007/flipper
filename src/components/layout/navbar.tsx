@@ -122,11 +122,15 @@ export function Navbar() {
                             variant={'ghost'}
                             onClick={() => window.location.href = '/discover'}
                             className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
-                            <span className="group-hover:text-primary transition-colors duration-300">Discover</span>
+                            <span className="group-hover:text-primary">Discover</span>
                         </Button>
-                        <Link href="/pricing" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
-                            <span className="group-hover:text-primary transition-colors duration-300">Pricing</span>
-                        </Link>
+                        <Button
+                            variant={'ghost'}
+                            className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
+                            <Link href="/pricing">
+                                <span className="group-hover:text-primary">Pricing</span>
+                            </Link>
+                        </Button>
                         {user ? (
                             <div className="flex items-center gap-2 xl:gap-3">
                                 <Link href="/profile" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 rounded-xl p-2 glass">
@@ -135,10 +139,14 @@ export function Navbar() {
                             </div>
                         ) : (
                             <>
-                                <Link href="/auth/register?mode=login" className="px-3 xl:px-4 py-2 rounded-xl hover:bg-accent transition-all duration-300 text-sm font-medium hover:scale-105 group">
-                                    <span className="group-hover:text-primary transition-colors duration-300">Login</span>
-                                </Link>
-                                <Button asChild className="bg-blue-500 hover:shadow-glow text-white text-sm font-medium px-4 xl:px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
+                                <Button
+                                    variant={'ghost'}
+                                    className="px-3 xl:px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium hover:scale-105">
+                                    <Link href="/auth/register?mode=login">
+                                        <span className="group-hover:text-primary">Login</span>
+                                    </Link>
+                                </Button>
+                                <Button asChild className="bg-primary hover:shadow-glow text-white text-sm font-medium px-4 xl:px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105 group">
                                     <Link href="/auth/register?mode=signup">
                                         <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                                         Sign up

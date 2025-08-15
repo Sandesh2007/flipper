@@ -20,7 +20,7 @@ export function ThemeToggle() {
 
     return (
         <Button
-        className="ouline-0"
+        className="outline-none"
         variant="ghost" size="lg" onClick={() => {
             setTheme(theme === "dark" ? "light" : "dark")
             }} >

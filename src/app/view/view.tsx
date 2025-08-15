@@ -152,11 +152,11 @@ export default function View() {
         }
     }, [pdfUrl, pdfContext, loadStoredPdf, pdfId, pdfName, isMounted]);
 
-    const handleReload = useCallback(() => {
-        setRetryCount(prev => prev + 1);
-        setForceRerender(prev => prev + 1);
-        loadPdfFile();
-    }, [loadPdfFile]);
+    // const handleReload = useCallback(() => {
+    //     setRetryCount(prev => prev + 1);
+    //     setForceRerender(prev => prev + 1);
+    //     loadPdfFile();
+    // }, [loadPdfFile]);
 
     const handleGoBack = useCallback(() => {
         if (window.history.length > 1) {
@@ -228,10 +228,10 @@ export default function View() {
                         <p className="text-muted-foreground break-words">{error}</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Button onClick={handleReload} className="flex items-center gap-2 cursor-pointer">
+                        {/* <Button onClick={handleReload} className="flex items-center gap-2 cursor-pointer">
                             <RefreshCw className="h-4 w-4" />
                             Reload
-                        </Button>
+                        </Button> */}
                         <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2 cursor-pointer">
                             <ArrowLeft className="h-4 w-4" />
                             Go Back
@@ -280,10 +280,10 @@ export default function View() {
                             </h1>
                         </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleReload} className="cursor-pointer flex-shrink-0 ml-2">
+                    {/* <Button variant="outline" size="sm" onClick={handleReload} className="cursor-pointer flex-shrink-0 ml-2">
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Reload
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
 

@@ -132,7 +132,7 @@ export default function SearchBox({
       {/* Search Input */}
       <div className={`relative group transition-all duration-200 ${isFocused ? 'transform scale-[1.02]' : ''
         }`}>
-        <div className={`absolute inset-0 rounded-xl bg-blue-500/20 opacity-0 blur-xl transition-opacity duration-300 ${isFocused ? 'opacity-100' : ''
+        <div className={`absolute inset-0 rounded-xl bg-blue-500/20 opacity-0 transition-opacity duration-300 ${isFocused ? 'opacity-100' : ''
           }`}></div>
 
         <div className="relative glass rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-200 hover:shadow-xl">

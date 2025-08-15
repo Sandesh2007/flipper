@@ -112,7 +112,7 @@ export const ConversionInfo = () => {
               <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <div className="text-2xl font-bold text-blue-500 mb-2">50K+</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">1K+</div>
               <div className="text-sm text-muted-foreground">Happy Users</div>
             </div>
             <div className="text-center group">

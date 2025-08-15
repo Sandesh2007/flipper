@@ -40,7 +40,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
         if (rejection.errors.some((e: any) => e.code === 'file-too-large')) {
           setError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
         } else if (rejection.errors.some((e: any) => e.code === 'file-invalid-type')) {
-          setError('Invalid file type. Please upload a supported file: PDF, EPUB, image, CBZ, or ZIP.');
+          setError('Invalid file type. Please upload a supported file: PDF');
         } else {
           setError('File upload failed. Please try again.');
         }
@@ -67,7 +67,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
       // Validate by extension as well (for browsers that don't set type)
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (!ACCEPTED_EXTENSIONS.some(e => file.name.toLowerCase().endsWith(e))) {
-        setError('Invalid file type. Please upload a supported file: PDF, EPUB, image, CBZ, or ZIP.');
+        setError('Invalid file type. Please upload a supported file: PDF');
         return;
       }
 
@@ -132,7 +132,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploadedFile) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl glass border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl glass outline outline-primary shadow-soft p-8 text-center">
           {/* Success Background Animation */}
           <div className="absolute inset-0 bg-green-500/10 animate-pulse-slow"></div>
           <div className="relative">
@@ -170,7 +170,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
   if (uploading) {
     return (
       <div className="w-full max-w-2xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl glass border border-border/50 shadow-soft p-8 text-center">
+        <div className="relative overflow-hidden rounded-2xl glass outline outline-primary shadow-soft p-8 text-center">
           {/* Upload Background Animation */}
           <div className="absolute inset-0 bg-blue-500/10 animate-pulse-slow"></div>
           <div className="relative">
@@ -218,7 +218,7 @@ export const FileUpload: React.FC<{ onFileSelected?: (file: File) => void }> = (
 
       <div
         {...getRootProps()}
-        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass border-2 border-dashed shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isDragActive && !isDragReject
+        className={`relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer transition-all duration-500 glass outline outline-primary/50 shadow-soft hover:shadow-upload focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isDragActive && !isDragReject
             ? "border-blue-500 bg-blue-500/5 shadow-glow scale-105"
             : isDragReject
               ? "border-red-400 bg-red-50 dark:bg-red-900/20"
