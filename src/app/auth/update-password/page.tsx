@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/database';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function UpdatePasswordPage() {
+function UpdatePasswordContent() {
     const supabase = createBrowserClient();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -58,7 +58,7 @@ export default function UpdatePasswordPage() {
                     router.push('/auth/register');
                 }
             }
-            
+
             setIsCheckingToken(false);
         };
 
@@ -91,7 +91,7 @@ export default function UpdatePasswordPage() {
         if (!validateForm()) return;
 
         setLoading(true);
-        
+
         try {
             const { error } = await supabase.auth.updateUser({ password });
 
@@ -130,8 +130,8 @@ export default function UpdatePasswordPage() {
             <div className="flex min-h-screen items-center justify-center p-4">
                 <div className="text-center">
                     <p>Invalid or expired reset link</p>
-                    <Button 
-                        onClick={() => router.push('/auth/register')} 
+                    <Button
+                        onClick={() => router.push('/auth/register')}
                         className="mt-4"
                     >
                         Go to Login
@@ -167,7 +167,7 @@ export default function UpdatePasswordPage() {
                         value={password}
                         disabled={loading}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full glass focus:outline-1 outline-primary rounded-xl p-2.5 text-sm pr-10"
+                        className="w-full glass focus:outline-1 outline-primary rounded-xl p-2.5 text-sm pr-10" 
                     />
                     <button
                         type="button"
@@ -179,7 +179,7 @@ export default function UpdatePasswordPage() {
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
-                
+
                 <div className='relative'>
                     <Input
                         name="confirm-password"
@@ -189,7 +189,7 @@ export default function UpdatePasswordPage() {
                         value={confirmPassword}
                         required
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full glass focus:outline-1 outline-primary rounded-xl p-2.5 text-sm pr-10"
+                        className="w-full glass focus:outline-1 outline-primary rounded-xl p-2.5 text-sm pr-10" 
                     />
                     <button
                         type="button"
@@ -207,5 +207,24 @@ export default function UpdatePasswordPage() {
                 </Button>
             </form>
         </div>
+    );
+}
+
+function LoadingSpinner() {
+    return (
+        <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+    );
+}
+
+export default function UpdatePasswordPage() {
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <UpdatePasswordContent />
+        </Suspense>
     );
 }
