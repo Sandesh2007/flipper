@@ -196,7 +196,7 @@ export default function EditProfile() {
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 onCloseAutoFocus={(e) => e.preventDefault()}
-                className="sm:max-w-md glass">
+                className="sm:max-w-md dark:bg-neutral-900">
                 <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
