@@ -203,7 +203,7 @@ export default function EditProfile() {
 
                 <div className="grid gap-6 py-1">
                     <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
+                        <Label htmlFor="name" className="text-sm font-medium text-black dark:text-white">
                             Name
                         </Label>
                         <Input
@@ -216,7 +216,7 @@ export default function EditProfile() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="bio" className="text-sm font-medium text-muted-foreground">
+                        <Label htmlFor="bio" className="text-sm font-medium text-black dark:text-white">
                             Bio
                         </Label>
                         <Input
@@ -230,7 +230,7 @@ export default function EditProfile() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="country" className="text-sm font-medium text-muted-foreground">
+                        <Label htmlFor="country" className="text-sm font-medium text-black dark:text-white">
                             Location (Country)
                         </Label>
                         <CountryDropdown
@@ -239,7 +239,7 @@ export default function EditProfile() {
                             onChange={handleCountryChange}
                         />
                         {location && (
-                            <div className="text-sm text-muted-foreground mt-1">
+                            <div className="text-sm text-black dark:text-white mt-1">
                                 Selected: {location}
                             </div>
                         )}
@@ -247,7 +247,7 @@ export default function EditProfile() {
 
                     <div className="space-y-2">
                         <div className="flex flex-col gap-2">
-                            <Label htmlFor="image" className="text-sm font-medium text-muted-foreground">
+                            <Label htmlFor="image" className="text-sm font-medium text-black dark:text-white">
                                 Profile Image
                             </Label>
                             <div className="w-full items-center gap-2 p-3 border-2 rounded-2xl">
@@ -263,7 +263,7 @@ export default function EditProfile() {
                                         }
                                     }}
                                 />
-                                <label htmlFor="image" className="flex text-sm font-medium text-muted-foreground cursor-pointer">
+                                <label htmlFor="image" className="flex text-sm font-medium text-gray-300 cursor-pointer">
                                     <Upload className="h-4 w-4 mr-2" />
                                     Select Profile Image
                                 </label>
@@ -271,7 +271,7 @@ export default function EditProfile() {
                         </div>
                         {avatarUrl && (
                             <div className="mt-2">
-                                <Label className="text-sm text-muted-foreground mb-1 block">Preview</Label>
+                                <Label className="text-sm text-black dark:text-white mb-1 block">Preview</Label>
                                 <Image
                                     src={avatarUrl}
                                     alt="Profile Preview"

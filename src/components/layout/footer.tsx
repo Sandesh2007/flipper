@@ -17,12 +17,12 @@ const footerLinks = {
     { name: "Community", href: "/discover" },
   ],
   company: [
-    { name: "About", href: "#about" },
+    { name: "About Us", href: "/about" },
     { name: "Contact", href: "#contact" },
   ],
   legal: [
-    { name: "Privacy", href: "#privacy" },
-    { name: "Terms", href: "#terms" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "#terms" },
   ]
 };
 
