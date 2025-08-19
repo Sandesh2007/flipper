@@ -348,7 +348,8 @@ const userPublications = (userProfile: UserProfile, userIndex: number) => {
           <CardContent className="p-2 relative">
             <div 
             onClick={() => {
-              window.location.href = `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`
+              // Updated to use publication ID instead of URL and title
+              window.location.href = `/view?id=${encodeURIComponent(pub.id)}`
             }}
             className="block cursor-pointer">
               {/* Image */}

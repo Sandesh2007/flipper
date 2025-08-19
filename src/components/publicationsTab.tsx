@@ -189,9 +189,8 @@ export default function PublicationsTab() {
                                         variant="ghost"
                                         size="sm"
                                         onClick={() =>
-                                            router.push(
-                                                `/view?pdf=${encodeURIComponent(pub.pdf_url)}&title=${encodeURIComponent(pub.title)}`
-                                            )
+                                            window.location.href = `/view?id=${encodeURIComponent(pub.id)}`
+
                                         }
                                         className="hover:bg-primary/10 transition-all duration-300"
                                     >

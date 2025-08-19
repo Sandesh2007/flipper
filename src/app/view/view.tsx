@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DFlipViewer from "@/components/DearFlipViewer";
-import { usePdfUpload } from "@/components/PdfUploadContext";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, AlertCircle, FileText, ArrowLeft } from "lucide-react";
+import { AlertCircle, FileText, ArrowLeft, Loader2, Share2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import toast from "react-hot-toast";
+import { createClient } from '@/lib/database/supabase/client';
 
 export default function View() {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -17,19 +17,27 @@ export default function View() {
     const [viewerHeight, setViewerHeight] = useState('600px');
     const [isMounted, setIsMounted] = useState(true);
     const [somethingWentWrong, setSomethingWentWrong] = useState(false);
-    const [forceRerender, setForceRerender] = useState(0); // Add this to control rerenders
+    const [forceRerender, setForceRerender] = useState(0);
+    const [publication, setPublication] = useState<{
+        id: string;
+        title: string;
+        pdf_url: string;
+        thumb_url: string | null;
+        created_at: string;
+        user_id: string;
+        author?: {
+            username: string,
+            avatar_url: string
+        } | null;
+    } | null>(null);
 
     // Add stable responsive values that only change on significant viewport changes
     const [isMobile, setIsMobile] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { pdf: pdfContext, loadStoredPdf } = usePdfUpload();
 
-    const pdfId = searchParams?.get('id');
-    const pdfName = searchParams?.get('name');
-    const pdfUrl = searchParams?.get('pdf');
-    const publicationTitle = searchParams?.get('title');
+    const publicationId = searchParams?.get('id');
 
     const calculateViewerHeight = useCallback(() => {
         if (typeof window !== 'undefined') {
@@ -76,87 +84,75 @@ export default function View() {
         }
     }, [calculateViewerHeight, checkMobileView]);
 
-    const loadPdfFile = useCallback(async () => {
-        if (!isMounted) return;
+    const fetchPublication = useCallback(async () => {
+        if (!publicationId || !isMounted) return;
+
         setIsLoading(true);
         setError(null);
 
         try {
-            // First check if we have a PDF URL from query parameters
-            if (pdfUrl) {
-                try {
-                    const response = await fetch(pdfUrl);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
-                    }
+            const supabase = createClient();
+            // First, get the publication
+            const { data: publicationData, error: fetchError } = await supabase
+                .from('publications')
+                .select('*')
+                .eq('id', publicationId)
+                .single();
 
-                    const blob = await response.blob();
-                    if (blob.type !== 'application/pdf') {
-                        throw new Error('The provided URL does not point to a valid PDF file');
-                    }
-
-                    // Extract filename from URL or use default
-                    const urlParts = pdfUrl.split('/');
-                    const filename = decodeURIComponent(urlParts[urlParts.length - 1]) || 'document.pdf';
-
-                    // Create a File object from the blob
-                    const file = new File([blob], filename, { type: 'application/pdf' });
-                    if (isMounted) {
-                        setPdfFile(file);
-                    }
-                    return;
-                } catch (fetchError) {
-                    console.error('Error fetching PDF from URL:', fetchError);
-                    throw new Error(`Failed to load PDF from URL: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
-                }
+            if (fetchError || !publicationData) {
+                throw new Error(fetchError?.message || 'Publication not found');
             }
 
-            // Try to load from context if available
-            if (pdfContext?.file) {
-                if (isMounted) {
-                    setPdfFile(pdfContext.file);
-                }
-                return;
+            // Then, get the author's profile
+            const { data: profileData } = await supabase
+                .from('profiles')
+                .select('username, avatar_url')
+                .eq('id', publicationData.user_id)
+                .single();
+
+            setPublication({
+                ...publicationData,
+                author: profileData || null
+            });
+
+            // Now load the PDF file
+            const response = await fetch(publicationData.pdf_url);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
             }
 
-            // Try to load from localStorage
-            try {
-                const storedFile = await loadStoredPdf();
-                if (storedFile && isMounted) {
-                    setPdfFile(storedFile);
-                    return;
-                }
-            } catch (storageError) {
-                console.warn('Failed to load from storage:', storageError);
+            const blob = await response.blob();
+            if (blob.type !== 'application/pdf') {
+                throw new Error('The provided URL does not point to a valid PDF file');
             }
 
-            // If we have URL parameters, try to load based on them
-            if (pdfId || pdfName) {
-                throw new Error(`PDF with ${pdfId ? `ID: ${pdfId}` : `name: ${pdfName}`} not found`);
-            }
+            const filename = publicationData.title ? `${publicationData.title}.pdf` : 'document.pdf';
 
-            // No PDF found anywhere
-            throw new Error('No PDF file available to view');
-
+            // Create a File object from the blob
+            const file = new File([blob], filename, { type: 'application/pdf' });
+            setPdfFile(file);
+            setError(null);
+            setSomethingWentWrong(false);
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Failed to load PDF file';
-            if (isMounted) {
-                setError(errorMessage);
-                toast.error(errorMessage);
-            }
-            console.error('PDF loading error:', err);
+            console.error("Error loading publication:", err);
+            setError(err instanceof Error ? err.message : 'Failed to load publication');
+            setSomethingWentWrong(true);
         } finally {
             if (isMounted) {
                 setIsLoading(false);
             }
         }
-    }, [pdfUrl, pdfContext, loadStoredPdf, pdfId, pdfName, isMounted]);
+    }, [isMounted, publicationId, retryCount]);
 
-    // const handleReload = useCallback(() => {
-    //     setRetryCount(prev => prev + 1);
-    //     setForceRerender(prev => prev + 1);
-    //     loadPdfFile();
-    // }, [loadPdfFile]);
+    // Load publication when component mounts or when ID changes
+    useEffect(() => {
+        if (isMounted && publicationId) {
+            fetchPublication();
+        } else if (!publicationId) {
+            setSomethingWentWrong(true);
+            setIsLoading(false);
+        }
+    }, [fetchPublication, isMounted, publicationId]);
 
     const handleGoBack = useCallback(() => {
         if (window.history.length > 1) {
@@ -167,82 +163,36 @@ export default function View() {
     }, [router]);
 
     useEffect(() => {
-        loadPdfFile();
-        // Add a backup timer for retry if initial load fails
-        const backupTimer = setTimeout(() => {
-            if (!pdfFile) {
-                loadPdfFile();
-            }
-        }, 400);
-
-        return () => clearTimeout(backupTimer);
-    }, [loadPdfFile]);
-
-    // Cleanup effect to handle component unmounting
-    useEffect(() => {
-        return () => {
-            setIsMounted(false);
-            setPdfFile(null);
-        };
-    }, []);
-
-    useEffect(() => {
         const timer = setTimeout(() => {
             setSomethingWentWrong(true);
         }, 3000);
         return () => clearTimeout(timer);
     }, [isLoading]);
 
-    if (isLoading) {
+    if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-muted/20">
-                <div className="text-center space-y-4 p-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <h2 className="text-xl font-semibold">Loading PDF...</h2>
-                    <p className="text-muted-foreground">Please wait while we prepare your document</p>
-                    {somethingWentWrong && (
-                        <div className='flex flex-col justify-center gap-4'>
-                            <p className="text-muted-foreground">Stuck on loading??</p>
-                            <Button onClick={() => {
-                                window.location.reload();
-                            }} className="gap-2 cursor-pointer">
-                                <RefreshCw className="h-4 w-4" />
-                                Reload
-                            </Button>
-                        </div>
-                    )}
+            <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+                <div className="bg-destructive/10 p-4 rounded-full mb-4">
+                    <AlertCircle className="w-12 h-12 text-destructive" />
                 </div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">Error Loading Publication</h2>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                    {error || 'An error occurred while loading the publication. Please try again.'}
+                </p>
+                <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2 cursor-pointer">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Go Back
+                </Button>
             </div>
         );
     }
 
-    if (error) {
+    if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
-                <div className="text-center space-y-6 max-w-md w-full">
-                    <div className="flex justify-center">
-                        <AlertCircle className="h-16 w-16 text-destructive" />
-                    </div>
-                    <div className="space-y-2">
-                        <h2 className="text-2xl font-bold text-foreground">Unable to Load PDF</h2>
-                        <p className="text-muted-foreground break-words">{error}</p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        {/* <Button onClick={handleReload} className="flex items-center gap-2 cursor-pointer">
-                            <RefreshCw className="h-4 w-4" />
-                            Reload
-                        </Button> */}
-                        <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2 cursor-pointer">
-                            <ArrowLeft className="h-4 w-4" />
-                            Go Back
-                        </Button>
-                    </div>
-                    {retryCount > 0 && (
-                        <p className="text-sm text-muted-foreground">
-                            Retry attempts: {retryCount}
-                        </p>
-                    )}
-                </div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
+                <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+                <p className="text-lg font-medium text-foreground">Loading publication...</p>
+                <p className="text-sm text-muted-foreground mt-2">Please wait while we fetch your document</p>
             </div>
         );
     }
@@ -252,7 +202,7 @@ export default function View() {
             <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
                 <div className="text-center space-y-4">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto" />
-                    <h2 className="text-xl font-semibold">No PDF file loaded</h2>
+                    <h2 className="text-xl font-semibold">No publication loaded</h2>
                     <Button onClick={handleGoBack} variant="outline" className="cursor-pointer">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Go Back
@@ -268,14 +218,16 @@ export default function View() {
             {/* Header */}
             <header className="sticky top-0 z-10 glass border-b border-primary ">
                 <div className="container flex h-16 items-center justify-between">
-                    <div className="flex items-center gap-2 truncate">
-                        <Button variant="ghost" size="sm" onClick={handleGoBack}>
-                            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+                    <div className="flex items-center gap-2 p-2 truncate">
+                        <Button variant="outline" size="lg" onClick={handleGoBack}>
+                            <ArrowLeft className="h-4 w-4" /> Back
                         </Button>
                         <FileText className="h-5 w-5 text-primary" />
                         <h1 className="text-lg font-semibold truncate">
-                            {publicationTitle || pdfName || pdfFile.name}
+                            {publication?.title || pdfFile.name}
                         </h1>
+
+                        <div className="w-20" />
                     </div>
                 </div>
             </header>
@@ -284,27 +236,92 @@ export default function View() {
             <main className="flex-1 container py-6 grid lg:grid-cols-12 gap-6">
                 {/* Left: Publication details */}
                 <aside className="lg:col-span-4 p-2">
-                    <div className="glass outline rounded-2xl p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold mb-3">Publication Details</h2>
-                        <div className="space-y-2 text-sm text-muted-foreground">
-                            <p>
-                                <span className="font-medium text-foreground">Author:</span> {pdfFile.name}
-                            </p>
-                            {publicationTitle && (
-                                <p>
-                                    <span className="font-medium text-foreground">Title:</span> {publicationTitle}
-                                </p>
+                    <div className="glass outline rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+                        <h2 className="text-lg font-semibold mb-4">Publication Details</h2>
+
+                        <div className="space-y-5 text-sm">
+                            {/* Author */}
+                            {publication?.author && (
+                                <div
+                                    className="flex items-center gap-3 hover:bg-primary/10 p-2 rounded-md cursor-pointer transition-colors"
+                                    onClick={() => router.push(`/profile/${publication.author?.username}`)}
+                                >
+                                    {/* Avatar */}
+                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                                        {publication.author.avatar_url ? (
+                                            <img
+                                                src={publication.author.avatar_url}
+                                                alt={publication.author.username}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-primary font-semibold">
+                                                {publication.author.username[0].toUpperCase()}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Author Info */}
+                                    <div>
+                                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                                            Author
+                                        </p>
+                                        <p className="text-base font-medium text-foreground">
+                                            {publication.author.username}
+                                        </p>
+                                    </div>
+                                </div>
                             )}
-                            {/* Future: add author, date, size, others. */}
+
+                            {/* Divider */}
+                            <div className="border-t border-border/60" />
+
+                            {/* Title */}
+                            {publication?.title && (
+                                <div>
+                                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                                        Title
+                                    </p>
+                                    <p className="text-base font-medium text-foreground">
+                                        {publication.title}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Divider */}
+                            <div className="border-t border-border/60" />
+
+                            {/* Published Date */}
+                            {publication?.created_at && (
+                                <div>
+                                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                                        Published
+                                    </p>
+                                    <p className="text-base font-medium text-foreground">
+                                        {new Date(publication.created_at).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        })}
+                                    </p>
+                                </div>
+                            )}
                         </div>
-                        <div className="mt-4 flex gap-2">
-                            <Button variant="default" size="sm"
+
+                        {/* Actions */}
+                        <div className="mt-6 flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
-                                    toast.success('Publication name copied to clipboard');
-                                }
-                                }
-                            >Share</Button>
+                                    toast.success("Publication link copied to clipboard!");
+                                }}
+                                className="transition-all duration-200 hover:scale-105 group"
+                            >
+                                <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
+                                Share Publication
+                            </Button>
                         </div>
                     </div>
                 </aside>
