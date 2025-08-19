@@ -18,7 +18,7 @@ export default function View() {
     const [isMounted, setIsMounted] = useState(true);
     const [somethingWentWrong, setSomethingWentWrong] = useState(false);
     const [forceRerender, setForceRerender] = useState(0); // Add this to control rerenders
-    
+
     // Add stable responsive values that only change on significant viewport changes
     const [isMobile, setIsMobile] = useState(false);
 
@@ -60,7 +60,7 @@ export default function View() {
         let resizeTimeout: NodeJS.Timeout;
         const handleResize = () => {
             calculateViewerHeight();
-            
+
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 checkMobileView();
@@ -264,48 +264,72 @@ export default function View() {
 
     // Show PDF viewer
     return (
-        <div className="min-h-screen bg-muted/20 flex flex-col">
+        <>
             {/* Header */}
-            <div className="border-b glass flex-shrink-0">
-                <div className="container flex md:flex-row lg:flex-row sm:flex-row h-16 items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Button variant="ghost" size="sm" onClick={handleGoBack} className="cursor-pointer flex-shrink-0">
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back
+            <header className="sticky top-0 z-10 glass border-b border-primary ">
+                <div className="container flex h-16 items-center justify-between">
+                    <div className="flex items-center gap-2 truncate">
+                        <Button variant="ghost" size="sm" onClick={handleGoBack}>
+                            <ArrowLeft className="h-4 w-4 mr-1" /> Back
                         </Button>
-                        <div className="flex items-center gap-2 min-w-0">
-                            <FileText className="h-5 w-5 text-primary flex-shrink-0" />
-                            <h1 className="text-lg font-semibold truncate">
-                                Publication: {publicationTitle || pdfName || pdfFile.name}
-                            </h1>
+                        <FileText className="h-5 w-5 text-primary" />
+                        <h1 className="text-lg font-semibold truncate">
+                            {publicationTitle || pdfName || pdfFile.name}
+                        </h1>
+                    </div>
+                </div>
+            </header>
+
+            {/* Body */}
+            <main className="flex-1 container py-6 grid lg:grid-cols-12 gap-6">
+                {/* Left: Publication details */}
+                <aside className="lg:col-span-4 p-2">
+                    <div className="glass outline rounded-2xl p-6 shadow-sm">
+                        <h2 className="text-lg font-semibold mb-3">Publication Details</h2>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                            <p>
+                                <span className="font-medium text-foreground">Author:</span> {pdfFile.name}
+                            </p>
+                            {publicationTitle && (
+                                <p>
+                                    <span className="font-medium text-foreground">Title:</span> {publicationTitle}
+                                </p>
+                            )}
+                            {/* Future: add author, date, size, others. */}
+                        </div>
+                        <div className="mt-4 flex gap-2">
+                            <Button variant="default" size="sm"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success('Publication name copied to clipboard');
+                                }
+                                }
+                            >Share</Button>
                         </div>
                     </div>
-                    {/* <Button variant="outline" size="sm" onClick={handleReload} className="cursor-pointer flex-shrink-0 ml-2">
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Reload
-                    </Button> */}
-                </div>
-            </div>
+                </aside>
 
-            {/* PDF Viewer */}
-            <div className="flex-1 self-center container py-6">
-                <div className="border rounded-lg overflow-hidden glass outline-1 outline-primary h-full">
-                    <DFlipViewer
-                        key={`${pdfFile.name}-${forceRerender}`} // Use a simpler key that updates when the file changes
-                        pdfFile={pdfFile}
-                        options={{
-                            webgl: true,
-                            autoEnableOutline: true,
-                            pageMode: isMobile ? 1 : 2,
-                            singlePageMode: isMobile ? 1 : 0,
-                            responsive: true,
-                            height: viewerHeight,
-                            duration: 800,
-                            backgroundColor: 'transparent',
-                        }}
-                    />
-                </div>
-            </div>
-        </div>
+                {/* Right: PDF Viewer */}
+                <section className="lg:col-span-8">
+                    <div className="rounded-2xl bg-neutral-100 outline dark:bg-neutral-800 border overflow-hidden shadow-lg">
+                        <DFlipViewer
+                            key={`${pdfFile.name}-${forceRerender}`}
+                            pdfFile={pdfFile}
+                            options={{
+                                webgl: true,
+                                autoEnableOutline: true,
+                                pageMode: isMobile ? 1 : 2,
+                                singlePageMode: isMobile ? 1 : 0,
+                                responsive: true,
+                                height: viewerHeight,
+                                duration: 800,
+                                backgroundColor: 'transparent',
+                            }}
+                        />
+                    </div>
+                </section>
+            </main>
+
+        </>
     );
 }
